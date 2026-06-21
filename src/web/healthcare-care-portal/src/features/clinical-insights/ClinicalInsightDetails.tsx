@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { clinicalInsightApi } from '../../core/api/clinicalInsightApi';
-import { ClinicalNoteInsight, HumanReviewStatus, EntityCategory } from './types';
+import { ClinicalNoteInsight, HumanReviewStatus, EntityCategory, AiProviderMode } from './types';
 
 export const ClinicalInsightDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();

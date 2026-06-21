@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { auditApi } from '../../core/api/auditApi';
 import { Card, CardHeader, CardTitle, CardContent } from '../../shared/ui/Card';
 import { Loader2, Activity, ShieldAlert, CheckCircle, XCircle } from 'lucide-react';
-import { format } from 'date-fns';
 
 export function AuditList() {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -85,7 +84,7 @@ export function AuditList() {
                           </div>
                           <div className="ml-2 flex flex-shrink-0">
                             <p className="text-sm text-gray-500">
-                              {format(new Date(event.createdAt), 'MMM d, yyyy HH:mm:ss')}
+                              {new Date(event.createdAt).toLocaleString()}
                             </p>
                           </div>
                         </div>

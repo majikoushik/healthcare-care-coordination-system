@@ -5,7 +5,7 @@ import { followUpTaskApi } from '../../core/api/followUpTaskApi';
 import { patientApi } from '../../core/api/patientApi';
 import { carePlanApi } from '../../core/api/carePlanApi';
 import { Patient } from '../patients/types';
-import { CarePlan } from '../care-plans/types';
+import { CarePlanDocument } from '../care-plans/types';
 import { FollowUpTaskType, Priority } from './types';
 
 interface FormData {
@@ -26,7 +26,7 @@ export const FollowUpTaskRegistrationForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [carePlans, setCarePlans] = useState<CarePlan[]>([]);
+  const [carePlans, setCarePlans] = useState<CarePlanDocument[]>([]);
   
   const selectedPatientId = watch('patientId');
 
@@ -80,7 +80,7 @@ export const FollowUpTaskRegistrationForm: React.FC = () => {
           >
             <option value="">Select Patient...</option>
             {patients.map(p => (
-              <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
+              <option key={p.id} value={p.id}>{p.fullName}</option>
             ))}
           </select>
           {errors.patientId && <span style={{ color: 'red', fontSize: '12px' }}>{errors.patientId.message}</span>}

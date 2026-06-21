@@ -169,11 +169,82 @@ h2 {
 }
 
 .workstream-grid,
-.module-grid {
+.module-grid,
+.metric-grid {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 18px;
+}
+
+.metric-grid {
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+}
+
+.metric-card,
+.ops-item {
+  background: #f7fafc;
+  border: 1px solid #d9e4e7;
+  border-radius: 8px;
+  color: inherit;
+  display: flex;
+  justify-content: space-between;
+  min-height: 58px;
+  padding: 12px;
+  text-decoration: none;
+}
+
+.metric-card {
+  flex-direction: column;
+}
+
+.metric-card span,
+.ops-item span {
+  color: #62707d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.metric-card strong {
+  font-size: 1.4rem;
+}
+
+.operational-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ops-item {
+  align-items: center;
+}
+
+.ops-item.alert {
+  background: #fff1f1;
+  border-color: #f4b6b6;
+}
+
+.ops-item.alert span {
+  color: #b42318;
+}
+
+.ops-item.warning {
+  background: #fff7e6;
+  border-color: #ffd48a;
+}
+
+.ops-item.warning span {
+  color: #a15c00;
+}
+
+.ops-item.info {
+  background: #edf7ff;
+  border-color: #9dd3f5;
+}
+
+.ops-item.info span {
+  color: #146ca4;
 }
 
 .badge {
@@ -211,7 +282,8 @@ h2 {
   }
 
   .workstream-grid,
-  .module-grid {
+  .module-grid,
+  .metric-grid {
     grid-template-columns: 1fr;
   }
 }

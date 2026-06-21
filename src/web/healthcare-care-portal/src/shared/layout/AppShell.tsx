@@ -33,7 +33,7 @@ export function AppShell({ children }: PropsWithChildren) {
             <DemoRoleSelector />
             <div className="header-status">
               <span className="status-dot" />
-              Mock AI local mode
+              Synthetic data mode
             </div>
           </div>
         </header>

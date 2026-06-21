@@ -1,5 +1,5 @@
 import { axiosClient } from '../../core/api/axiosClient';
-import { CreateNotificationRequest, NotificationRecord, SimulateSendResponse } from './types';
+import { CreateNotificationRequest, NotificationRecord, SimulateSendResponse } from '../../features/notifications/types';
 
 export const notificationApi = {
   getNotifications: async (): Promise<NotificationRecord[]> => {

@@ -1,5 +1,5 @@
 import { axiosClient } from './axiosClient';
-import { ApiResponse } from './apiConfig';
+import type { ApiResponse } from '../types/api';
 import { AuditEvent } from '../../features/audit/types';
 
 export const auditApi = {

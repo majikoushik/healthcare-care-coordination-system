@@ -1,6 +1,6 @@
 import { axiosClient } from './axiosClient';
 import { FollowUpTask, CreateFollowUpTaskRequest, UpdateFollowUpTaskStatusRequest } from '../../features/follow-up-tasks/types';
-import { ApiResponse } from './apiConfig';
+import type { ApiResponse } from '../types/api';
 
 const BASE_URL = '/api/v1/follow-up-tasks';
 

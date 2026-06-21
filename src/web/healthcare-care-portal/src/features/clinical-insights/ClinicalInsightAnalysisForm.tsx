@@ -70,7 +70,7 @@ export const ClinicalInsightAnalysisForm: React.FC = () => {
       </div>
       <div className="info-panel" style={{ marginTop: '20px' }}>
         <p style={{ color: '#62707d', marginBottom: '16px', fontSize: '0.9rem' }}>
-          <strong>Responsible AI Notice:</strong> This feature uses a mocked AI provider locally. Do NOT paste real patient medical records. Synthetic data only. AI output requires human review.
+          <strong>Responsible AI Notice:</strong> This feature uses a mock AI provider locally unless Azure AI Language is explicitly configured. Do not paste real patient records or real clinical notes. Output is demo information for review only; it is not diagnosis, medical advice, or a replacement for qualified healthcare professional judgment.
         </p>
 
         {providerStatus && (
@@ -108,7 +108,7 @@ export const ClinicalInsightAnalysisForm: React.FC = () => {
 
           <div>
             <label style={{ display: 'block', fontWeight: 600, marginBottom: '4px' }}>Clinical Note Text * (Synthetic Data Only)</label>
-            <textarea placeholder="Example: Patient presented with fatigue and poor diet. Blood sugar levels were elevated..." {...register('clinicalNoteText')} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '150px' }} />
+            <textarea placeholder="Example synthetic note: Demo patient reports mild fatigue and requests follow-up coordination. No real medical record content." {...register('clinicalNoteText')} style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc', minHeight: '150px' }} />
             {errors.clinicalNoteText && <span style={{ color: 'red', fontSize: '0.85rem' }}>{errors.clinicalNoteText.message}</span>}
           </div>
 

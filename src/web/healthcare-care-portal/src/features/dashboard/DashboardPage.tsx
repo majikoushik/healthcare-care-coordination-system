@@ -8,12 +8,19 @@ import { notificationApi } from '../../core/api/notificationApi';
 import { Link } from 'react-router-dom';
 
 const workstreams = [
-  ["Patient coordination", "Registration and consent readiness", "SQL"],
-  ["Appointments", "Scheduling lifecycle boundary", "SQL"],
-  ["Care plans", "Goals, instructions, and follow-ups", "Cosmos"],
+  ["Patient coordination", "Registration, contact profile, and consent readiness", "SQL"],
+  ["Appointments", "Scheduling lifecycle and status transition boundary", "SQL"],
+  ["Care plans", "Goals, instructions, embedded tasks, and follow-ups", "Cosmos"],
   ["Clinical insights", "Mock AI provider with Azure AI Language readiness", "AI-ready"],
   ["Follow-up Tasks", "Due dates, priorities, and workflow execution", "Cosmos"],
-  ["Observability", "Correlation IDs, health checks, structured logs", "Ops"]
+  ["Audit and observability", "Traceability, correlation IDs, health checks, structured logs", "Ops"]
+] as const;
+
+const portfolioMetrics = [
+  ["Synthetic patients", "patients"],
+  ["Active providers", "providers"],
+  ["Appointments", "appointments"],
+  ["Active care plans", "carePlans"]
 ] as const;
 
 export function DashboardPage() {
@@ -62,38 +69,44 @@ export function DashboardPage() {
     <section className="dashboard">
       <div className="dashboard-intro">
         <div>
-          <p className="eyebrow">Portfolio architecture foundation</p>
-          <h2>Cloud-native healthcare coordination, ready for MVP epics.</h2>
+          <p className="eyebrow">Healthcare operations portfolio demo</p>
+          <h2>Cloud-native care coordination across patient, provider, appointment, care plan, insight, notification, and audit workflows.</h2>
           <p>
-            The foundation separates transactional healthcare master data from flexible coordination documents,
-            prepares clinical AI through a safe mock provider, and keeps privacy constraints visible from day one.
+            The portal separates transactional healthcare master data from flexible coordination documents,
+            prepares clinical AI through a safe mock provider, and keeps privacy, responsible AI, and traceability constraints visible.
           </p>
+          <div className="metric-grid">
+            {portfolioMetrics.map(([label, key]) => (
+              <Link className="metric-card" key={label} to={
+                key === "patients" ? "/patients" :
+                key === "providers" ? "/providers" :
+                key === "appointments" ? "/appointments" : "/care-plans"
+              }>
+                <span>{label}</span>
+                <strong>{stats[key]}</strong>
+              </Link>
+            ))}
+          </div>
         </div>
         <div className="readiness-card">
           <span>Local default</span>
           <strong>AI_PROVIDER=Mock</strong>
           <small>Azure credentials are not required for local development or CI.</small>
           
-          <div style={{ marginTop: '16px', display: 'flex', gap: '8px', flexDirection: 'column' }}>
-            <Link to="/follow-up-tasks" style={{ textDecoration: 'none', display: 'block' }}>
-              <div style={{ background: stats.overdueTasks > 0 ? '#fed7d7' : '#f7fafc', padding: '12px', borderRadius: '4px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: stats.overdueTasks > 0 ? '#c53030' : '#4a5568', fontWeight: 'bold' }}>Overdue Tasks</span>
-                <span style={{ fontWeight: 'bold' }}>{stats.overdueTasks}</span>
-              </div>
+          <div className="operational-list">
+            <Link to="/follow-up-tasks" className={stats.overdueTasks > 0 ? "ops-item alert" : "ops-item"}>
+              <span>Overdue Tasks</span>
+              <strong>{stats.overdueTasks}</strong>
             </Link>
             
-            <Link to="/follow-up-tasks" style={{ textDecoration: 'none', display: 'block' }}>
-              <div style={{ background: stats.dueTodayTasks > 0 ? '#feebc8' : '#f7fafc', padding: '12px', borderRadius: '4px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: stats.dueTodayTasks > 0 ? '#dd6b20' : '#4a5568', fontWeight: 'bold' }}>Tasks Due Today</span>
-                <span style={{ fontWeight: 'bold' }}>{stats.dueTodayTasks}</span>
-              </div>
+            <Link to="/follow-up-tasks" className={stats.dueTodayTasks > 0 ? "ops-item warning" : "ops-item"}>
+              <span>Tasks Due Today</span>
+              <strong>{stats.dueTodayTasks}</strong>
             </Link>
 
-            <Link to="/notifications" style={{ textDecoration: 'none', display: 'block' }}>
-              <div style={{ background: stats.queuedNotifications > 0 ? '#ebf8ff' : '#f7fafc', padding: '12px', borderRadius: '4px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: stats.queuedNotifications > 0 ? '#3182ce' : '#4a5568', fontWeight: 'bold' }}>Pending Notifications</span>
-                <span style={{ fontWeight: 'bold' }}>{stats.queuedNotifications}</span>
-              </div>
+            <Link to="/notifications" className={stats.queuedNotifications > 0 ? "ops-item info" : "ops-item"}>
+              <span>Pending Notifications</span>
+              <strong>{stats.queuedNotifications}</strong>
             </Link>
           </div>
         </div>
