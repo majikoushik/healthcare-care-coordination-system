@@ -1,0 +1,372 @@
+Run a Security, Secrets, Privacy, and Responsible AI Review for the `healthcare-care-coordination-system` repository.
+
+This is not a new feature epic. This is a focused final safety and security review before publishing the repository on GitHub.
+
+Before starting:
+
+1. Read `AGENTS.md`.
+2. Review the complete repository after Epic 0 through Epic 14 and the Final QA pass.
+3. Review backend services, React frontend, configuration files, Docker files, GitHub Actions, Bicep files, documentation, samples, tests, and architecture diagrams.
+4. Do not add unrelated business features.
+5. Do not change the core architecture unless a security or privacy issue requires it.
+
+Goal:
+
+Ensure the repository is safe to publish publicly and does not expose secrets, real data, unsafe healthcare claims, misleading AI claims, or insecure configuration patterns.
+
+Main review areas:
+
+1. Secrets review
+2. Healthcare privacy review
+3. Responsible AI review
+4. RBAC/security readiness review
+5. Logging and audit safety review
+6. Configuration safety review
+7. DevOps and Azure deployment safety review
+8. Public GitHub publishing readiness
+
+Secrets review checklist:
+
+Search the full repository for any real or suspicious values:
+
+* API keys
+* Azure AI keys
+* Azure AI Language endpoints
+* Cosmos DB keys
+* Cosmos DB connection strings
+* SQL Server connection strings
+* SQL passwords
+* Application Insights connection strings
+* Service Bus connection strings
+* JWT signing keys
+* Client secrets
+* Tenant IDs
+* Client IDs
+* Subscription IDs
+* Access tokens
+* Refresh tokens
+* Private keys
+* Certificates
+* Real email credentials
+* Real SMS provider credentials
+* Real storage account keys
+
+Check these file types carefully:
+
+* `.json`
+* `.cs`
+* `.ts`
+* `.tsx`
+* `.env`
+* `.yml`
+* `.yaml`
+* `.bicep`
+* `.md`
+* `.config`
+* `.csproj`
+* Dockerfiles
+* GitHub Actions workflows
+* Bicep parameter files
+* sample files
+* test files
+
+Expected result:
+
+1. No real secrets exist.
+2. `.env.example` contains placeholders only.
+3. No `.env` file is committed.
+4. Bicep parameters contain placeholders only.
+5. GitHub Actions use GitHub Secrets placeholders only.
+6. Docker Compose does not contain production secrets.
+7. Documentation does not include real secret examples.
+
+If any secret-like value exists:
+
+1. Remove it.
+2. Replace it with a safe placeholder.
+3. Update `.gitignore` if needed.
+4. Document the fix.
+5. Do not invent fake values that look like real secrets.
+
+Healthcare privacy review checklist:
+
+Ensure the repository contains synthetic healthcare data only.
+
+Search for and remove:
+
+* Real patient names
+* Real provider names
+* Real hospital names
+* Real client names
+* Real phone numbers
+* Real personal email addresses
+* Real addresses
+* Real medical records
+* Real clinical notes
+* Real prescription details
+* Real lab reports
+* Real appointment records
+* Real insurance identifiers
+* Real government identifiers
+
+Safe examples should use:
+
+* `Demo Patient`
+* `Synthetic Patient`
+* `Demo Provider`
+* `synthetic.patient@example.com`
+* `synthetic.provider@example.com`
+* `example.com`
+* `555-0100` style placeholder numbers
+* Synthetic clinical note text clearly labeled as demo content
+
+Healthcare compliance wording review:
+
+Search documentation and UI text for unsupported claims.
+
+Remove or correct phrases such as:
+
+* `HIPAA compliant`
+* `HIPAA-certified`
+* `clinically certified`
+* `production medical system`
+* `medical diagnosis`
+* `medical advice`
+* `doctor-approved`
+* `EHR compliant`
+* `certified healthcare platform`
+
+Replace with safer wording:
+
+* `compliance-readiness pattern`
+* `privacy-aware design`
+* `auditability pattern`
+* `synthetic healthcare data only`
+* `portfolio demonstration`
+* `not a production medical system`
+* `does not provide medical advice`
+* `does not claim HIPAA compliance`
+* `not clinically certified`
+
+Required disclaimer:
+
+Ensure the README and relevant clinical insight screens/docs include:
+
+```text
+This repository is a portfolio demonstration project. It uses synthetic healthcare data only. It is not a production medical system, does not provide medical advice, does not claim HIPAA compliance, and is not clinically certified.
+```
+
+Responsible AI review checklist:
+
+Review Clinical Insights and Azure AI Language readiness.
+
+Ensure:
+
+1. Mock AI provider is the default for local development.
+2. Azure AI Language provider is optional and configuration-driven.
+3. No Azure AI credentials are required locally.
+4. No real clinical notes are used.
+5. No real AI endpoint or key is committed.
+6. AI output is clearly marked as assistive only.
+7. AI output requires human review.
+8. AI output is not presented as diagnosis.
+9. AI output is not presented as medical advice.
+10. AI output is not automatically converted into patient-facing communication.
+11. AI-generated recommendations do not automatically become follow-up tasks without explicit human action.
+12. Raw AI responses are not logged.
+13. Full clinical note text is not logged.
+14. Azure AI configuration is not exposed in the frontend.
+
+Add or strengthen disclaimers where needed.
+
+Security and RBAC readiness review:
+
+Review the demo RBAC implementation.
+
+Ensure:
+
+1. Demo header-based identity is clearly documented as local/demo-only.
+2. Production identity readiness points to Azure Entra ID or equivalent.
+3. No real tenant IDs, client IDs, or secrets are committed.
+4. Role-permission mapping is documented.
+5. Sensitive actions are protected where practical.
+6. Audit read access is restricted to appropriate roles where implemented.
+7. Clinical insight review is restricted to appropriate roles where implemented.
+8. Notification simulation is restricted to appropriate roles where implemented.
+9. Access-denied behavior is safe and clear.
+10. Error messages do not expose internal details.
+
+Logging and audit safety review:
+
+Review logging and audit metadata across all modules.
+
+Ensure logs and audit events do not contain:
+
+* Full patient profile
+* Full appointment notes
+* Full care plan clinical summary
+* Full care plan instructions
+* Full clinical note text
+* Raw AI response
+* Full notification message content
+* Secrets
+* API keys
+* Tokens
+* Connection strings
+* Passwords
+* Stack traces in API responses
+
+Logs may contain safe metadata such as:
+
+* Correlation ID
+* Entity ID
+* Event type
+* Source service
+* Outcome
+* Severity
+* Provider mode
+* Status code
+* Request path
+* Duration
+
+Audit metadata must remain safe and minimal.
+
+Configuration review:
+
+Review configuration files:
+
+* `appsettings.json`
+* `appsettings.Development.json`
+* `.env.example`
+* Docker Compose
+* GitHub Actions
+* Bicep parameter files
+* React environment examples
+* README setup commands
+
+Ensure:
+
+1. Local development works with mock providers.
+2. Local development does not require Azure credentials.
+3. Azure AI Language is optional.
+4. Cosmos DB can run in mock/emulator-ready mode as documented.
+5. Application Insights is optional locally.
+6. No secret is exposed to the React frontend.
+7. `VITE_` variables do not contain secrets.
+8. Production configuration points to Key Vault or GitHub Secrets.
+
+DevOps and Azure deployment safety review:
+
+Review:
+
+* `.github/workflows/ci.yml`
+* Azure deployment workflow placeholders
+* `infra/bicep/`
+* Dockerfiles
+* `docker-compose.yml`
+* deployment documentation
+
+Ensure:
+
+1. No real Azure identifiers are committed.
+2. No real credentials are committed.
+3. GitHub Actions use placeholder secret names only.
+4. Bicep files use parameters and secure parameters where appropriate.
+5. Key Vault strategy is documented.
+6. Managed identity strategy is documented.
+7. Frontend deployment does not expose backend secrets.
+8. Health checks do not expose secrets.
+9. Logs do not expose secrets.
+10. Deployment docs are clearly blueprint-level unless actually deployed.
+
+Public GitHub publishing review:
+
+Prepare the repository for safe public visibility.
+
+Check:
+
+1. README is professional and clear.
+2. Repository description is accurate.
+3. Topics are recommended.
+4. No private client or employer information is present.
+5. No internal Cognizant/client/project names are used.
+6. No real business data is included.
+7. No copyrighted client assets are included.
+8. No private architecture diagrams are included.
+9. All sample data is synthetic.
+10. License file exists if appropriate.
+11. `.gitignore` is complete.
+12. Build/test instructions are clear.
+13. Known limitations are documented.
+
+Recommended GitHub repository description:
+
+```text
+Cloud-native healthcare care coordination platform demo built with .NET, React, SQL Server, Cosmos DB, Azure AI Language readiness, RBAC, audit logging, observability, Docker, and Azure deployment architecture.
+```
+
+Recommended GitHub topics:
+
+```text
+dotnet
+react
+typescript
+azure
+healthcare
+cosmos-db
+sql-server
+azure-ai
+azure-ai-language
+microservices
+clean-architecture
+rbac
+audit-logging
+observability
+docker
+bicep
+azure-container-apps
+solution-architecture
+portfolio-project
+responsible-ai
+```
+
+Testing expectations:
+
+Run or verify where practical:
+
+```text
+dotnet build
+dotnet test
+npm install
+npm run build
+npm run test
+docker compose config
+```
+
+If commands cannot run due to environment limitations, document the limitation and provide the expected command.
+
+Do not remove tests to make the project pass.
+
+Fix real issues properly.
+
+Final output required:
+
+After review, provide:
+
+1. Security review summary.
+2. Secrets scan summary.
+3. Files fixed or changed.
+4. Healthcare privacy review result.
+5. Responsible AI review result.
+6. RBAC/security readiness review result.
+7. Logging and audit safety review result.
+8. Configuration safety review result.
+9. DevOps/Azure deployment safety review result.
+10. Public GitHub publishing readiness result.
+11. Commands run.
+12. Issues found.
+13. Issues fixed.
+14. Remaining known limitations.
+15. Final recommended GitHub repository description.
+16. Final recommended GitHub topics.
+17. Final go/no-go publishing recommendation.

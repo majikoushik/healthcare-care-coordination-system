@@ -1,0 +1,460 @@
+Implement Epic 14: Portfolio Polish based on AGENTS.md and the existing repository.
+
+Build the final portfolio-quality polish pass for the `healthcare-care-coordination-system` repository.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the full implementation from Epic 0 through Epic 13.
+4. Review all backend services, React frontend, SQL Server persistence, Cosmos DB-ready persistence, Azure AI Language readiness, mock AI provider, Azure deployment blueprint, Docker setup, GitHub Actions, documentation, architecture diagrams, tests, security/RBAC readiness, privacy guidance, audit logging, observability, and DevOps setup.
+5. Preserve the architecture direction, healthcare privacy guidance, responsible AI guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, security model, RBAC readiness, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 14 Goal:
+
+Make the repository look like a professional Solution Architect portfolio project that clearly demonstrates healthcare domain architecture, .NET backend design, React frontend implementation, SQL Server, Azure Cosmos DB, Azure AI Language readiness, Azure deployment architecture, observability, security, privacy, auditability, DevOps, and responsible AI thinking.
+
+This epic should not add major new business features. It should polish, stabilize, document, and present the project professionally.
+
+Main polish scope:
+
+1. Improve root `README.md`.
+2. Add professional architecture overview.
+3. Add portfolio positioning.
+4. Add feature summary.
+5. Add technology stack summary.
+6. Add screenshots or screenshot placeholders.
+7. Add demo workflow documentation.
+8. Add API overview.
+9. Add local setup instructions.
+10. Add Docker setup instructions.
+11. Add Azure deployment blueprint summary.
+12. Add security and privacy notes.
+13. Add responsible AI notes.
+14. Add testing instructions.
+15. Add project roadmap and future improvements.
+16. Ensure all docs are internally consistent.
+17. Ensure frontend navigation and UI labels are polished.
+18. Ensure sample data is synthetic and professional.
+19. Ensure no secrets or real data are present.
+20. Ensure CI/build/test instructions are clear.
+
+Root README expectations:
+
+Rewrite or improve `README.md` so it looks excellent on GitHub.
+
+It should include:
+
+1. Project title.
+2. Professional one-line description.
+3. Architecture summary.
+4. Business problem.
+5. Solution overview.
+6. Key capabilities.
+7. Technology stack.
+8. System architecture diagram using Mermaid.
+9. Module overview.
+10. Data architecture.
+11. Azure AI Language readiness.
+12. Security and privacy readiness.
+13. Observability readiness.
+14. Azure deployment blueprint.
+15. Local development instructions.
+16. Docker instructions.
+17. API documentation instructions.
+18. Testing instructions.
+19. Repository structure.
+20. Screenshots or screenshot placeholders.
+21. Important disclaimer.
+22. Future roadmap.
+23. Portfolio value section.
+
+Suggested project description:
+
+```text
+Healthcare Care Coordination System is a cloud-native healthcare platform demo built with .NET, React, SQL Server, Azure Cosmos DB, and Azure AI Language readiness. It demonstrates patient management, provider coordination, appointment scheduling, care plan workflows, clinical note insight analysis, follow-up task tracking, notification simulation, audit logging, RBAC readiness, observability, Docker-based local development, and Azure deployment architecture.
+```
+
+README disclaimer must clearly state:
+
+```text
+This repository is a portfolio demonstration project. It uses synthetic healthcare data only. It is not a production medical system, does not provide medical advice, does not claim HIPAA compliance, and is not clinically certified.
+```
+
+Portfolio positioning section:
+
+Add a section explaining what this project demonstrates for a Solution Architect profile:
+
+* Healthcare domain workflow modeling
+* .NET microservice/API architecture
+* React frontend architecture
+* SQL Server and Cosmos DB polyglot persistence
+* Azure AI Language readiness
+* Responsible AI and human-review-first design
+* Security, privacy, and RBAC readiness
+* Audit logging and traceability
+* Observability and production-readiness
+* Docker and DevOps maturity
+* Azure deployment blueprint
+
+Architecture documentation polish:
+
+Review and improve these files for consistency:
+
+* `architecture/README.md`
+* `architecture/hld.md`
+* `architecture/lld.md`
+* `architecture/nfrs.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/deployment-architecture.md`
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/clinical-ai-architecture.md`
+
+Ensure each architecture document has:
+
+1. Clear purpose.
+2. Scope.
+3. Key decisions.
+4. Design summary.
+5. Current MVP implementation.
+6. Future production considerations.
+7. Healthcare privacy note where applicable.
+8. Responsible AI note where applicable.
+9. No unsupported compliance claims.
+
+ADR polish:
+
+Review all ADRs and ensure consistency.
+
+Expected ADRs include:
+
+* `0001-architecture-style.md`
+* `0002-react-frontend-choice.md`
+* `0003-polyglot-persistence-sql-and-cosmos.md`
+* `0004-cosmos-db-for-care-plans-and-events.md`
+* `0005-azure-ai-language-for-clinical-insights.md`
+* `0006-mock-ai-provider-first.md`
+* `0007-observability-strategy.md`
+* `0008-azure-hosting-strategy.md`
+* `0009-demo-rbac-and-azure-entra-id-readiness.md`
+
+Each ADR should include:
+
+* Status
+* Context
+* Decision
+* Consequences
+* Alternatives considered
+
+Documentation polish:
+
+Review and improve:
+
+* `docs/setup.md`
+* `docs/local-development.md`
+* `docs/docker-guide.md`
+* `docs/devops-guide.md`
+* `docs/ci-cd.md`
+* `docs/api-contracts.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/security-and-rbac-readiness.md`
+* `docs/privacy-design.md`
+* `docs/azure-ai-language-readiness.md`
+* `docs/application-insights-readiness.md`
+* `docs/operational-runbook.md`
+* `docs/troubleshooting-guide.md`
+* `docs/monitoring-and-alerting.md`
+* `docs/production-readiness-checklist.md`
+* `docs/azure-deployment-guide.md`
+* `docs/environment-strategy.md`
+* `docs/key-vault-strategy.md`
+* `docs/managed-identity-strategy.md`
+* `docs/rollback-strategy.md`
+* `docs/release-strategy.md`
+* `docs/cost-optimization-notes.md`
+* `docs/disaster-recovery-notes.md`
+* `docs/roadmap.md`
+
+Remove duplication where possible, but do not delete useful architecture or operational content.
+
+Diagram polish:
+
+Review all Mermaid diagrams under `architecture/diagrams/`.
+
+Ensure diagrams render correctly in GitHub markdown where possible.
+
+Important diagrams to verify or improve:
+
+* `system-context.md`
+* `container-diagram.md`
+* `patient-appointment-flow.md`
+* `care-plan-flow.md`
+* `clinical-insights-flow.md`
+* `polyglot-persistence.md`
+* `audit-logging-flow.md`
+* `security-and-rbac-flow.md`
+* `observability-flow.md`
+* `correlation-id-flow.md`
+* `health-check-flow.md`
+* `azure-deployment.md`
+* `azure-data-flow.md`
+* `azure-ci-cd-flow.md`
+
+Frontend polish:
+
+Review the React application and improve portfolio presentation.
+
+Polish:
+
+1. App layout.
+2. Sidebar navigation.
+3. Page headers.
+4. Dashboard cards.
+5. Status badges.
+6. Priority badges.
+7. Empty states.
+8. Loading states.
+9. Error states.
+10. Access denied page, if present.
+11. System health page.
+12. Clinical insights disclaimer.
+13. Privacy notices.
+14. Audit log readability.
+15. Notification simulation clarity.
+16. Form labels and validation messages.
+17. Route consistency.
+18. API error handling.
+19. Mobile/responsive basics where practical.
+
+Frontend must clearly feel like a healthcare operations portal.
+
+Recommended dashboard sections:
+
+* Total synthetic patients
+* Active providers
+* Today’s appointments
+* Active care plans
+* Pending follow-up tasks
+* Clinical insights pending review
+* Recent simulated notifications
+* Recent audit events
+* System health summary
+
+Backend polish:
+
+Review backend services for consistency.
+
+Check:
+
+1. API route naming consistency.
+2. DTO naming consistency.
+3. Error response consistency.
+4. Problem Details consistency.
+5. Health endpoint consistency.
+6. Correlation ID consistency.
+7. Safe logging consistency.
+8. Validation consistency.
+9. Swagger/OpenAPI metadata.
+10. No business logic in controllers.
+11. No hardcoded secrets.
+12. No real data.
+13. No full clinical text in logs.
+14. No raw AI response in logs.
+15. No secrets in configuration.
+
+API documentation polish:
+
+Ensure API documentation clearly covers:
+
+* Patient APIs
+* Provider APIs
+* Appointment APIs
+* Care Plan APIs
+* Clinical Insight APIs
+* Follow-up Task APIs
+* Notification APIs
+* Audit APIs
+* System Health APIs
+* Security/RBAC behavior
+* Error response model
+* Correlation ID usage
+
+Sample data polish:
+
+Review `samples/`.
+
+Ensure all sample files contain synthetic data only.
+
+Sample data should look realistic but not real.
+
+Check:
+
+* No real patient names
+* No real provider names unless clearly synthetic
+* No real phone numbers
+* No real email addresses except safe example domains
+* No real hospital/client data
+* No real medical records
+* No real clinical notes
+
+Use safe examples such as:
+
+* `synthetic.patient@example.com`
+* `synthetic.provider@example.com`
+* `Demo Patient`
+* `Demo Provider`
+* `Synthetic clinical note for demo workflow`
+
+Security and privacy polish:
+
+Confirm:
+
+1. No `.env` file is committed.
+2. `.env.example` contains placeholders only.
+3. `.gitignore` excludes local secret files.
+4. No Azure keys are committed.
+5. No Cosmos DB keys are committed.
+6. No SQL connection strings with real passwords are committed.
+7. No Application Insights connection string is committed.
+8. No client secrets are committed.
+9. No tokens are committed.
+10. No production identity claims are made.
+11. No HIPAA compliance claim is made.
+12. No medical certification claim is made.
+
+Responsible AI polish:
+
+Clinical Insights module must clearly communicate:
+
+1. AI output is assistive only.
+2. AI output requires human review.
+3. AI output is not diagnosis.
+4. AI output is not medical advice.
+5. Mock provider is default locally.
+6. Azure AI Language readiness is optional and configuration-driven.
+7. No real clinical notes should be used.
+
+Azure deployment blueprint polish:
+
+Review `infra/bicep/` and deployment docs.
+
+Ensure:
+
+1. Bicep files use placeholders only.
+2. Parameter files do not include secrets.
+3. GitHub Actions deployment workflows use GitHub secrets placeholders only.
+4. Azure resources are named consistently.
+5. Azure SQL and Cosmos DB responsibilities are clear.
+6. Key Vault strategy is clear.
+7. Managed identity strategy is clear.
+8. Application Insights strategy is clear.
+9. Azure AI Language strategy is clear.
+10. Azure Service Bus readiness is clear.
+11. Local development does not require Azure credentials.
+
+DevOps polish:
+
+Review:
+
+* Dockerfiles
+* `docker-compose.yml`
+* `.github/workflows/ci.yml`
+* Azure deployment workflow placeholders
+* `.env.example`
+* setup docs
+
+Ensure commands are accurate and clear.
+
+Testing and quality scope:
+
+Run or verify where practical:
+
+1. `dotnet build`
+2. `dotnet test`
+3. React install/build/test commands
+4. Docker build validation if practical
+5. TypeScript build
+6. Lint if configured
+7. CI workflow syntax review
+
+Do not remove tests to make the build pass. Fix issues properly.
+
+Add missing tests only if there are obvious gaps from previous epics and the fixes are small.
+
+Do not add major new feature tests beyond polish scope unless needed for stability.
+
+Final roadmap:
+
+Update `docs/roadmap.md` with:
+
+Completed MVP capabilities:
+
+* Patient Registration
+* Provider Management
+* Appointment Scheduling
+* Care Plan Management with Cosmos DB
+* Clinical Note Insights with Mock AI Provider
+* Azure AI Language Provider Readiness
+* Follow-up Task Tracking
+* Notification Simulation
+* Audit Logging with Cosmos DB
+* Security, Privacy, and RBAC Readiness
+* Observability and Production Readiness
+* DevOps and Docker
+* Azure Deployment Blueprint
+* Portfolio Polish
+
+Future improvements:
+
+* Real Azure AI Language integration
+* Azure Entra ID authentication
+* API Management gateway
+* Real Azure Service Bus eventing
+* Advanced role-based workflows
+* Real deployment pipeline
+* Advanced monitoring dashboards
+* Automated integration testing
+* Synthetic E2E test automation
+* Advanced accessibility improvements
+
+Important rules:
+
+* Do not add unrelated business features.
+* Do not overbuild beyond polish.
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, clinical note, audit, notification, care plan, or client data.
+* Do not use real medical records.
+* Do not send real notifications.
+* Do not call real Azure AI unless explicitly configured and already safe.
+* Do not require Azure credentials for local development.
+* Do not claim HIPAA compliance.
+* Do not claim medical certification.
+* Do not present AI output as medical advice or diagnosis.
+* Do not remove architecture depth just to make docs shorter.
+* Keep the repository professional, consistent, and portfolio-ready.
+
+After implementation, provide:
+
+1. What was polished.
+2. README improvements.
+3. Architecture documentation improvements.
+4. Frontend polish changes.
+5. Backend polish changes.
+6. API documentation improvements.
+7. Azure deployment blueprint polish.
+8. DevOps and Docker polish.
+9. Security and privacy review results.
+10. Responsible AI review results.
+11. Sample data review results.
+12. Tests/builds run.
+13. Any issues fixed.
+14. Any remaining known limitations.
+15. Recommended final repository description for GitHub.
+16. Recommended GitHub topics.
+17. Recommended screenshots to add manually, if any.

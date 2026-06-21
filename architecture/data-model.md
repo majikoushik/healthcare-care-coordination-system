@@ -29,6 +29,18 @@ This document describes the high-level data models used across the system, adher
 - `CreatedAt` (datetimeoffset)
 - `UpdatedAt` (datetimeoffset, null)
 
+### Appointment
+- `Id` (Guid, PK)
+- `PatientId` (Guid, FK conceptually)
+- `ProviderId` (Guid, FK conceptually)
+- `AppointmentDateTime` (datetimeoffset)
+- `VisitReason` (string, max 500)
+- `Type` (enum: Consultation, FollowUp, LabReview, MedicationReview, CarePlanReview)
+- `Status` (enum: Requested, Scheduled, CheckedIn, Completed, Cancelled, NoShow)
+- `Notes` (string, max 2000)
+- `CreatedAt` (datetimeoffset)
+- `UpdatedAt` (datetimeoffset, null)
+
 ## Document Data (Azure Cosmos DB)
 
 *(To be implemented in future epics: Care Plans, Clinical Notes, Audit Events)*

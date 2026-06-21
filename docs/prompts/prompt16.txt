@@ -1,0 +1,319 @@
+Run a Final QA and Stabilization Pass for the `healthcare-care-coordination-system` repository.
+
+This is not a new feature epic. This is a final engineering quality, stability, consistency, and portfolio-readiness pass.
+
+Before starting:
+
+1. Read `AGENTS.md`.
+2. Review the full implementation from Epic 0 through Epic 14.
+3. Review the backend services, React frontend, SQL Server modules, Cosmos DB-ready modules, Azure AI Language readiness, mock AI provider, notification simulation, audit logging, RBAC readiness, observability, Docker setup, Azure deployment blueprint, documentation, tests, and CI/CD workflows.
+4. Preserve all architecture decisions and do not introduce unrelated features.
+
+Goal:
+
+Make sure the repository is stable, consistent, buildable, testable, safe, and ready to publish on GitHub as a professional Solution Architect portfolio project.
+
+Final QA scope:
+
+1. Run or verify backend build.
+2. Run or verify backend tests.
+3. Run or verify React frontend build.
+4. Run or verify frontend tests if configured.
+5. Run or verify TypeScript checks if configured.
+6. Review Docker Compose setup.
+7. Review Dockerfiles.
+8. Review GitHub Actions workflows.
+9. Review Bicep infrastructure files.
+10. Review documentation consistency.
+11. Review API route consistency.
+12. Review naming consistency.
+13. Review environment configuration.
+14. Review sample data.
+15. Review security and privacy safeguards.
+16. Review responsible AI disclaimers.
+17. Review healthcare compliance wording.
+18. Review README quality.
+19. Review frontend navigation and UI polish.
+20. Review all known limitations.
+
+Backend QA checklist:
+
+Check all backend services for:
+
+* Consistent project structure
+* Consistent API route naming
+* Consistent DTO naming
+* Consistent validation behavior
+* Consistent error response format
+* Consistent Problem Details usage
+* Consistent health endpoints
+* Consistent correlation ID handling
+* Consistent structured logging
+* Consistent Swagger/OpenAPI metadata
+* No business logic inside controllers
+* No unnecessary duplication
+* No dead code
+* No hardcoded secrets
+* No real patient/provider/hospital/client data
+* No real medical records
+* No full clinical notes in logs
+* No raw Azure AI responses in logs
+* No connection strings in source code
+
+Frontend QA checklist:
+
+Check the React frontend for:
+
+* Clean route structure
+* Working navigation
+* Professional healthcare dashboard
+* Patient screens
+* Provider screens
+* Appointment screens
+* Care Plan screens
+* Clinical Insights screens
+* Follow-up Task screens
+* Notification screens
+* Audit screens
+* System Health screen
+* Access denied screen if implemented
+* Loading states
+* Empty states
+* Error states
+* Form validation messages
+* Consistent status badges
+* Consistent priority badges
+* Consistent page headers
+* No direct API calls inside deeply nested UI components where avoidable
+* No exposed secrets
+* No hardcoded production URLs
+* No real healthcare data
+
+API consistency checklist:
+
+Review and fix inconsistencies in:
+
+* Endpoint naming
+* HTTP verbs
+* Route prefixes
+* Request DTO names
+* Response DTO names
+* Status update request patterns
+* Error response models
+* Pagination/filtering behavior if present
+* Correlation ID response headers
+* Swagger summaries and descriptions
+
+Database and persistence checklist:
+
+Review:
+
+* SQL Server usage for Patient, Provider, and Appointment modules
+* Cosmos DB-ready usage for Care Plan, Clinical Insights, Follow-up Tasks, Notifications, and Audit Events
+* Repository abstractions
+* Configuration placeholders
+* Local development behavior
+* Mock/in-memory fallback behavior if present
+* Cosmos DB partition key documentation
+* EF Core migrations if present
+* No real credentials
+* No real data
+
+Azure AI readiness checklist:
+
+Review Clinical Insights and Azure AI readiness:
+
+* Mock provider remains default for local development
+* Azure AI provider is configuration-driven
+* Missing Azure AI credentials do not break local development
+* No Azure AI endpoint or key is committed
+* Azure AI output is documented as assistive only
+* Human review requirement is clear
+* No diagnosis or medical advice claims
+* No real clinical note examples
+* No full AI input or raw AI output in logs
+
+Security and privacy checklist:
+
+Review the repository for:
+
+* No committed `.env` files
+* `.env.example` contains placeholders only
+* `.gitignore` excludes secret files
+* No API keys
+* No Azure secrets
+* No Cosmos DB keys
+* No SQL passwords except obvious fake local placeholder examples
+* No Application Insights real connection strings
+* No tenant IDs, client IDs, or client secrets
+* No JWT signing secrets
+* No real patient names
+* No real phone numbers
+* No real hospital/client names
+* No real clinical notes
+* No HIPAA compliance claim
+* No medical certification claim
+* No medical advice claim
+
+Documentation QA checklist:
+
+Review and fix inconsistencies in:
+
+* `README.md`
+* `docs/setup.md`
+* `docs/local-development.md`
+* `docs/docker-guide.md`
+* `docs/devops-guide.md`
+* `docs/ci-cd.md`
+* `docs/api-contracts.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/security-and-rbac-readiness.md`
+* `docs/privacy-design.md`
+* `docs/azure-ai-language-readiness.md`
+* `docs/application-insights-readiness.md`
+* `docs/operational-runbook.md`
+* `docs/troubleshooting-guide.md`
+* `docs/monitoring-and-alerting.md`
+* `docs/production-readiness-checklist.md`
+* `docs/azure-deployment-guide.md`
+* `docs/environment-strategy.md`
+* `docs/key-vault-strategy.md`
+* `docs/managed-identity-strategy.md`
+* `docs/rollback-strategy.md`
+* `docs/release-strategy.md`
+* `docs/cost-optimization-notes.md`
+* `docs/disaster-recovery-notes.md`
+* `docs/roadmap.md`
+
+Architecture QA checklist:
+
+Review and fix:
+
+* `architecture/hld.md`
+* `architecture/lld.md`
+* `architecture/nfrs.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/deployment-architecture.md`
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/clinical-ai-architecture.md`
+* ADR files
+* Mermaid diagrams
+
+Ensure all diagrams render correctly in GitHub markdown where practical.
+
+DevOps QA checklist:
+
+Review:
+
+* `.github/workflows/ci.yml`
+* Azure deployment workflow placeholders
+* Dockerfiles
+* `docker-compose.yml`
+* `.env.example`
+* Bicep files
+* Bicep parameter files
+* Build commands
+* Test commands
+* Local run commands
+* Docker run commands
+* Documentation accuracy
+
+Make sure CI does not require real Azure credentials, real Cosmos DB credentials, real Azure AI credentials, or real production secrets.
+
+Bicep and Azure blueprint QA checklist:
+
+Review:
+
+* No real subscription IDs
+* No real tenant IDs
+* No real object IDs
+* No real secrets
+* No real endpoints
+* No real keys
+* No real connection strings
+* Parameters are placeholders
+* Key Vault strategy is clear
+* Managed identity strategy is clear
+* Azure SQL strategy is clear
+* Cosmos DB strategy is clear
+* Azure AI Language strategy is clear
+* Application Insights strategy is clear
+* Azure Service Bus readiness is clear
+* Container Apps deployment pattern is clear
+* Static Web Apps frontend deployment is clear
+
+Testing expectations:
+
+Run or verify these commands where practical:
+
+```text
+dotnet build
+dotnet test
+npm install
+npm run build
+npm run test
+docker compose config
+docker compose build
+```
+
+Use the correct project paths based on the repository structure.
+
+Do not delete tests to make the build pass. Fix the underlying issue.
+
+If a command cannot be run due to environment limitations, document the limitation clearly and provide the expected command for the developer.
+
+Final cleanup tasks:
+
+1. Remove unused files.
+2. Remove dead code.
+3. Remove duplicate documentation where harmful.
+4. Fix broken links.
+5. Fix incorrect file references.
+6. Fix inconsistent project names.
+7. Fix inconsistent route names.
+8. Fix obvious typos.
+9. Fix incorrect README commands.
+10. Fix incorrect Docker commands.
+11. Fix incorrect API examples.
+12. Fix broken Mermaid syntax.
+13. Fix placeholder names that look unprofessional.
+14. Ensure all generated content is portfolio-grade.
+
+Important rules:
+
+* Do not add major new business features.
+* Do not change core architecture unnecessarily.
+* Do not remove important documentation depth.
+* Do not hardcode secrets.
+* Do not use real healthcare data.
+* Do not use real medical records.
+* Do not send real notifications.
+* Do not require Azure credentials for local development.
+* Do not require Azure AI credentials for local development.
+* Do not claim HIPAA compliance.
+* Do not claim medical certification.
+* Do not present AI output as diagnosis or medical advice.
+
+After completion, provide:
+
+1. Final QA summary.
+2. Build/test commands run.
+3. Issues found.
+4. Issues fixed.
+5. Backend stabilization changes.
+6. Frontend stabilization changes.
+7. Documentation fixes.
+8. DevOps/Docker fixes.
+9. Azure blueprint fixes.
+10. Security and privacy review result.
+11. Responsible AI review result.
+12. Remaining known limitations.
+13. Final recommended GitHub repository description.
+14. Final recommended GitHub topics.
+15. Final publishing checklist.

@@ -1,192 +1,275 @@
-Implement Epic 7: Observability and Production Readiness based on AGENTS.md and the existing repository.
+Implement Epic 3: Appointment Scheduling based on AGENTS.md and the existing repository.
 
-Build the next architecture capability for the `enterprise-loan-origination-platform`: Observability, Error Handling, Correlation ID, Health Checks, and Production Readiness.
+Build the next business capability for the `healthcare-care-coordination-system` repository: Appointment Scheduling.
 
 Before implementation:
 
 1. Read `AGENTS.md`.
 2. Review the current repository structure.
-3. Review the implementation from Epic 0 through Epic 6.
-4. Review existing Customer, Loan Application, Eligibility, Status Tracking, Notification, and Audit implementations.
-5. Review existing Angular routes, services, components, tests, documentation, CI workflow, Docker setup, and event abstractions.
-6. Preserve the existing architecture direction, naming conventions, API response pattern, security standards, testing standards, and Azure-readiness.
+3. Review the implementation from Epic 0, Epic 1, and Epic 2.
+4. Review existing Patient and Provider APIs, React patient/provider screens, SQL Server persistence setup, tests, documentation, Docker setup, Cosmos DB readiness, Azure AI readiness, and CI workflow.
+5. Preserve the architecture direction, healthcare privacy guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, error handling approach, observability readiness, and Azure-readiness defined in `AGENTS.md`.
 
-Epic 7 Goal:
+Epic 3 Goal:
 
-Make the application more production-ready by adding consistent observability, global error handling, correlation ID propagation, structured logging, health checks, and operational support documentation.
+Allow users to schedule, view, update, and track synthetic healthcare appointments between patients and providers through backend APIs and React frontend.
 
-This epic should demonstrate that the platform is not only functionally correct, but also supportable, traceable, diagnosable, and ready for enterprise cloud deployment.
+Appointment Scheduling connects Patient and Provider workflows and demonstrates healthcare coordination, status lifecycle management, validation, traceability, and enterprise API design.
 
 Backend scope:
 
-1. Implement or standardize correlation ID middleware across all backend APIs and workers.
-2. Ensure every incoming request has a correlation ID.
-3. Return correlation ID in API responses and error responses.
-4. Propagate correlation ID into logs, audit events, notification requests, and business events where practical.
-5. Implement or standardize global exception handling.
-6. Use Problem Details style error responses consistently.
-7. Ensure validation errors follow a consistent response format.
-8. Add structured logging across services.
-9. Add service name, environment, correlation ID, request path, HTTP method, status code, elapsed time, and exception details where appropriate.
-10. Add health check endpoints for all APIs.
-11. Add readiness/liveness style health check structure where practical.
-12. Add Application Insights readiness without requiring real Azure secrets.
-13. Add safe logging practices to prevent sensitive data leakage.
-14. Add operational logging for important business events.
-15. Add retry/circuit-breaker readiness notes where external dependencies are simulated.
-16. Add tests for middleware, error handling, and health checks where practical.
+1. Implement Appointment Scheduling in `Appointment.Api`.
+2. Create a clean domain model for `Appointment`.
+3. Use SQL Server / Azure SQL persistence direction for appointment data.
+4. Associate appointments with existing Patient and Provider records where practical.
+5. Add request and response DTOs.
+6. Add validation for all required fields.
+7. Add appointment status lifecycle logic.
+8. Add persistence using Entity Framework Core.
+9. Add database migration support.
+10. Add synthetic seed data if appropriate.
+11. Add Swagger/OpenAPI documentation readiness.
+12. Add structured logging.
+13. Use correlation ID support if already available.
+14. Add proper error handling using Problem Details or the existing global error-handling pattern.
+15. Add health check readiness if not already present.
+16. Add unit tests and API/integration tests where practical.
 
-Required observability capabilities:
+Appointment fields:
 
-* Correlation ID middleware
-* Structured request logging
-* Global exception handling
-* Problem Details response model
-* Validation error response model
-* Health check endpoints
-* Application Insights configuration placeholder
-* Safe logging policy
-* Operational support notes
-* Azure Monitor / Log Analytics readiness documentation
+* Appointment ID
+* Patient ID
+* Provider ID
+* Appointment date and time
+* Visit reason
+* Appointment type
+* Status
+* Notes
+* Created timestamp
+* Updated timestamp
 
-Suggested backend endpoints:
+Supported appointment types:
 
-* `GET /health`
-* `GET /health/live`
-* `GET /health/ready`
+* Consultation
+* FollowUp
+* LabReview
+* MedicationReview
+* CarePlanReview
 
-If the existing service structure uses different health check conventions, align with it only if it is clean and documented.
+Supported appointment statuses:
 
-Correlation ID expectations:
+* Requested
+* Scheduled
+* CheckedIn
+* Completed
+* Cancelled
+* NoShow
 
-1. Accept incoming correlation ID from request header:
+Validation rules:
 
-   * `X-Correlation-ID`
-2. Generate a new correlation ID if not provided.
-3. Add correlation ID to response headers.
-4. Include correlation ID in structured logs.
-5. Include correlation ID in API response envelopes if the current pattern supports it.
-6. Include correlation ID in Problem Details error responses.
-7. Include correlation ID in audit events, notification requests, and business events where practical.
+* Patient ID is required.
+* Patient ID must refer to an existing patient if patient lookup is available.
+* Provider ID is required.
+* Provider ID must refer to an existing provider if provider lookup is available.
+* Appointment date and time is required.
+* Appointment date and time should not be in the past for new appointments.
+* Visit reason is required.
+* Visit reason should have a reasonable length limit.
+* Appointment type must be a supported value.
+* Status must be a supported value.
+* Notes should have a reasonable length limit.
+* Created timestamp should be system generated.
+* Updated timestamp should be system generated or updated automatically.
 
-Error handling expectations:
+Recommended appointment status transition rules:
 
-Use consistent error categories:
+* Requested → Scheduled
+* Requested → Cancelled
+* Scheduled → CheckedIn
+* Scheduled → Cancelled
+* Scheduled → NoShow
+* CheckedIn → Completed
+* CheckedIn → Cancelled
+* Completed → no further transition
+* Cancelled → no further transition
+* NoShow → no further transition
 
-* Validation error
-* Not found
-* Conflict
-* Unauthorized readiness
-* Forbidden readiness
-* Business rule violation
-* External dependency failure readiness
-* Unexpected server error
+Suggested API endpoints:
 
-Do not expose stack traces to the frontend.
+* `POST /api/v1/appointments`
+* `GET /api/v1/appointments`
+* `GET /api/v1/appointments/{appointmentId}`
+* `GET /api/v1/patients/{patientId}/appointments`
+* `GET /api/v1/providers/{providerId}/appointments`
+* `GET /api/v1/appointments/date/{date}`
+* `PUT /api/v1/appointments/{appointmentId}`
+* `PATCH /api/v1/appointments/{appointmentId}/status`
 
-Do not leak secrets, connection strings, or sensitive customer/financial data in error responses.
+Suggested status update request:
+
+```json
+{
+  "status": "Scheduled",
+  "reason": "Provider confirmed the requested appointment slot",
+  "updatedBy": "System"
+}
+```
+
+Use consistent API response and error response patterns according to `AGENTS.md`.
 
 Frontend scope:
 
-1. Improve Angular error handling consistency.
-2. Add or enhance HTTP interceptor for correlation ID.
-3. Add or enhance HTTP interceptor for API error handling.
-4. Show user-friendly error messages.
-5. Avoid exposing raw backend stack traces or technical internals in the UI.
-6. Add loading and empty-state consistency where practical.
-7. Add a simple system health/status page if appropriate.
-8. Use typed error models where practical.
-9. Keep UI professional and suitable for a banking platform demo.
+1. Implement Appointment Scheduling UI in React.
+2. Use the existing feature-based React structure.
+3. Add appointment list screen.
+4. Add appointment creation form.
+5. Add appointment details screen.
+6. Add patient-specific appointment view if practical.
+7. Add provider-specific appointment view if practical.
+8. Add appointment status display using professional badges.
+9. Add appointment type display.
+10. Add controlled status update action if appropriate for demo use.
+11. Show only valid next statuses where practical.
+12. Use React Hook Form or the existing form approach.
+13. Use Zod or the existing validation approach if already configured.
+14. Add field-level and form-level validation.
+15. Show user-friendly validation messages.
+16. Show loading state during API calls.
+17. Show success message after appointment creation or status update.
+18. Show API error message when creation, fetch, or status update fails.
+19. Use typed React models and API services.
+20. Do not call APIs directly from components; use a dedicated appointment API service or data hook.
+21. Keep the UI professional, clean, and suitable for a healthcare operations portal.
 
-Frontend route expectation:
+Frontend route expectations:
 
-* Optional: `/system-health`
-* Optional: show health/status indicators on `/dashboard`
+* `/appointments`
+* `/appointments/new`
+* `/appointments/:id`
+* `/patients/:patientId/appointments`
+* `/providers/:providerId/appointments`
+* Optional: link today’s appointments from `/dashboard`
+
+React implementation expectations:
+
+1. Use React + TypeScript.
+2. Use React Router for routes.
+3. Use a typed API client or API service.
+4. Use TanStack Query if it is already configured or appropriate.
+5. Reuse shared components from previous epics where practical:
+
+   * Page header
+   * Form field
+   * Select field
+   * Status badge
+   * Loading state
+   * Empty state
+   * Error alert
+   * Data table or list card
+6. Do not duplicate unnecessary UI logic.
+7. Keep components small and maintainable.
+
+Database scope:
+
+1. Use SQL Server for appointment data.
+2. Add Entity Framework Core model configuration.
+3. Add migration support.
+4. Ensure local configuration uses safe placeholder values.
+5. Do not use Cosmos DB for appointments in this epic.
+6. Preserve Cosmos DB readiness for future Care Plan, Clinical Insights, Notification, and Audit modules.
+
+Healthcare privacy and compliance-readiness expectations:
+
+Appointment data can reveal patient-care activity, so safe handling is important.
+
+Ensure implementation and documentation state:
+
+1. Only synthetic patient, provider, and appointment data is used.
+2. This is not a production healthcare system.
+3. The project does not claim HIPAA compliance or medical certification.
+4. Appointment notes should not contain real clinical details.
+5. Logs should use safe metadata such as appointment ID, patient ID, provider ID, and correlation ID.
+6. Do not log full appointment notes unnecessarily.
+7. Future authentication and role-based access control should be documented.
+8. Appointment status tracking is included as a workflow-readiness and traceability pattern.
 
 Documentation scope:
 
 Update or create relevant documentation:
 
 * `README.md`
+* `docs/api-contracts.md`
 * `docs/local-development.md`
 * `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
 * `docs/roadmap.md`
-* `docs/operational-runbook.md`
-* `architecture/observability-architecture.md`
-* `architecture/security-architecture.md`
-* `architecture/deployment-architecture.md`
-* `architecture/nfrs.md`
 * `architecture/lld.md`
-
-Create `docs/operational-runbook.md` if it does not exist.
-
-Operational runbook should include:
-
-* How to check service health
-* How to use correlation ID for troubleshooting
-* Common failure scenarios
-* Where logs would go in Azure
-* How Application Insights would be used
-* How Log Analytics would be used
-* Basic incident triage flow
-* Safe logging guidelines
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/diagrams/patient-appointment-flow.md`
 
 Architecture expectations:
 
-1. Observability should be implemented as shared infrastructure or reusable building blocks where practical.
-2. Do not duplicate middleware logic unnecessarily across services.
-3. Keep implementation simple but enterprise-ready.
-4. Keep Application Insights configuration optional and environment-driven.
-5. Do not require actual Azure resources for local development.
-6. Document how local observability maps to Azure production observability.
-7. Preserve service boundaries.
-8. Do not implement unrelated business features in this epic.
+1. Keep controllers thin.
+2. Keep validation and business rules out of controllers.
+3. Put status transition rules in the domain or application layer.
+4. Use clear application/domain/infrastructure boundaries.
+5. Use healthcare-friendly naming.
+6. Document the Appointment service responsibility clearly.
+7. Keep Appointment service focused on appointment lifecycle and scheduling workflow.
+8. Do not implement Care Plan Management yet.
+9. Do not implement Clinical AI features yet.
+10. Do not implement Notification Simulation yet unless a lightweight event-readiness hook already exists.
+11. Do not implement Audit Logging yet unless a lightweight audit-readiness hook already exists.
+12. Do not use real Azure AI calls.
+13. Keep the design ready for future Care Plan, Clinical Insights, Notification, and Audit epics.
 
 Testing expectations:
 
 Add tests for:
 
-* Correlation ID generated when missing
-* Incoming correlation ID preserved when provided
-* Correlation ID returned in response header
-* Correlation ID included in error response
-* Global exception handling returns safe Problem Details response
-* Validation error returns consistent response
-* Not found scenario returns consistent response
-* Health endpoint returns healthy response
-* Angular interceptor adds or propagates correlation ID if practical
-* Angular error handling maps API error to user-friendly message if practical
+* Successful appointment creation
+* Missing patient ID
+* Invalid patient ID if patient lookup exists
+* Missing provider ID
+* Invalid provider ID if provider lookup exists
+* Missing appointment date and time
+* Appointment date and time in the past
+* Missing visit reason
+* Invalid appointment type
+* Invalid appointment status
+* Fetching all appointments
+* Fetching appointment by ID
+* Fetching appointments by patient ID
+* Fetching appointments by provider ID
+* Fetching appointments by date
+* Appointment not found scenario
+* Updating appointment details
+* Valid status transition from Requested to Scheduled
+* Valid status transition from Scheduled to CheckedIn
+* Valid status transition from CheckedIn to Completed
+* Invalid transition from Completed to Scheduled
+* Invalid transition from Cancelled to Scheduled
+* Safe logging does not log full appointment notes where practical
 
 CI/CD expectation:
 
-Update GitHub Actions if required so the build and tests include the new observability and frontend changes.
-
-Docker expectation:
-
-Update Docker Compose if required so health checks can be used locally.
-
-Azure-readiness expectation:
-
-Document how this observability implementation maps to future Azure resources:
-
-* Azure Application Insights
-* Azure Log Analytics
-* Azure Monitor
-* Azure Container Apps health probes
-* Azure Service Bus diagnostics
-* Azure SQL monitoring
-* Distributed tracing
-* Dashboard and alerting readiness
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
 
 Important rules:
 
 * Do not hardcode secrets.
-* Do not require real Azure credentials.
-* Do not log sensitive data.
-* Do not expose stack traces to frontend.
-* Do not overbuild beyond Epic 7.
-* Do not implement authentication unless already required by the existing foundation.
-* Do not implement full Azure deployment yet unless required by the current foundation.
+* Do not use real patient, provider, hospital, appointment, or client data.
+* Do not log full appointment notes unnecessarily.
+* Do not implement Care Plan Management yet.
+* Do not implement Clinical AI features yet.
+* Do not implement real Azure AI calls.
+* Do not overbuild beyond Epic 3.
 * Keep the project Azure-ready.
 * Keep the implementation portfolio-grade and Solution Architect quality.
 
@@ -195,15 +278,13 @@ After implementation, provide:
 1. What was implemented.
 2. Backend files created or modified.
 3. Frontend files created or modified.
-4. Shared building blocks added or changed.
-5. Middleware added.
-6. Health check endpoints added.
-7. Error handling improvements.
-8. Logging and correlation ID improvements.
-9. Tests added.
-10. Documentation updated.
-11. Docker Compose changes if any.
-12. Commands to run locally.
-13. Commands to test.
-14. Any assumptions made.
-15. Recommended next epic.
+4. Database/migration changes.
+5. API endpoints added.
+6. Appointment status transition rules implemented.
+7. Tests added.
+8. Documentation updated.
+9. Healthcare privacy and safe data handling notes.
+10. Commands to run locally.
+11. Commands to test.
+12. Any assumptions made.
+13. Recommended next epic.

@@ -13,12 +13,12 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 - Mock clinical AI provider for local development with Azure AI Language-ready provider abstraction.
 - Correlation ID, health check, Problem Details, structured logging, and Application Insights readiness.
 
-## Current Epic 2 Scope
+## Current Epic 3 Scope
 
-Epic 2 implements Provider Management, building upon Epic 1:
-- React frontend forms and lists for Provider Management.
-- .NET 8 minimal API backend with FluentValidation for Providers.
-- Provider availability status and specialty tracking.
+Epic 3 implements Appointment Scheduling, connecting the Patient and Provider workflows:
+- React frontend forms and lists for Appointment Management.
+- .NET 8 minimal API backend with FluentValidation for Appointments.
+- Strict appointment status machine (Requested -> Scheduled -> CheckedIn).
 
 ## Run Locally
 
