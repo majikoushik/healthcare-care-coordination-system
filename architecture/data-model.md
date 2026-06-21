@@ -43,4 +43,45 @@ This document describes the high-level data models used across the system, adher
 
 ## Document Data (Azure Cosmos DB)
 
-*(To be implemented in future epics: Care Plans, Clinical Notes, Audit Events)*
+### CarePlan
+**Partition Key:** `/patientId`
+
+*Document Structure:*
+```json
+{
+  "id": "guid",
+  "patientId": "guid",
+  "providerId": "guid",
+  "relatedAppointmentId": "guid (optional)",
+  "title": "string",
+  "clinicalSummary": "string",
+  "instructions": "string",
+  "followUpDate": "datetimeoffset (optional)",
+  "status": "enum: Draft, Active, OnHold, Completed, Cancelled",
+  "goals": [
+    {
+      "goalId": "guid",
+      "description": "string",
+      "targetDate": "datetimeoffset (optional)",
+      "status": "enum: NotStarted, InProgress, Achieved, NotAchieved, Cancelled",
+      "priority": "enum: Low, Medium, High, Critical"
+    }
+  ],
+  "tasks": [
+    {
+      "taskId": "guid",
+      "taskTitle": "string",
+      "taskDescription": "string",
+      "dueDate": "datetimeoffset (optional)",
+      "status": "enum: Pending, InProgress, Completed, Overdue, Cancelled",
+      "priority": "enum: Low, Medium, High, Critical",
+      "assignedTo": "string",
+      "completedTimestamp": "datetimeoffset (optional)"
+    }
+  ],
+  "createdAt": "datetimeoffset",
+  "updatedAt": "datetimeoffset (optional)"
+}
+```
+
+*(To be implemented in future epics: Clinical Notes, Audit Events)*

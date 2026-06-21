@@ -13,12 +13,12 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 - Mock clinical AI provider for local development with Azure AI Language-ready provider abstraction.
 - Correlation ID, health check, Problem Details, structured logging, and Application Insights readiness.
 
-## Current Epic 3 Scope
+## Current Epic 4 Scope
 
-Epic 3 implements Appointment Scheduling, connecting the Patient and Provider workflows:
-- React frontend forms and lists for Appointment Management.
-- .NET 8 minimal API backend with FluentValidation for Appointments.
-- Strict appointment status machine (Requested -> Scheduled -> CheckedIn).
+Epic 4 implements Care Plan Management using Azure Cosmos DB document storage modeling:
+- React frontend forms and dynamic nested list views for Care Plan tracking.
+- .NET 8 minimal API backend supporting embedded tasks and goals.
+- Polyglot persistence modeling using `MockCarePlanRepository` to mimic Cosmos DB behavior.
 
 ## Run Locally
 

@@ -1,0 +1,475 @@
+Run the GitHub Portfolio Publishing Pass for the `healthcare-care-coordination-system` repository.
+
+This is the final publishing-readiness pass before making the repository public on GitHub.
+
+This is not a new feature epic. Do not add major business features. Focus on GitHub presentation, repository metadata, documentation polish, screenshots guidance, final cleanup, and public portfolio readiness.
+
+Before starting:
+
+1. Read `AGENTS.md`.
+2. Review the full repository after Epic 0 through Epic 14.
+3. Review the Final QA and Stabilization Pass.
+4. Review the Security, Secrets, Privacy, and Responsible AI Review.
+5. Confirm that the repository is safe to publish publicly.
+6. Preserve all architecture decisions and do not introduce unrelated features.
+
+Goal:
+
+Make the repository look excellent as a public GitHub portfolio project for a Solution Architect profile.
+
+The repository should clearly communicate:
+
+* Healthcare domain architecture
+* .NET backend engineering
+* React frontend implementation
+* SQL Server and Cosmos DB polyglot persistence
+* Azure AI Language readiness
+* Responsible AI and human-review-first design
+* Security, privacy, and RBAC readiness
+* Audit logging and traceability
+* Observability and production-readiness
+* Docker and DevOps maturity
+* Azure deployment blueprint
+* Solution Architect thinking
+
+Main tasks:
+
+1. Finalize root `README.md`.
+2. Add polished GitHub repository description.
+3. Add recommended GitHub topics.
+4. Add screenshot placeholders or screenshot guidance.
+5. Add final architecture diagram links.
+6. Add clean local setup instructions.
+7. Add demo workflow instructions.
+8. Add API documentation instructions.
+9. Add Docker run instructions.
+10. Add testing instructions.
+11. Add Azure deployment blueprint summary.
+12. Add final disclaimers.
+13. Add final roadmap.
+14. Add final known limitations.
+15. Add final publishing checklist.
+16. Ensure no unsafe content exists.
+
+README final structure:
+
+Ensure root `README.md` has these sections in a professional order:
+
+1. Project title
+2. One-line description
+3. Portfolio value statement
+4. Important disclaimer
+5. Business problem
+6. Solution overview
+7. Key capabilities
+8. Technology stack
+9. Architecture overview
+10. System diagram
+11. Module overview
+12. Data architecture
+13. Azure AI Language readiness
+14. Security, privacy, and RBAC readiness
+15. Audit logging and traceability
+16. Observability and production readiness
+17. DevOps and Docker
+18. Azure deployment blueprint
+19. Demo workflow
+20. Local development
+21. Docker setup
+22. API documentation
+23. Testing
+24. Repository structure
+25. Screenshots
+26. Roadmap
+27. Known limitations
+28. GitHub topics recommendation
+29. License
+
+Recommended one-line description:
+
+```text
+Cloud-native healthcare care coordination platform demo built with .NET, React, SQL Server, Azure Cosmos DB, Azure AI Language readiness, RBAC, audit logging, observability, Docker, and Azure deployment architecture.
+```
+
+Required disclaimer:
+
+```text
+This repository is a portfolio demonstration project. It uses synthetic healthcare data only. It is not a production medical system, does not provide medical advice, does not claim HIPAA compliance, and is not clinically certified.
+```
+
+Portfolio value section:
+
+Add a section titled:
+
+```text
+Why This Project Matters for Solution Architecture
+```
+
+Include points such as:
+
+* Demonstrates healthcare workflow modeling.
+* Shows .NET API and service boundary design.
+* Shows React frontend architecture.
+* Demonstrates SQL Server and Cosmos DB polyglot persistence.
+* Shows Azure AI Language readiness with responsible AI safeguards.
+* Demonstrates RBAC, audit logging, privacy-aware design, and traceability.
+* Shows observability, Docker, CI/CD, and Azure deployment blueprint.
+* Presents a realistic enterprise architecture portfolio project rather than a simple CRUD demo.
+
+Technology stack section:
+
+Include:
+
+Backend:
+
+* .NET 8
+* ASP.NET Core Web API
+* Entity Framework Core
+* SQL Server / Azure SQL
+* Cosmos DB-ready repositories
+* Swagger / OpenAPI
+* Serilog / structured logging readiness
+* Health checks
+* Problem Details
+* Docker
+
+Frontend:
+
+* React
+* TypeScript
+* Vite
+* React Router
+* React Hook Form
+* Zod or existing validation library
+* TanStack Query or existing API state approach
+* Axios or existing API client
+
+Cloud and DevOps:
+
+* Azure Container Apps
+* Azure Static Web Apps
+* Azure SQL Database
+* Azure Cosmos DB
+* Azure AI Language readiness
+* Azure Key Vault
+* Azure Application Insights
+* Azure Log Analytics
+* Azure Service Bus readiness
+* Docker Compose
+* GitHub Actions
+* Bicep
+
+Module overview:
+
+Ensure README summarizes:
+
+* Patient Registration
+* Provider Management
+* Appointment Scheduling
+* Care Plan Management
+* Clinical Note Insights
+* Azure AI Language Provider Readiness
+* Follow-up Task Tracking
+* Notification Simulation
+* Audit Logging
+* Security, Privacy, and RBAC Readiness
+* Observability and System Health
+* Azure Deployment Blueprint
+
+Data architecture summary:
+
+Clearly state:
+
+* SQL Server is used for structured transactional data:
+
+  * Patients
+  * Providers
+  * Appointments
+
+* Cosmos DB is used for flexible healthcare documents and event-style data:
+
+  * Care Plans
+  * Clinical Insights
+  * Follow-up Tasks
+  * Notifications
+  * Audit Events
+
+* All data is synthetic demo data only.
+
+Azure AI Language readiness section:
+
+Ensure README explains:
+
+1. The Clinical Insights module uses a mock AI provider by default.
+2. Azure AI Language / Text Analytics for Health integration is configuration-ready.
+3. No Azure AI credentials are required for local development.
+4. No real clinical notes should be used.
+5. AI output is assistive only.
+6. AI output requires human review.
+7. AI output is not medical advice or diagnosis.
+
+Security and privacy section:
+
+Ensure README explains:
+
+1. Synthetic data only.
+2. Demo RBAC readiness.
+3. Future Azure Entra ID readiness.
+4. Safe logging.
+5. Safe audit metadata.
+6. No secrets in source code.
+7. Key Vault readiness.
+8. No HIPAA compliance claim.
+9. No clinical certification claim.
+
+Screenshots section:
+
+Create a `docs/screenshots/README.md` file if it does not exist.
+
+Add screenshot placeholder guidance for:
+
+* Dashboard
+* Patient list
+* Appointment scheduling
+* Care plan details
+* Clinical insight analysis
+* Follow-up task board/list
+* Notification simulation
+* Audit log
+* System health
+* Azure deployment diagram
+
+In README, add placeholder links such as:
+
+```text
+docs/screenshots/dashboard.png
+docs/screenshots/care-plan-details.png
+docs/screenshots/clinical-insights.png
+docs/screenshots/audit-log.png
+docs/screenshots/system-health.png
+```
+
+Do not add fake binary screenshots.
+
+Do not generate screenshots unless the app can actually be run and captured safely.
+
+Demo workflow section:
+
+Add a clear demo workflow:
+
+1. Register synthetic patient.
+2. Register synthetic provider.
+3. Schedule appointment.
+4. Create care plan.
+5. Submit synthetic clinical note.
+6. Generate mock clinical insights.
+7. Review AI insight.
+8. Create follow-up task.
+9. Simulate notification.
+10. View audit trail.
+11. Check system health.
+
+Local setup section:
+
+Ensure commands are accurate for the repository structure.
+
+Include:
+
+* Backend restore/build/test commands.
+* Frontend install/build/test commands.
+* Docker Compose command.
+* Environment setup using `.env.example`.
+* Mock provider mode explanation.
+
+Docker section:
+
+Include:
+
+```text
+docker compose up --build
+docker compose down
+docker compose config
+```
+
+Testing section:
+
+Include:
+
+```text
+dotnet build
+dotnet test
+npm install
+npm run build
+npm run test
+```
+
+Use the correct frontend folder path.
+
+Azure deployment blueprint section:
+
+Summarize:
+
+* Bicep files under `infra/bicep`
+* Azure Container Apps
+* Azure Static Web Apps
+* Azure SQL
+* Cosmos DB
+* Azure AI Language
+* Key Vault
+* Application Insights
+* Log Analytics
+* Service Bus readiness
+* GitHub Actions deployment workflow placeholders
+
+Make clear this is a blueprint and does not include real credentials.
+
+Final roadmap:
+
+Ensure roadmap includes completed capabilities and future improvements.
+
+Completed capabilities:
+
+* Patient Registration
+* Provider Management
+* Appointment Scheduling
+* Care Plan Management with Cosmos DB
+* Clinical Note Insights with Mock AI Provider
+* Azure AI Language Provider Readiness
+* Follow-up Task Tracking
+* Notification Simulation
+* Audit Logging with Cosmos DB
+* Security, Privacy, and RBAC Readiness
+* Observability and Production Readiness
+* DevOps and Docker
+* Azure Deployment Blueprint
+* Portfolio Polish
+* Final QA
+* Security and Responsible AI Review
+* GitHub Publishing Readiness
+
+Future improvements:
+
+* Real Azure AI Language integration
+* Azure Entra ID authentication
+* Real Azure Cosmos DB deployment
+* Real Azure Service Bus eventing
+* API Management gateway
+* Advanced role workflows
+* Real dashboards in Azure Monitor
+* E2E testing
+* Accessibility improvements
+* Deployment to live Azure environment
+
+Known limitations section:
+
+Add clear limitations:
+
+* Uses synthetic data only.
+* Not a production medical system.
+* Does not provide medical advice.
+* Does not claim HIPAA compliance.
+* Mock AI provider is default locally.
+* Azure AI integration is readiness-focused unless configured.
+* Notification module simulates delivery only.
+* Azure deployment files are blueprint-level unless deployed separately.
+* Security model is demo/readiness-oriented, not production identity.
+
+GitHub repository metadata:
+
+Add a section recommending:
+
+Repository name:
+
+```text
+healthcare-care-coordination-system
+```
+
+Repository description:
+
+```text
+Cloud-native healthcare care coordination platform demo built with .NET, React, SQL Server, Cosmos DB, Azure AI Language readiness, RBAC, audit logging, observability, Docker, and Azure deployment architecture.
+```
+
+Topics:
+
+```text
+dotnet
+react
+typescript
+azure
+healthcare
+cosmos-db
+sql-server
+azure-ai
+azure-ai-language
+microservices
+clean-architecture
+rbac
+audit-logging
+observability
+docker
+bicep
+azure-container-apps
+solution-architecture
+portfolio-project
+responsible-ai
+```
+
+Final cleanup:
+
+Check and fix:
+
+1. Broken README links.
+2. Broken documentation links.
+3. Broken Mermaid syntax.
+4. Incorrect commands.
+5. Incorrect folder paths.
+6. Duplicate disclaimers where excessive.
+7. Typos.
+8. Inconsistent project name.
+9. Inconsistent terminology.
+10. Missing license reference.
+11. Missing screenshot placeholder docs.
+12. Missing roadmap links.
+13. Missing architecture links.
+14. Any content that sounds like production medical compliance.
+
+Public safety review:
+
+Confirm one more time:
+
+* No secrets.
+* No real data.
+* No private client names.
+* No employer confidential details.
+* No real healthcare records.
+* No real Azure credentials.
+* No unsupported compliance claims.
+* No medical advice claims.
+* No real notification sending.
+* No raw AI outputs in docs or logs.
+
+Do not:
+
+* Add new major features.
+* Add real Azure credentials.
+* Add real patient data.
+* Add fake compliance claims.
+* Add fake screenshots.
+* Remove important architecture documentation.
+* Over-simplify the README.
+* Change the project architecture unnecessarily.
+
+After implementation, provide:
+
+1. Publishing pass summary.
+2. README improvements.
+3. Documentation improvements.
+4. Screenshot placeholder updates.
+5. Repository metadata recommendation.
+6. Final GitHub description.
+7. Final GitHub topics.
+8. Final safety review result.
+9. Commands checked or updated.
+10. Remaining known limitations.
+11. Final go/no-go recommendation for making the repository public.

@@ -7,6 +7,8 @@ import { ProviderRegistrationForm } from "../features/providers/ProviderRegistra
 import { ProviderDetails } from "../features/providers/ProviderDetails";
 import { AppointmentRegistrationForm } from "../features/appointments/AppointmentRegistrationForm";
 import { AppointmentDetails } from "../features/appointments/AppointmentDetails";
+import { CarePlanRegistrationForm } from "../features/care-plans/CarePlanRegistrationForm";
+import { CarePlanDetails } from "../features/care-plans/CarePlanDetails";
 
 export function App() {
   return (
@@ -22,6 +24,8 @@ export function App() {
         <Route path="/providers/:id" element={<ProviderDetails />} />
         <Route path="/appointments/new" element={<AppointmentRegistrationForm />} />
         <Route path="/appointments/:id" element={<AppointmentDetails />} />
+        <Route path="/care-plans/new" element={<CarePlanRegistrationForm />} />
+        <Route path="/care-plans/:id" element={<CarePlanDetails />} />
       </Routes>
     </AppShell>
   );

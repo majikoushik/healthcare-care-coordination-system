@@ -101,6 +101,47 @@ Transitions the appointment status using strict business rules.
 - **Response**: `200 OK` with `ApiResponse<AppointmentResponse>`
 - **Errors**: `400 Bad Request` (Invalid Transition), `404 Not Found`
 
+## CarePlan.Api
+
+Base path: `/api/v1/care-plans`
+
+### `POST /` (Create Care Plan)
+Creates a new care plan document with optional embedded goals and tasks.
+- **Request Body**: `CreateCarePlanRequest`
+- **Response**: `201 Created` with `ApiResponse<CarePlanDocument>`
+
+### `GET /` (List Care Plans)
+Fetches all care plans.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<CarePlanDocument>>`
+
+### `GET /{id}` (Get Care Plan)
+Fetches specific care plan document by ID.
+- **Response**: `200 OK` with `ApiResponse<CarePlanDocument>`
+
+### `PATCH /{id}/status` (Update Care Plan Status)
+Transitions the status using strict business rules.
+- **Request Body**: `UpdateCarePlanStatusRequest`
+- **Response**: `200 OK` with `ApiResponse<CarePlanDocument>`
+- **Errors**: `400 Bad Request` (Invalid Transition)
+
+### `POST /{id}/goals` (Add Goal)
+Appends a goal to the care plan document.
+- **Request Body**: `AddCarePlanGoalRequest`
+- **Response**: `200 OK` with `ApiResponse<CarePlanDocument>`
+
+### `PATCH /{id}/goals/{goalId}/status` (Update Goal Status)
+- **Request Body**: `UpdateCarePlanGoalStatusRequest`
+- **Response**: `200 OK` with `ApiResponse<CarePlanDocument>`
+
+### `POST /{id}/tasks` (Add Task)
+Appends a task to the care plan document.
+- **Request Body**: `AddCarePlanTaskRequest`
+- **Response**: `200 OK` with `ApiResponse<CarePlanDocument>`
+
+### `PATCH /{id}/tasks/{taskId}/status` (Update Task Status)
+- **Request Body**: `UpdateCarePlanTaskStatusRequest`
+- **Response**: `200 OK` with `ApiResponse<CarePlanDocument>`
+
 ## Common Response Format
 
 ```json

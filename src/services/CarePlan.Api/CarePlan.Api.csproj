@@ -4,4 +4,8 @@
     <ProjectReference Include="..\..\building-blocks\Observability\Observability.csproj" />
     <ProjectReference Include="..\..\building-blocks\SharedKernel\SharedKernel.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+  </ItemGroup>
 </Project>
