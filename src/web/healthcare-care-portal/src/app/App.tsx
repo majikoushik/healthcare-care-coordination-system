@@ -3,6 +3,8 @@ import { AppShell } from "../shared/layout/AppShell";
 import { featureRoutes } from "./router";
 import { PatientRegistrationForm } from "../features/patients/PatientRegistrationForm";
 import { PatientDetails } from "../features/patients/PatientDetails";
+import { ProviderRegistrationForm } from "../features/providers/ProviderRegistrationForm";
+import { ProviderDetails } from "../features/providers/ProviderDetails";
 
 export function App() {
   return (
@@ -14,6 +16,8 @@ export function App() {
         ))}
         <Route path="/patients/new" element={<PatientRegistrationForm />} />
         <Route path="/patients/:id" element={<PatientDetails />} />
+        <Route path="/providers/new" element={<ProviderRegistrationForm />} />
+        <Route path="/providers/:id" element={<ProviderDetails />} />
       </Routes>
     </AppShell>
   );

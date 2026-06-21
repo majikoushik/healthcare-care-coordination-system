@@ -18,6 +18,17 @@ This document describes the high-level data models used across the system, adher
 - `CreatedAt` (datetimeoffset)
 - `UpdatedAt` (datetimeoffset, null)
 
+### Provider
+- `Id` (Guid, PK)
+- `FullName` (string, max 200)
+- `Specialty` (enum: GeneralMedicine, Cardiology, Endocrinology, Orthopedics, Pediatrics, Neurology, Dermatology)
+- `Email` (string, max 150)
+- `MobileNumber` (string, max 50)
+- `Department` (string, max 200)
+- `AvailabilityStatus` (enum: Available, Busy, OnLeave, Inactive)
+- `CreatedAt` (datetimeoffset)
+- `UpdatedAt` (datetimeoffset, null)
+
 ## Document Data (Azure Cosmos DB)
 
 *(To be implemented in future epics: Care Plans, Clinical Notes, Audit Events)*

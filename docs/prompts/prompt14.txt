@@ -1,0 +1,390 @@
+Implement Epic 13: Azure Deployment Blueprint based on AGENTS.md and the existing repository.
+
+Build the next enterprise capability for the `healthcare-care-coordination-system` repository: Azure Deployment Blueprint.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0 through Epic 12.
+4. Review existing backend services, React frontend, SQL Server persistence, Cosmos DB-ready persistence, Azure AI Language readiness, Azure Application Insights readiness, Dockerfiles, Docker Compose setup, GitHub Actions CI, security/RBAC readiness, privacy documentation, audit logging, and observability documentation.
+5. Preserve the architecture direction, healthcare privacy guidance, responsible AI guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, security model, RBAC readiness, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 13 Goal:
+
+Create a professional Azure deployment blueprint for the healthcare care coordination platform.
+
+This epic should not require real Azure credentials to run locally. It should provide infrastructure-as-code templates, deployment documentation, environment strategy, security guidance, and cloud architecture diagrams showing how this system would be deployed on Azure.
+
+Target Azure architecture:
+
+* Azure Static Web Apps for React frontend
+* Azure Container Apps for .NET backend APIs and worker services
+* Azure Container Registry for container images
+* Azure SQL Database for Patient, Provider, and Appointment data
+* Azure Cosmos DB for Care Plans, Clinical Insights, Follow-up Tasks, Notifications, and Audit Events
+* Azure AI Language for future Text Analytics for Health integration
+* Azure Key Vault for secrets
+* Azure Application Insights for telemetry
+* Azure Log Analytics Workspace for centralized logs
+* Azure Service Bus for future event-driven communication
+* Azure API Management as optional future gateway
+* Azure Front Door as optional future edge layer
+
+Infrastructure scope:
+
+Create or improve infrastructure-as-code under:
+
+* `infra/bicep/`
+
+Recommended files:
+
+* `infra/bicep/main.bicep`
+* `infra/bicep/parameters/dev.parameters.json`
+* `infra/bicep/parameters/test.parameters.json`
+* `infra/bicep/parameters/prod.parameters.json`
+* `infra/bicep/modules/container-apps.bicep`
+* `infra/bicep/modules/container-registry.bicep`
+* `infra/bicep/modules/static-web-app.bicep`
+* `infra/bicep/modules/sql-database.bicep`
+* `infra/bicep/modules/cosmos-db.bicep`
+* `infra/bicep/modules/key-vault.bicep`
+* `infra/bicep/modules/application-insights.bicep`
+* `infra/bicep/modules/log-analytics.bicep`
+* `infra/bicep/modules/service-bus.bicep`
+* `infra/bicep/modules/managed-identity.bicep`
+
+If full Bicep implementation is too large, create a clear blueprint-level Bicep structure with realistic placeholders and professional documentation.
+
+Do not include real subscription IDs, tenant IDs, object IDs, secrets, Azure AI keys, SQL passwords, Cosmos DB keys, or Application Insights connection strings.
+
+Azure resources to define:
+
+1. Resource group expectation through deployment documentation.
+2. Azure Container Registry.
+3. Azure Container Apps Environment.
+4. Container Apps for:
+
+   * Patient API
+   * Provider API
+   * Appointment API
+   * Care Plan API
+   * Clinical Insights API
+   * Audit API
+   * Notification Worker or Notification API
+5. Azure Static Web Apps for React frontend.
+6. Azure SQL Server and Azure SQL Database.
+7. Azure Cosmos DB account and database.
+8. Cosmos containers for:
+
+   * care-plans
+   * clinical-insights
+   * follow-up-tasks
+   * notifications
+   * audit-events
+9. Azure Key Vault.
+10. Managed identity.
+11. Application Insights.
+12. Log Analytics Workspace.
+13. Azure Service Bus namespace and queues/topics for future event-driven messaging.
+14. Azure AI Language placeholder or documentation-ready reference.
+
+Cosmos DB expectations:
+
+Define or document containers with recommended partition keys:
+
+* `care-plans` partition key: `/patientId`
+* `clinical-insights` partition key: `/patientId`
+* `follow-up-tasks` partition key: `/patientId`
+* `notifications` partition key: `/patientId`, with documented strategy for system notifications
+* `audit-events` partition key: `/correlationId` or `/patientId`, based on the decision already made in the project
+
+Document why each partition key was selected.
+
+Azure SQL expectations:
+
+Azure SQL should support structured transactional modules:
+
+* Patient
+* Provider
+* Appointment
+
+Document:
+
+1. SQL connection through Key Vault or managed identity where practical.
+2. No connection strings in source code.
+3. Migration strategy.
+4. Backup and restore considerations.
+5. Environment-specific database naming.
+
+Azure AI Language expectations:
+
+Add deployment-readiness documentation for Azure AI Language / Text Analytics for Health.
+
+Do not create real Azure AI resource secrets.
+
+Document:
+
+1. Azure AI Language endpoint should be stored in Key Vault or configuration.
+2. API keys must not be committed.
+3. Managed identity or secure secret retrieval should be preferred where supported.
+4. Mock AI provider remains default for local development.
+5. Azure AI output is assistive only and requires human review.
+6. Do not use real clinical notes in this portfolio demo.
+
+Key Vault expectations:
+
+Document and/or define secret placeholders for:
+
+* SQL connection string
+* Cosmos DB endpoint
+* Cosmos DB key or managed identity configuration
+* Azure AI Language endpoint
+* Azure AI Language key, if key-based access is used
+* Application Insights connection string
+* Service Bus connection string, if used
+* JWT or security-related secrets, if applicable
+
+Do not include real secret values.
+
+Managed identity expectations:
+
+Create or document managed identity readiness for:
+
+* Container Apps accessing Key Vault
+* Container Apps accessing Azure SQL where applicable
+* Container Apps accessing Cosmos DB where applicable
+* Container Apps writing telemetry to Application Insights where applicable
+
+Application Insights and Log Analytics expectations:
+
+Create or document:
+
+1. Application Insights resource.
+2. Log Analytics Workspace.
+3. Telemetry connection through safe configuration.
+4. Correlation ID tracking.
+5. Distributed tracing readiness.
+6. Health monitoring.
+7. Alerting strategy.
+
+Suggested alerts to document:
+
+* API error rate spike
+* API latency increase
+* Container app restart count
+* SQL Database connectivity failure
+* Cosmos DB request failure or RU pressure
+* Clinical AI provider failure
+* Audit write failure
+* Notification simulated failure spike
+* Unauthorized or forbidden request spike
+* Health check failure
+
+Container Apps expectations:
+
+Document or define:
+
+1. CPU and memory placeholders.
+2. Environment variables.
+3. Secret references.
+4. Health probes.
+5. Ingress configuration.
+6. Service-to-service communication.
+7. Scaling rules.
+8. Managed identity.
+9. Revision strategy.
+10. Zero-downtime deployment considerations.
+
+React frontend deployment expectations:
+
+Document Azure Static Web Apps deployment for:
+
+1. React + Vite build.
+2. Environment variable handling.
+3. API base URL configuration.
+4. Routing fallback.
+5. Static asset caching.
+6. Deployment through GitHub Actions.
+
+Do not expose backend secrets or Azure keys in frontend configuration.
+
+GitHub Actions deployment scope:
+
+Create or update deployment workflow placeholders:
+
+* `.github/workflows/azure-deploy-dev.yml`
+* Optional: `.github/workflows/azure-deploy-template.yml`
+
+Workflow should be safe and placeholder-based.
+
+It may include:
+
+1. Build backend.
+2. Build frontend.
+3. Build Docker images.
+4. Push images to Azure Container Registry.
+5. Deploy Bicep templates.
+6. Deploy Container Apps.
+7. Deploy Static Web App.
+
+Use placeholder secrets such as:
+
+* `AZURE_CLIENT_ID`
+* `AZURE_TENANT_ID`
+* `AZURE_SUBSCRIPTION_ID`
+* `AZURE_CREDENTIALS`
+* `AZURE_RESOURCE_GROUP`
+* `AZURE_CONTAINER_REGISTRY`
+* `AZURE_STATIC_WEB_APPS_API_TOKEN`
+
+Do not include real values.
+
+Deployment documentation scope:
+
+Create or update:
+
+* `docs/azure-deployment-guide.md`
+* `docs/deployment.md`
+* `docs/environment-strategy.md`
+* `docs/secure-configuration.md`
+* `docs/key-vault-strategy.md`
+* `docs/managed-identity-strategy.md`
+* `docs/monitoring-and-alerting.md`
+* `docs/production-readiness-checklist.md`
+* `docs/rollback-strategy.md`
+* `docs/release-strategy.md`
+* `docs/cost-optimization-notes.md`
+* `docs/disaster-recovery-notes.md`
+
+Deployment guide must include:
+
+1. Prerequisites.
+2. Azure resource overview.
+3. Environment naming convention.
+4. Required GitHub secrets.
+5. Bicep deployment command examples with placeholders.
+6. Container image build and push commands with placeholders.
+7. Static Web Apps deployment notes.
+8. Environment variable mapping.
+9. Key Vault secret mapping.
+10. Managed identity guidance.
+11. Health verification steps.
+12. Smoke test steps.
+13. Rollback approach.
+14. Troubleshooting steps.
+15. Security warnings.
+
+Architecture documentation scope:
+
+Update:
+
+* `architecture/deployment-architecture.md`
+* `architecture/security-architecture.md`
+* `architecture/observability-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/clinical-ai-architecture.md`
+* `architecture/api-governance.md`
+* `architecture/event-model.md`
+
+Create or update diagrams:
+
+* `architecture/diagrams/azure-deployment.md`
+* `architecture/diagrams/azure-network-flow.md`
+* `architecture/diagrams/azure-container-apps-flow.md`
+* `architecture/diagrams/azure-observability-flow.md`
+* `architecture/diagrams/azure-secret-management-flow.md`
+* `architecture/diagrams/azure-ai-language-flow.md`
+* `architecture/diagrams/azure-data-flow.md`
+* `architecture/diagrams/azure-ci-cd-flow.md`
+
+Security expectations:
+
+1. Do not hardcode secrets.
+2. Do not expose secrets in Bicep parameter files.
+3. Do not expose secrets in GitHub Actions.
+4. Do not expose secrets in frontend environment variables.
+5. Use placeholder values only.
+6. Document Azure Key Vault for secret management.
+7. Document managed identity where appropriate.
+8. Document private networking as a future production hardening option.
+9. Document least-privilege access.
+10. Document RBAC readiness.
+
+Healthcare privacy expectations:
+
+Ensure Azure documentation states:
+
+1. Synthetic data only.
+2. No real patient data.
+3. No real medical records.
+4. No real clinical notes.
+5. No HIPAA compliance claim.
+6. No medical certification claim.
+7. Production deployment would require security, legal, compliance, and clinical review.
+8. Clinical AI output is assistive and human-review-first.
+9. Logging and telemetry must avoid sensitive healthcare-like content.
+10. Audit logs must use safe metadata only.
+
+Responsible AI expectations:
+
+For Azure AI Language deployment readiness:
+
+1. Do not commit Azure AI endpoint or keys.
+2. Do not log full clinical notes.
+3. Do not log raw AI responses.
+4. Do not expose Azure AI configuration in frontend.
+5. AI insights require human review.
+6. AI insights must not be presented as diagnosis or medical advice.
+7. Azure AI provider should remain optional and configuration-driven.
+
+Testing and validation expectations:
+
+Add or update tests/checks where practical:
+
+* Bicep syntax validation notes or workflow placeholders.
+* GitHub Actions workflow uses placeholders only.
+* Parameter files do not contain real-looking secrets.
+* `.env.example` remains placeholder-only.
+* Application can still run locally without Azure credentials.
+* Mock AI provider remains default locally.
+* Docker Compose still works locally.
+* Frontend build still succeeds.
+* Backend tests still pass.
+* Health endpoints remain documented for post-deployment smoke test.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real Azure subscription IDs, tenant IDs, client IDs, secrets, endpoints, keys, or connection strings.
+* Do not use real patient, provider, hospital, audit, clinical note, care plan, notification, or client data.
+* Do not use real medical records.
+* Do not require Azure credentials for local development.
+* Do not require real Azure deployment to complete this epic.
+* Do not claim HIPAA compliance.
+* Do not claim medical certification.
+* Do not present AI output as medical advice or diagnosis.
+* Do not implement unrelated business features.
+* Do not overbuild beyond Azure Deployment Blueprint.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Bicep files created or modified.
+3. GitHub Actions deployment workflow files created or modified.
+4. Azure resource blueprint summary.
+5. Environment strategy added.
+6. Key Vault and managed identity strategy added.
+7. Azure AI Language deployment-readiness notes.
+8. Azure SQL and Cosmos DB deployment notes.
+9. Azure observability and alerting notes.
+10. Frontend deployment notes.
+11. Documentation updated.
+12. Security and secret-handling notes.
+13. Healthcare privacy notes.
+14. Responsible AI notes.
+15. Commands for local validation.
+16. Placeholder Azure deployment commands.
+17. Any assumptions made.
+18. Recommended next epic.

@@ -13,13 +13,12 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 - Mock clinical AI provider for local development with Azure AI Language-ready provider abstraction.
 - Correlation ID, health check, Problem Details, structured logging, and Application Insights readiness.
 
-## Current Epic 1 Scope
+## Current Epic 2 Scope
 
-Epic 1 implements the Patient Registration capability, including:
-- React frontend forms and lists for Patient Management.
-- .NET 8 minimal API backend with FluentValidation.
-- Entity Framework Core with SQL Server for transactional persistence.
-- Safe healthcare data handling and structured logging.
+Epic 2 implements Provider Management, building upon Epic 1:
+- React frontend forms and lists for Provider Management.
+- .NET 8 minimal API backend with FluentValidation for Providers.
+- Provider availability status and specialty tracking.
 
 ## Run Locally
 

@@ -1,0 +1,338 @@
+Implement Epic 12: DevOps and Docker based on AGENTS.md and the existing repository.
+
+Build the next enterprise capability for the `healthcare-care-coordination-system` repository: DevOps, Docker, local orchestration, and CI/CD readiness.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0 through Epic 11.
+4. Review existing Patient, Provider, Appointment, Care Plan, Clinical Insights, Follow-up Task, Notification, Audit, Security, Privacy, RBAC, and Observability modules.
+5. Review SQL Server persistence, Cosmos DB-ready persistence, Azure AI provider readiness, React screens, tests, documentation, health checks, logging, correlation ID, Docker setup, and CI workflow.
+6. Preserve the architecture direction, healthcare privacy guidance, responsible AI guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, security model, RBAC readiness, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 12 Goal:
+
+Make the repository easier to build, run, test, validate, containerize, and prepare for cloud deployment.
+
+This epic should demonstrate strong DevOps maturity for a healthcare platform using .NET, React, SQL Server, Cosmos DB-ready storage, Azure AI readiness, observability, and secure configuration practices.
+
+DevOps scope:
+
+1. Improve Docker support for backend services.
+2. Improve Docker support for React frontend.
+3. Improve `docker-compose.yml` for local development.
+4. Add or improve `.env.example`.
+5. Add safe environment variable documentation.
+6. Improve GitHub Actions CI workflow.
+7. Add build and test validation.
+8. Add frontend build validation.
+9. Add backend test validation.
+10. Add optional lint/type-check readiness where practical.
+11. Add scripts for local developer experience.
+12. Add documentation for local development and troubleshooting.
+13. Prepare the repository for Azure deployment in the next epic.
+
+Docker scope:
+
+Create or improve Dockerfiles for:
+
+* Patient.Api
+* Provider.Api
+* Appointment.Api
+* CarePlan.Api
+* ClinicalInsights.Api
+* Audit.Api
+* Notification module, if applicable
+* React frontend under `src/web/healthcare-care-portal`
+
+If the project structure makes separate Dockerfiles too heavy, create a clear reusable pattern and document how each service should be containerized.
+
+Docker expectations:
+
+1. Use multi-stage builds for .NET services.
+2. Use multi-stage build for React frontend.
+3. Do not copy secrets into images.
+4. Do not include `.env` files in images.
+5. Use safe default ports.
+6. Ensure container names are clear.
+7. Ensure service names are meaningful.
+8. Ensure health checks are supported where practical.
+9. Ensure local Docker setup does not require Azure credentials.
+10. Keep containerization portfolio-grade and readable.
+
+Recommended Dockerfile pattern for .NET APIs:
+
+* Restore
+* Build
+* Publish
+* Runtime image
+* Expose configured port
+* Use environment variables for configuration
+
+Recommended Dockerfile pattern for React:
+
+* Install dependencies
+* Build static assets
+* Serve using a lightweight production server such as nginx or equivalent
+* Use safe runtime configuration approach where practical
+
+Docker Compose scope:
+
+Update `docker-compose.yml` to support local orchestration for:
+
+* Patient API
+* Provider API
+* Appointment API
+* Care Plan API
+* Clinical Insights API
+* Audit API
+* Notification module if applicable
+* React frontend
+* SQL Server container
+* Optional Cosmos DB emulator readiness or documented placeholder
+
+Important:
+
+Cosmos DB Emulator can be heavy and platform-sensitive. If full emulator support is not practical, document a safe placeholder and local in-memory/mock repository mode.
+
+Docker Compose should support:
+
+1. Local backend API startup.
+2. React frontend startup.
+3. SQL Server local container.
+4. Safe placeholder configuration for Cosmos DB.
+5. Safe placeholder configuration for Azure AI Language.
+6. Health check wiring where practical.
+7. Service-to-service URLs through Docker network names.
+8. No real secrets.
+9. No real Azure credentials.
+10. No production configuration.
+
+Suggested environment file:
+
+Create or update:
+
+* `.env.example`
+
+Include placeholders such as:
+
+```text
+ASPNETCORE_ENVIRONMENT=Development
+SQL_SERVER_HOST=sqlserver
+SQL_SERVER_DATABASE=HealthcareCareCoordination
+SQL_SERVER_USER=sa
+SQL_SERVER_PASSWORD=Change_this_password_locally_only
+
+COSMOS_MODE=Mock
+COSMOS_ENDPOINT=
+COSMOS_KEY=
+COSMOS_DATABASE=HealthcareCareCoordination
+
+CLINICAL_AI_PROVIDER_MODE=Mock
+AZURE_AI_LANGUAGE_ENDPOINT=
+AZURE_AI_LANGUAGE_KEY=
+AZURE_AI_LANGUAGE_REGION=
+
+APPLICATIONINSIGHTS_CONNECTION_STRING=
+
+SECURITY_MODE=Demo
+ALLOW_DEMO_HEADERS=true
+DEFAULT_DEMO_ROLE=CareCoordinator
+
+VITE_API_BASE_URL=http://localhost:5000
+```
+
+Do not include real values.
+
+CI/CD scope:
+
+Improve GitHub Actions workflow under:
+
+* `.github/workflows/ci.yml`
+
+CI should include where practical:
+
+1. Checkout.
+2. Setup .NET.
+3. Restore .NET solution.
+4. Build .NET solution.
+5. Run backend tests.
+6. Setup Node.
+7. Install React dependencies.
+8. Run frontend type-check if configured.
+9. Run frontend lint if configured.
+10. Run frontend tests if configured.
+11. Build React frontend.
+12. Optional Docker build validation for key services.
+13. Upload test results or build artifacts if already supported.
+
+CI must not require real Azure credentials.
+
+CI must not require real SQL Server or Cosmos DB unless tests are specifically configured for safe local containers.
+
+If integration tests require unavailable dependencies, separate them from unit tests or document how to run them locally.
+
+Recommended workflow names:
+
+* `build-and-test`
+* or `ci`
+
+Branch triggers:
+
+* `main`
+* `develop`
+* pull requests to `main`
+
+Developer scripts:
+
+Add helpful scripts where practical.
+
+Examples:
+
+Root scripts or documentation commands:
+
+```text
+docker compose up --build
+docker compose down
+dotnet build
+dotnet test
+npm install
+npm run build
+npm run test
+```
+
+If adding a `Makefile`, PowerShell script, or shell script, keep it optional and cross-platform friendly.
+
+Do not require Linux-only tooling unless documented.
+
+Documentation scope:
+
+Update or create:
+
+* `README.md`
+* `docs/setup.md`
+* `docs/local-development.md`
+* `docs/docker-guide.md`
+* `docs/devops-guide.md`
+* `docs/ci-cd.md`
+* `docs/testing-strategy.md`
+* `docs/deployment.md`
+* `docs/troubleshooting-guide.md`
+* `docs/production-readiness-checklist.md`
+* `docs/secure-configuration.md`
+* `architecture/deployment-architecture.md`
+* `architecture/observability-architecture.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+
+Documentation must explain:
+
+1. How to run locally without Docker.
+2. How to run locally with Docker Compose.
+3. How to configure SQL Server locally.
+4. How Cosmos DB is handled locally.
+5. Why mock Cosmos or emulator-readiness may be used.
+6. How Azure AI Language is handled locally.
+7. Why mock AI provider is default.
+8. How to run backend tests.
+9. How to run frontend tests.
+10. How to build React frontend.
+11. How CI works.
+12. What secrets must never be committed.
+13. How future Azure deployment will be handled.
+14. Common troubleshooting scenarios.
+
+Security and secret-handling expectations:
+
+1. Do not commit real `.env` files.
+2. Do not commit secrets.
+3. Do not hardcode SQL passwords except clearly fake local placeholders in `.env.example`.
+4. Do not hardcode Azure AI keys.
+5. Do not hardcode Cosmos DB keys.
+6. Do not hardcode Application Insights connection string.
+7. Do not hardcode Azure tenant/client IDs.
+8. Ensure `.gitignore` excludes local secret files.
+9. Document use of Azure Key Vault for future production.
+10. Document managed identity readiness where applicable.
+
+Healthcare privacy expectations:
+
+DevOps files must not include real healthcare data.
+
+Ensure:
+
+1. Only synthetic sample data is referenced.
+2. No real patient/provider/hospital/client data appears in Docker, CI, docs, or examples.
+3. Logs and test data remain synthetic.
+4. Documentation repeats that this is a portfolio demo, not a production healthcare system.
+5. No HIPAA compliance claim is made.
+6. No medical certification claim is made.
+
+Responsible AI expectations:
+
+Ensure DevOps and local configuration support:
+
+1. Mock AI provider as default.
+2. Azure AI Language configuration as optional.
+3. No Azure AI credentials required locally.
+4. No AI keys in CI.
+5. No real clinical notes in test data.
+6. AI output remains assistive and human-review-first.
+
+Testing expectations:
+
+Add or update tests/checks for:
+
+* Docker-related configuration does not contain real secrets.
+* `.env.example` exists and contains placeholders only.
+* Application can run in mock AI mode without Azure credentials.
+* Application can run in mock Cosmos mode or documented local mode without real Cosmos credentials.
+* CI workflow builds backend.
+* CI workflow builds frontend.
+* Backend tests pass.
+* Frontend build passes.
+* Health endpoints remain available in containerized mode where practical.
+* Existing feature tests continue to pass.
+
+Architecture diagrams:
+
+Create or update:
+
+* `architecture/diagrams/local-docker-topology.md`
+* `architecture/diagrams/ci-cd-flow.md`
+* `architecture/diagrams/devops-runtime-flow.md`
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, clinical, notification, audit, or client data.
+* Do not use real medical records.
+* Do not require Azure credentials for local development.
+* Do not require Azure AI keys for CI.
+* Do not require Cosmos DB keys for CI.
+* Do not expose secrets through Docker logs, health checks, frontend, API responses, or documentation examples.
+* Do not implement Azure deployment yet beyond readiness documentation.
+* Do not claim HIPAA compliance.
+* Do not claim medical certification.
+* Do not implement unrelated business features.
+* Do not overbuild beyond Epic 12.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Dockerfiles created or modified.
+3. Docker Compose changes.
+4. Environment/configuration changes.
+5. GitHub Actions CI changes.
+6. Backend build/test changes.
+7. Frontend build/test changes.
+8. Documentation updated.
+9. Security and secret-handling notes.
+10. Healthcare privacy notes.
+11. Responsible AI configuration notes.
+12. Commands to run locally without Docker.
+13. Commands to run locally with Docker.
+14. Commands to test.
+15. Any assumptions made.
+16. Recommended next epic.

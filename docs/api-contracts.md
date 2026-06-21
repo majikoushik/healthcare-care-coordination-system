@@ -31,6 +31,41 @@ Updates the patient consent status.
 - **Response**: `200 OK` with `ApiResponse<PatientResponse>`
 - **Errors**: `400 Bad Request`, `404 Not Found`
 
+## Provider.Api
+
+Base path: `/api/v1/providers`
+
+### `POST /` (Register Provider)
+Registers a new synthetic provider profile.
+- **Request Body**: `RegisterProviderRequest`
+- **Response**: `201 Created` with `ApiResponse<ProviderResponse>`
+- **Errors**: `400 Bad Request` (Validation Problem Details)
+
+### `GET /` (List Providers)
+Fetches all registered synthetic providers.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<ProviderResponse>>`
+
+### `GET /{id}` (Get Provider Details)
+Fetches specific provider details by ID.
+- **Response**: `200 OK` with `ApiResponse<ProviderResponse>`
+- **Errors**: `404 Not Found`
+
+### `GET /specialty/{specialty}` (Get Providers by Specialty)
+Fetches all providers matching a given specialty.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<ProviderResponse>>`
+
+### `PUT /{id}` (Update Provider)
+Updates a provider profile.
+- **Request Body**: `UpdateProviderRequest`
+- **Response**: `200 OK` with `ApiResponse<ProviderResponse>`
+- **Errors**: `400 Bad Request`, `404 Not Found`
+
+### `PATCH /{id}/availability-status` (Update Availability)
+Updates the provider's availability status.
+- **Request Body**: `UpdateAvailabilityStatusRequest`
+- **Response**: `200 OK` with `ApiResponse<ProviderResponse>`
+- **Errors**: `400 Bad Request`, `404 Not Found`
+
 ## Common Response Format
 
 ```json

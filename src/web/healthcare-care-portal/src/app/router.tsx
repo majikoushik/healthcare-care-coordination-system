@@ -2,11 +2,12 @@ import { Activity, Bell, CalendarDays, ClipboardList, FileHeart, HeartPulse, Lay
 import { DashboardPage } from "../features/dashboard/DashboardPage";
 import { FeaturePlaceholderPage } from "../shared/components/FeaturePlaceholderPage";
 import { PatientList } from "../features/patients/PatientList";
+import { ProviderList } from "../features/providers/ProviderList";
 
 export const featureRoutes = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard, element: DashboardPage },
   { path: "/patients", label: "Patients", icon: UsersRound, element: PatientList },
-  { path: "/providers", label: "Providers", icon: Stethoscope, element: () => <FeaturePlaceholderPage title="Providers" domain="Provider profile and availability readiness" storage="SQL Server / Azure SQL" /> },
+  { path: "/providers", label: "Providers", icon: Stethoscope, element: ProviderList },
   { path: "/appointments", label: "Appointments", icon: CalendarDays, element: () => <FeaturePlaceholderPage title="Appointments" domain="Patient-provider scheduling workflow" storage="SQL Server / Azure SQL" /> },
   { path: "/care-plans", label: "Care Plans", icon: FileHeart, element: () => <FeaturePlaceholderPage title="Care Plans" domain="Care goals, instructions, and follow-up task documents" storage="Azure Cosmos DB" /> },
   { path: "/clinical-insights", label: "Clinical Insights", icon: HeartPulse, element: () => <FeaturePlaceholderPage title="Clinical Insights" domain="Synthetic clinical note insight readiness" storage="Azure Cosmos DB + mock AI provider" /> },
