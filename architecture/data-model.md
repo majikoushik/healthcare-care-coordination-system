@@ -84,4 +84,36 @@ This document describes the high-level data models used across the system, adher
 }
 ```
 
-*(To be implemented in future epics: Clinical Notes, Audit Events)*
+### ClinicalInsight
+**Partition Key:** `/patientId`
+
+*Document Structure:*
+```json
+{
+  "id": "guid",
+  "patientId": "guid",
+  "providerId": "guid",
+  "relatedCarePlanId": "guid (optional)",
+  "relatedAppointmentId": "guid (optional)",
+  "clinicalNoteText": "string",
+  "extractedEntities": [
+    {
+      "entityId": "guid",
+      "text": "string",
+      "category": "enum: Symptom, Condition, Medication, Test, etc.",
+      "confidenceScore": "double"
+    }
+  ],
+  "suggestedFollowUpTopics": [ "string" ],
+  "riskIndicators": [ "string" ],
+  "aiProviderName": "string",
+  "aiProviderMode": "enum: Mock, AzureAIReady",
+  "humanReviewStatus": "enum: PendingReview, Reviewed, Approved, Rejected, RequiresClarification",
+  "reviewedBy": "string (optional)",
+  "reviewedTimestamp": "datetimeoffset (optional)",
+  "createdAt": "datetimeoffset",
+  "updatedAt": "datetimeoffset (optional)"
+}
+```
+
+*(To be implemented in future epics: Audit Events)*

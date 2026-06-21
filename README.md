@@ -13,12 +13,13 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 - Mock clinical AI provider for local development with Azure AI Language-ready provider abstraction.
 - Correlation ID, health check, Problem Details, structured logging, and Application Insights readiness.
 
-## Current Epic 4 Scope
+## Current Epic 5 Scope
 
-Epic 4 implements Care Plan Management using Azure Cosmos DB document storage modeling:
-- React frontend forms and dynamic nested list views for Care Plan tracking.
-- .NET 8 minimal API backend supporting embedded tasks and goals.
-- Polyglot persistence modeling using `MockCarePlanRepository` to mimic Cosmos DB behavior.
+Epic 5 implements Clinical Note Insights utilizing a Mock AI Provider:
+- React frontend forms and dynamic detailed views for AI insight outputs.
+- .NET 8 minimal API backend connecting to an `IClinicalTextAnalyzer` abstraction.
+- Strict responsible AI workflow demanding Human Review of AI outputs.
+- Cosmos DB-ready persistence modeling via `MockClinicalInsightRepository`.
 
 ## Run Locally
 

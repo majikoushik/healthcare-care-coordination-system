@@ -9,6 +9,8 @@ import { AppointmentRegistrationForm } from "../features/appointments/Appointmen
 import { AppointmentDetails } from "../features/appointments/AppointmentDetails";
 import { CarePlanRegistrationForm } from "../features/care-plans/CarePlanRegistrationForm";
 import { CarePlanDetails } from "../features/care-plans/CarePlanDetails";
+import { ClinicalInsightAnalysisForm } from "../features/clinical-insights/ClinicalInsightAnalysisForm";
+import { ClinicalInsightDetails } from "../features/clinical-insights/ClinicalInsightDetails";
 
 export function App() {
   return (
@@ -26,6 +28,8 @@ export function App() {
         <Route path="/appointments/:id" element={<AppointmentDetails />} />
         <Route path="/care-plans/new" element={<CarePlanRegistrationForm />} />
         <Route path="/care-plans/:id" element={<CarePlanDetails />} />
+        <Route path="/clinical-insights/new" element={<ClinicalInsightAnalysisForm />} />
+        <Route path="/clinical-insights/:id" element={<ClinicalInsightDetails />} />
       </Routes>
     </AppShell>
   );

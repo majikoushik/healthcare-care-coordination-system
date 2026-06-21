@@ -142,6 +142,29 @@ Appends a task to the care plan document.
 - **Request Body**: `UpdateCarePlanTaskStatusRequest`
 - **Response**: `200 OK` with `ApiResponse<CarePlanDocument>`
 
+## ClinicalInsights.Api
+
+Base path: `/api/v1/clinical-insights`
+
+### `POST /analyze` (Analyze Clinical Note)
+Parses synthetic text using the AI provider and persists a new Insight Document.
+- **Request Body**: `AnalyzeNoteRequest`
+- **Response**: `201 Created` with `ApiResponse<ClinicalNoteInsight>`
+
+### `GET /` (List Insights)
+Fetches all clinical insights.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<ClinicalNoteInsight>>`
+
+### `GET /{id}` (Get Insight)
+Fetches specific clinical insight document by ID.
+- **Response**: `200 OK` with `ApiResponse<ClinicalNoteInsight>`
+
+### `PATCH /{id}/review-status` (Update Review Status)
+Allows a Human Reviewer to approve or reject the AI generated output.
+- **Request Body**: `UpdateReviewStatusRequest`
+- **Response**: `200 OK` with `ApiResponse<ClinicalNoteInsight>`
+- **Errors**: `400 Bad Request`
+
 ## Common Response Format
 
 ```json
