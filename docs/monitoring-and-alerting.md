@@ -1,36 +1,21 @@
-# Monitoring and Alerting Strategy
+# Monitoring and Alerting
 
-This repository is designed for Enterprise Observability via **Azure Monitor** and **Application Insights**.
+This document outlines the Azure-native observability strategy for the care coordination platform.
 
-## Alerting Strategy
-The system handles expected domain errors (e.g. Invalid Appointment Time) via `400 Bad Request` Problem Details. These should NOT trigger pager alerts. Alerts are reserved for Systemic failures.
+## Application Insights Integration
+All backend services use the Application Insights SDK. Logs emitted by Serilog are forwarded directly into App Insights. 
+- **Correlation ID**: The `X-Correlation-ID` header is tracked natively as an Operation ID in App Insights, enabling end-to-end tracing from the React frontend to the database layer.
 
-### Recommended Alert Rules
+## Log Analytics Workspace
+App Insights and Azure Container Apps Environment logs flow into a central Log Analytics Workspace.
+- Custom KQL (Kusto Query Language) can be written to extract business metrics (e.g., number of Care Plans created today).
 
-1. **API Error Rate Increase**
-   - **Condition**: Count of `HTTP 5xx` responses > 5% over 5 minutes.
-   - **Action**: Page Care Coordination DevOps Team.
+## Recommended Alert Rules
 
-2. **API Latency Increase**
-   - **Condition**: P95 Latency of `/api/v1/clinical-insights/analyze` > 5 seconds over 5 minutes.
-   - **Action**: Alert AI Ops Team. Indicates Azure Language API throttling.
-
-3. **SQL Dependency Failure**
-   - **Condition**: Failed calls to `PatientDb` > 10 in 5 minutes.
-   - **Action**: Page Database Team.
-
-4. **Cosmos DB Dependency Failure**
-   - **Condition**: Request Charge (RU/s) exceeded `429 Too Many Requests` > 50 in 1 minute.
-   - **Action**: Scale Cosmos DB partition or page DevOps.
-
-5. **Notification Delivery Failure Spike**
-   - **Condition**: Simulated (or actual) Send failures > 20%.
-   - **Action**: Alert Ops Team.
-
-6. **Health Endpoint Failure**
-   - **Condition**: `/health/ready` returns `Unhealthy` for 3 consecutive polls (every 30s).
-   - **Action**: Remove container from load balancer; Page On-call.
-
-7. **Unauthorized / Forbidden Spike**
-   - **Condition**: `HTTP 401/403` count > 100 in 5 minutes.
-   - **Action**: Alert Security Team (potential brute force or misconfigured RBAC token).
+1. **API Error Rate Spike**: Alert if HTTP 5xx responses exceed 5% over a 5-minute window.
+2. **API Latency Increase**: Alert if 95th percentile response time exceeds 2000ms.
+3. **Container App Restart Count**: Alert if any container restarts more than 3 times in 1 hour (indicates crash loops or memory leaks).
+4. **SQL Database Connectivity Failure**: Alert on specific SQL Exceptions in App Insights traces.
+5. **Cosmos DB RU Pressure**: Alert if consumed Request Units (RUs) hit 90% of provisioned capacity.
+6. **Clinical AI Provider Failure**: Alert if the Azure AI Language service returns non-200 status codes.
+7. **Unauthorized Request Spike**: Alert if HTTP 401/403 errors exceed normal baselines (potential brute force/reconnaissance).

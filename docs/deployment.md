@@ -1,17 +1,27 @@
-# Deployment
+# Deployment Overview
 
-Epic 0 creates deployment direction, not production deployment automation.
+This repository uses a formal Azure Deployment Blueprint (Epic 13) to manage infrastructure as code.
 
-Target Azure services:
+## Target Azure Architecture
 
-- Azure Static Web Apps for React.
-- Azure Container Apps for APIs and workers.
-- Azure Container Registry for images.
-- Azure SQL Database.
-- Azure Cosmos DB for NoSQL.
-- Azure Key Vault.
-- Azure AI Language.
-- Application Insights and Log Analytics.
-- Azure Service Bus readiness.
+- **Frontend**: Azure Static Web Apps for the React portal.
+- **Backend APIs**: Azure Container Apps (serverless containers).
+- **Image Registry**: Azure Container Registry.
+- **Relational Data**: Azure SQL Database (Patient, Provider, Appointment).
+- **Document/Event Data**: Azure Cosmos DB (Care Plans, Insights, Tasks, Notifications, Audit).
+- **Secrets Management**: Azure Key Vault via User-Assigned Managed Identity.
+- **Observability**: Application Insights and Log Analytics Workspace.
+- **AI Processing**: Azure AI Language Service (Text Analytics for Health).
 
-Bicep files will be added under `infra/bicep` in a later Azure deployment epic.
+## Deployment Guides
+
+Detailed deployment instructions and strategies have been moved to dedicated documentation:
+
+- [Azure Deployment Guide (Bicep & CLI)](azure-deployment-guide.md)
+- [CI/CD Pipeline (GitHub Actions)](ci-cd.md)
+- [Environment Strategy](environment-strategy.md)
+- [Release Strategy](release-strategy.md)
+- [Key Vault Strategy](key-vault-strategy.md)
+- [Managed Identity Strategy](managed-identity-strategy.md)
+
+*Bicep templates for these resources are located in `infra/bicep/`.*

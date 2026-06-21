@@ -1,0 +1,22 @@
+name: Deploy to Azure (Dev)
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-dev:
+    uses: ./.github/workflows/azure-deploy-template.yml
+    with:
+      environment: dev
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.DEV_AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_RESOURCE_GROUP: ${{ secrets.DEV_AZURE_RESOURCE_GROUP }}
+      AZURE_CONTAINER_REGISTRY: ${{ secrets.DEV_AZURE_CONTAINER_REGISTRY }}
