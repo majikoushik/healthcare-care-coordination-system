@@ -165,6 +165,10 @@ Allows a Human Reviewer to approve or reject the AI generated output.
 - **Response**: `200 OK` with `ApiResponse<ClinicalNoteInsight>`
 - **Errors**: `400 Bad Request`
 
+### `GET /ai-provider/status` (Check AI Readiness)
+Returns the active configuration and AI Provider mode (Mock vs Azure-Ready). Never leaks secrets.
+- **Response**: `200 OK` with `status object`
+
 ## Common Response Format
 
 ```json

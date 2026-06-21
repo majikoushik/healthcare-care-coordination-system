@@ -13,13 +13,13 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 - Mock clinical AI provider for local development with Azure AI Language-ready provider abstraction.
 - Correlation ID, health check, Problem Details, structured logging, and Application Insights readiness.
 
-## Current Epic 5 Scope
+## Current Epic 6 Scope
 
-Epic 5 implements Clinical Note Insights utilizing a Mock AI Provider:
-- React frontend forms and dynamic detailed views for AI insight outputs.
-- .NET 8 minimal API backend connecting to an `IClinicalTextAnalyzer` abstraction.
-- Strict responsible AI workflow demanding Human Review of AI outputs.
-- Cosmos DB-ready persistence modeling via `MockClinicalInsightRepository`.
+Epic 6 introduces Azure AI Language Readiness:
+- Implemented `AzureTextAnalyticsForHealthProvider` abstraction allowing seamless toggle between mock and cognitive services.
+- `ClinicalAIConfiguration` with safe, secretless `.env` handling preventing accidental key check-ins.
+- Responsible AI React views specifically distinguishing Azure cognitive outputs from deterministic Mocks.
+- Fail-safe runtime defaults: System gracefully reverts to `MockClinicalTextAnalyzer` if Azure settings are misconfigured, ensuring local development remains undisturbed.
 
 ## Run Locally
 

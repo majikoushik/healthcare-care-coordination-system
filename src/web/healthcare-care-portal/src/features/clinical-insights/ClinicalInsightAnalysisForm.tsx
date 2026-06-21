@@ -23,6 +23,7 @@ export const ClinicalInsightAnalysisForm: React.FC = () => {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [providerStatus, setProviderStatus] = useState<any>(null);
 
   const [patients, setPatients] = useState<Patient[]>([]);
   const [providers, setProviders] = useState<Provider[]>([]);
@@ -30,12 +31,14 @@ export const ClinicalInsightAnalysisForm: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [pats, provs] = await Promise.all([
+        const [pats, provs, status] = await Promise.all([
           patientApi.getPatients(),
-          providerApi.getProviders()
+          providerApi.getProviders(),
+          clinicalInsightApi.getAiProviderStatus().catch(() => null)
         ]);
         setPatients(pats);
         setProviders(provs);
+        setProviderStatus(status);
       } catch (err) {
         setApiError('Failed to load lookup data for patients/providers.');
       }
@@ -69,6 +72,13 @@ export const ClinicalInsightAnalysisForm: React.FC = () => {
         <p style={{ color: '#62707d', marginBottom: '16px', fontSize: '0.9rem' }}>
           <strong>Responsible AI Notice:</strong> This feature uses a mocked AI provider locally. Do NOT paste real patient medical records. Synthetic data only. AI output requires human review.
         </p>
+
+        {providerStatus && (
+          <div style={{ background: providerStatus.providerMode === 'AzureAIConfigured' ? '#ebf8ff' : '#fdfaed', padding: '12px', borderRadius: '4px', border: providerStatus.providerMode === 'AzureAIConfigured' ? '1px solid #90cdf4' : '1px solid #feebc8', marginBottom: '16px', fontSize: '0.9rem' }}>
+            <strong>AI Provider Readiness: </strong> 
+            {providerStatus.message} (Using <code>{providerStatus.activeProvider}</code>)
+          </div>
+        )}
 
         {apiError && <div style={{ color: 'red', marginBottom: '16px', padding: '12px', background: '#ffe6e6', borderRadius: '4px' }}>{apiError}</div>}
         

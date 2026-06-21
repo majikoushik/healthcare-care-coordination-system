@@ -35,5 +35,10 @@ export const clinicalInsightApi = {
   updateReviewStatus: async (id: string, data: UpdateReviewStatusRequest): Promise<ClinicalNoteInsight> => {
     const response = await axiosClient.patch<ApiResponse<ClinicalNoteInsight>>(`/api/v1/clinical-insights/${id}/review-status`, data);
     return response.data.data;
+  },
+
+  getAiProviderStatus: async (): Promise<any> => {
+    const response = await axiosClient.get("/api/v1/clinical-insights/ai-provider/status");
+    return response.data;
   }
 };

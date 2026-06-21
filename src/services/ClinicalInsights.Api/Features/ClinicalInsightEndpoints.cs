@@ -155,5 +155,25 @@ public static class ClinicalInsightEndpoints
 
             return Results.Ok(new ApiResponse<ClinicalNoteInsight>(insight, correlationId, DateTimeOffset.UtcNow));
         });
+
+        group.MapGet("/clinical-insights/ai-provider/status", (
+            [FromServices] Microsoft.Extensions.Options.IOptions<HealthcareCareCoordination.ClinicalAI.ClinicalAIConfiguration> options,
+            [FromServices] HealthcareCareCoordination.ClinicalAI.IClinicalTextAnalyzer activeAnalyzer) =>
+        {
+            var config = options.Value;
+            var isConfigured = !string.IsNullOrEmpty(config.AzureLanguage.Endpoint);
+            
+            var status = new
+            {
+                providerMode = config.ProviderMode,
+                azureLanguageConfigured = isConfigured,
+                activeProvider = activeAnalyzer.GetType().Name,
+                message = isConfigured && config.ProviderMode == "AzureAIConfigured" 
+                    ? "System is configured for Azure AI Language."
+                    : "Local development is using the mock clinical text analyzer."
+            };
+
+            return Results.Ok(status);
+        });
     }
 }
