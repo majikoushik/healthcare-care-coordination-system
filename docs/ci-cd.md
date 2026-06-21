@@ -27,10 +27,10 @@ The CI workflow is divided into three parallel/dependent jobs.
 - **Environment**: Ubuntu Latest
 - **Setup**: Node.js 22.
 - **Steps**:
-  - `npm install` for dependencies.
+  - `npm ci` for lockfile-based dependencies.
   - Type-checking with `npx tsc --noEmit`.
   - Production build generation (`npm run build`).
-  - Runs React testing library tests if present.
+  - Runs React testing library tests.
 
 ### 3. Docker Validation Job (`docker-validation`)
 - **Dependencies**: Depends on both `backend` and `frontend` jobs passing.
@@ -40,4 +40,4 @@ The CI workflow is divided into three parallel/dependent jobs.
   - *Note: These images are not pushed to a registry during PRs, but validate that containerization remains un-broken.*
 
 ## Continuous Deployment (Azure Readiness)
-Actual CD pipelines deploying to Azure Container Apps and Azure Static Web Apps will be handled in a future deployment epic. CI currently ensures the codebase remains cleanly buildable and deployable.
+Azure deployment workflows are template-based and require GitHub OIDC secrets. The Bicep template is subscription-scoped because it creates the target resource group.

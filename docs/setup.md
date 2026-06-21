@@ -66,6 +66,7 @@ Repeat with another service project when testing an individual boundary.
 Get-ChildItem -Recurse -Filter *.csproj src | ForEach-Object { dotnet build $_.FullName }
 Get-ChildItem -Recurse -Filter *.csproj tests | ForEach-Object { dotnet test $_.FullName }
 cd src/web/healthcare-care-portal
+npm ci
 npm run build
 npm test
 ```

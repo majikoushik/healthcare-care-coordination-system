@@ -2,15 +2,6 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 ARG SERVICE_PROJECT
 
-# Copy solution and project files first to cache restore layer
-COPY *.sln ./
-COPY src/building-blocks/*/*.csproj ./
-COPY src/services/*/*.csproj ./
-# Ensure correct directory structure is recreated for restore
-RUN for file in $(ls *.csproj); do mkdir -p ${file%.*}/ && mv $file ${file%.*}/; done || true
-
-# We will just copy everything for simplicity in a multi-project setup
-# but it's better to explicitly copy and restore.
 COPY . .
 RUN dotnet restore $SERVICE_PROJECT
 RUN dotnet publish $SERVICE_PROJECT -c Release -o /app/publish --no-restore

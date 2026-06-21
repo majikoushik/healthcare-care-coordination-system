@@ -13,8 +13,6 @@ on:
         required: true
       AZURE_SUBSCRIPTION_ID:
         required: true
-      AZURE_RESOURCE_GROUP:
-        required: true
       AZURE_CONTAINER_REGISTRY:
         required: true
 
@@ -36,7 +34,8 @@ jobs:
       - name: Deploy Bicep
         uses: azure/arm-deploy@v1
         with:
-          resourceGroupName: ${{ secrets.AZURE_RESOURCE_GROUP }}
+          scope: subscription
+          region: eastus
           template: ./infra/bicep/main.bicep
           parameters: ./infra/bicep/parameters/${{ inputs.environment }}.parameters.json
           failOnStdErr: false

@@ -214,7 +214,7 @@ Frontend:
 
 ```powershell
 cd src/web/healthcare-care-portal
-npm install
+npm ci
 npm run build
 npm test
 ```
@@ -290,4 +290,3 @@ Future improvements:
 ## Portfolio Value
 
 This project demonstrates Solution Architect capability across healthcare workflow modeling, .NET API architecture, React frontend architecture, SQL Server and Cosmos DB data ownership, Azure AI Language readiness, responsible AI and human-review-first design, security and privacy architecture, audit logging, observability, Docker, CI/CD, and Azure cloud deployment planning.
-

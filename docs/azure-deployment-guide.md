@@ -22,7 +22,6 @@ To enable the CI/CD pipeline, configure the following GitHub Secrets:
 - `AZURE_CLIENT_ID`
 - `AZURE_TENANT_ID`
 - `AZURE_SUBSCRIPTION_ID`
-- `DEV_AZURE_RESOURCE_GROUP`
 - `DEV_AZURE_CONTAINER_REGISTRY`
 
 *Note: We use OpenID Connect (OIDC) authentication (`AZURE_CLIENT_ID`) instead of legacy service principal passwords (`AZURE_CREDENTIALS`).*
@@ -31,8 +30,7 @@ To enable the CI/CD pipeline, configure the following GitHub Secrets:
 You can test the Bicep templates locally using placeholder commands:
 
 ```powershell
-az group create --name rg-healthco-dev-eastus --location eastus
-az deployment group create --resource-group rg-healthco-dev-eastus --template-file infra/bicep/main.bicep --parameters infra/bicep/parameters/dev.parameters.json
+az deployment sub create --location eastus --template-file infra/bicep/main.bicep --parameters infra/bicep/parameters/dev.parameters.json
 ```
 
 ## Security & Healthcare Privacy Warning

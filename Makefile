@@ -27,9 +27,9 @@ test-backend:
 	dotnet test tests/Observability.Tests/Observability.Tests.csproj
 
 build-frontend:
-	cd src/web/healthcare-care-portal && npm install && npm run build
+	cd src/web/healthcare-care-portal && npm ci && npm run build
 
 test-frontend:
-	cd src/web/healthcare-care-portal && npm install && npm test
+	cd src/web/healthcare-care-portal && npm ci && npm test
 
 ci-test: test-backend build-frontend

@@ -21,7 +21,7 @@ Get-ChildItem -Recurse -Filter *.csproj tests | ForEach-Object { dotnet test $_.
 
 ```powershell
 cd src/web/healthcare-care-portal
-npm install
+npm ci
 npm test
 npm run build
 ```

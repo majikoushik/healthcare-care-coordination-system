@@ -38,13 +38,13 @@ jobs:
         with:
           node-version: "22"
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Type check portal
-        run: npx tsc --noEmit || true
+        run: npx tsc --noEmit
       - name: Build portal
         run: npm run build
       - name: Test portal
-        run: npm test -- --run --reporter=verbose || true
+        run: npm test -- --reporter=verbose
 
   docker-validation:
     runs-on: ubuntu-latest
