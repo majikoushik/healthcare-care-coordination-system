@@ -1,20 +1,107 @@
 # Healthcare Care Coordination System
 
-Healthcare Care Coordination System is a cloud-native healthcare platform demo built with .NET, React, SQL Server, Azure Cosmos DB, and Azure AI Language readiness. It demonstrates patient management, provider coordination, appointment scheduling, care plan workflows, clinical note insight analysis, follow-up task tracking, notification simulation, audit logging, RBAC readiness, observability, Docker-based local development, and Azure deployment architecture.
+Cloud-native healthcare care coordination platform demo built with .NET, React, SQL Server, Azure Cosmos DB, Azure AI Language readiness, RBAC, audit logging, observability, Docker, and Azure deployment architecture.
+
+## Why This Project Matters for Solution Architecture
+
+This repository is designed as a public Solution Architect portfolio project, not a simple CRUD demo. It demonstrates:
+
+- Healthcare workflow modeling across patients, providers, appointments, care plans, clinical insights, follow-up tasks, notifications, and audit events.
+- .NET API and service boundary design with domain-oriented modules.
+- React frontend architecture for a healthcare operations portal.
+- SQL Server and Azure Cosmos DB polyglot persistence decisions.
+- Azure AI Language readiness with responsible AI safeguards and human-review-first design.
+- RBAC readiness, safe audit logging, privacy-aware data handling, and traceability.
+- Observability, health checks, Docker, GitHub Actions, Bicep, and Azure deployment planning.
+
+## Important Disclaimer
 
 This repository is a portfolio demonstration project. It uses synthetic healthcare data only. It is not a production medical system, does not provide medical advice, does not claim HIPAA compliance, and is not clinically certified.
 
-## Architecture Summary
+## Business Problem
 
-The system models a simplified healthcare coordination journey across domain-oriented service boundaries:
+Healthcare care coordination requires multiple roles to work from a shared operational picture: patient profile readiness, provider availability, appointment scheduling, care plans, follow-up tasks, clinical note review, notifications, and audit trails. The project demonstrates how those concerns can be modeled with clear service boundaries, safe data handling, auditability, and Azure-ready deployment architecture.
 
-- React + TypeScript care operations portal under `src/web/healthcare-care-portal`.
-- ASP.NET Core APIs for patient, provider, appointment, care plan, clinical insight, notification, and audit capabilities.
-- SQL Server locally and Azure SQL by design for transactional patient, provider, and appointment data.
-- Azure Cosmos DB-ready repositories for care plans, clinical insights, notifications, audit events, and follow-up workflow documents.
-- `MockClinicalTextAnalyzer` as the local default with optional `AzureTextAnalyticsForHealthProvider` readiness.
-- Correlation IDs, Problem Details, structured logging, health checks, OpenTelemetry, and Application Insights readiness.
-- Demo RBAC via `X-Demo-User-Role` for portfolio review, with Azure Entra ID direction documented.
+## Solution Overview
+
+The system models a simplified healthcare coordination journey through a React care portal and domain-oriented ASP.NET Core services. Transactional master data is represented with SQL Server / Azure SQL direction, while flexible coordination documents and event-style records are represented through Azure Cosmos DB-ready repositories. Clinical insights use a mock AI provider locally and remain Azure AI Language-ready without requiring Azure credentials for development or CI.
+
+## Key Capabilities
+
+| Capability | Current implementation |
+|---|---|
+| Patient Registration | SQL-backed patient API, validation, React registration/list/detail screens |
+| Provider Management | SQL-backed provider API, specialty, department, and availability modeling |
+| Appointment Scheduling | SQL-backed scheduling API with appointment status transitions |
+| Care Plan Management | Cosmos DB-ready document model with goals, instructions, and tasks |
+| Clinical Note Insights | Synthetic note analysis through mock AI with human review workflow |
+| Azure AI Language Provider Readiness | Optional provider abstraction for Text Analytics for Health readiness |
+| Follow-up Task Tracking | Task status, priority, due-date, overdue, and due-today views |
+| Notification Simulation | Simulated email, SMS, and portal notification workflow |
+| Audit Logging | Cosmos DB-ready safe audit event capture and query APIs |
+| Security, Privacy, and RBAC Readiness | Demo role model with future Azure Entra ID and JWT direction |
+| Observability and System Health | Correlation IDs, structured logging, health endpoints, telemetry readiness |
+| Azure Deployment Blueprint | Bicep, Container Apps, Static Web Apps, Azure SQL, Cosmos DB, Key Vault, Application Insights |
+
+## Technology Stack
+
+Backend:
+
+- .NET 8
+- ASP.NET Core Web API / Minimal APIs
+- Entity Framework Core
+- SQL Server / Azure SQL
+- Cosmos DB-ready repository abstractions
+- Swagger / OpenAPI
+- Serilog / structured logging readiness
+- Health checks
+- Problem Details
+- Docker
+
+Frontend:
+
+- React
+- TypeScript
+- Vite
+- React Router
+- React Hook Form
+- Zod
+- TanStack Query
+- Axios
+
+Cloud and DevOps:
+
+- Azure Container Apps
+- Azure Static Web Apps
+- Azure SQL Database
+- Azure Cosmos DB
+- Azure AI Language readiness
+- Azure Key Vault
+- Azure Application Insights
+- Azure Log Analytics
+- Azure Service Bus readiness
+- Docker Compose
+- GitHub Actions
+- Bicep
+
+## Architecture Overview
+
+Key architecture views:
+
+- [High-Level Design](architecture/hld.md)
+- [Low-Level Design](architecture/lld.md)
+- [API Governance](architecture/api-governance.md)
+- [Data Model](architecture/data-model.md)
+- [Event Model](architecture/event-model.md)
+- [Polyglot Persistence](architecture/polyglot-persistence.md)
+- [Clinical AI Architecture](architecture/clinical-ai-architecture.md)
+- [Security Architecture](architecture/security-architecture.md)
+- [Privacy and Compliance-Readiness](architecture/privacy-and-compliance.md)
+- [Observability Architecture](architecture/observability-architecture.md)
+- [Deployment Architecture](architecture/deployment-architecture.md)
+- [Architecture Decision Records](architecture/adr/)
+
+## System Diagram
 
 ```mermaid
 flowchart LR
@@ -49,35 +136,16 @@ flowchart LR
   Audit --> Telemetry
 ```
 
-## Business Problem
+Additional diagrams:
 
-Care coordination requires multiple roles to work from a shared operational picture: patient profile readiness, provider availability, appointments, care plans, follow-up tasks, clinical note review, notifications, and audit trails. The demo shows how those concerns can be separated into maintainable service boundaries while preserving traceability, privacy constraints, and Azure deployment readiness.
-
-## Key Capabilities
-
-| Capability | Current implementation |
-|---|---|
-| Patient registration | SQL-backed patient API, validation, React registration and detail screens |
-| Provider management | SQL-backed provider API, specialty and availability modeling |
-| Appointment scheduling | SQL-backed scheduling API with appointment status transitions |
-| Care plans | Cosmos DB-ready document model with goals and tasks |
-| Follow-up tasks | Task status, priority, due-date, overdue, and due-today views |
-| Clinical insights | Synthetic note analysis through mock AI, optional Azure AI Language provider readiness |
-| Notifications | Simulated email, SMS, and portal notification workflow |
-| Audit logging | Cosmos DB-ready safe audit event capture and query APIs |
-| Security/RBAC | Demo role model with future Azure Entra ID and JWT direction |
-| Observability | Correlation ID middleware, structured logging, health endpoints, telemetry readiness |
-| DevOps | Docker Compose, multi-stage Dockerfiles, CI workflow, Bicep deployment blueprint |
-
-## Technology Stack
-
-- Backend: .NET 8, ASP.NET Core minimal APIs, C#, Entity Framework Core, FluentValidation-style validators, Problem Details.
-- Frontend: React, TypeScript, Vite, React Router, TanStack Query, React Hook Form, Zod, Axios.
-- Persistence: SQL Server / Azure SQL for transactional modules; Azure Cosmos DB-ready repositories for document and event modules.
-- AI readiness: Mock local provider and optional Azure AI Language Text Analytics for Health provider.
-- Observability: Serilog-style structured logging, OpenTelemetry readiness, Application Insights, Log Analytics.
-- Azure target: Static Web Apps, Container Apps, Container Registry, Azure SQL, Cosmos DB, Key Vault, Service Bus readiness.
-- DevOps: Docker, Docker Compose, GitHub Actions, Bicep.
+- [System Context](architecture/diagrams/system-context.md)
+- [Container Diagram](architecture/diagrams/container-diagram.md)
+- [Patient Appointment Flow](architecture/diagrams/patient-appointment-flow.md)
+- [Care Plan Flow](architecture/diagrams/care-plan-flow.md)
+- [Clinical Insights Flow](architecture/diagrams/clinical-insights-flow.md)
+- [Audit Logging Flow](architecture/diagrams/audit-logging-flow.md)
+- [Correlation ID Flow](architecture/diagrams/correlation-id-flow.md)
+- [Azure Deployment](architecture/diagrams/azure-deployment.md)
 
 ## Module Overview
 
@@ -94,67 +162,123 @@ Care coordination requires multiple roles to work from a shared operational pict
 
 ## Data Architecture
 
-The repository intentionally demonstrates polyglot persistence:
+SQL Server / Azure SQL is used for structured transactional data:
 
-- SQL Server owns structured transactional data that benefits from relational integrity: patients, providers, appointments.
-- Cosmos DB owns flexible coordination documents and event-style history: care plans, clinical insights, notifications, audit events.
-- Audit metadata is intentionally minimal and must not contain full clinical notes or sensitive health details.
-- All sample data is synthetic demo data.
+- Patients
+- Providers
+- Appointments
 
-See [architecture/polyglot-persistence.md](architecture/polyglot-persistence.md) and [architecture/data-model.md](architecture/data-model.md).
+Azure Cosmos DB is used for flexible healthcare documents and event-style data:
+
+- Care Plans
+- Clinical Insights
+- Follow-up Tasks
+- Notifications
+- Audit Events
+
+All data is synthetic demo data only. See [Polyglot Persistence](architecture/polyglot-persistence.md) and [Data Model](architecture/data-model.md).
 
 ## Azure AI Language Readiness
 
-Clinical insights are implemented behind an abstraction:
+The Clinical Insights module uses an AI provider abstraction:
 
-- Local and CI default: `MockClinicalTextAnalyzer`.
-- Optional Azure-ready provider: `AzureTextAnalyticsForHealthProvider`.
-- Configuration is environment-driven and must not require Azure credentials for local development.
-- Output is informational demo output requiring qualified healthcare professional review.
-- The application must not present extracted terms as diagnosis, medical advice, or clinical decision support.
+- `MockClinicalTextAnalyzer` is the default local and CI provider.
+- `AzureTextAnalyticsForHealthProvider` is available as a configuration-ready provider.
+- No Azure AI credentials are required for local development.
+- No real clinical notes should be used.
+- AI output is assistive demo output only.
+- AI output requires human review.
+- AI output is not medical advice, diagnosis, or a replacement for qualified healthcare professional judgment.
 
-See [architecture/clinical-ai-architecture.md](architecture/clinical-ai-architecture.md) and [docs/azure-ai-language-readiness.md](docs/azure-ai-language-readiness.md).
+See [Clinical AI Architecture](architecture/clinical-ai-architecture.md) and [Azure AI Language Readiness](docs/azure-ai-language-readiness.md).
 
-## Security And Privacy Readiness
+## Security, Privacy, and RBAC Readiness
 
-The project demonstrates compliance-readiness patterns, not certified compliance:
+The project demonstrates compliance-readiness patterns without claiming certified compliance:
 
-- Synthetic demo data only.
-- No real patient data, clinical notes, provider data, hospital data, or client data.
-- No committed `.env` files, tokens, client secrets, Azure keys, Cosmos keys, or production connection strings.
+- Synthetic data only.
 - Demo RBAC roles: `Patient`, `Provider`, `CareCoordinator`, `Admin`, `Auditor`.
-- Future authentication direction: Azure Entra ID, JWT validation, role-based authorization policies.
-- Safe logging guidance prohibits secrets, full clinical notes, full patient addresses, and sensitive notification bodies.
+- Future Azure Entra ID and JWT authorization readiness.
+- Safe logging policy: no secrets, full clinical notes, full addresses, or sensitive notification bodies.
+- Safe audit metadata: no sensitive health details in audit records.
+- `.env.example` uses placeholders; `.env` files are ignored.
+- Key Vault and managed identity readiness are documented.
+- No HIPAA compliance claim.
+- No clinical certification claim.
 
-See [architecture/security-architecture.md](architecture/security-architecture.md), [architecture/privacy-and-compliance.md](architecture/privacy-and-compliance.md), and [docs/security-and-rbac-readiness.md](docs/security-and-rbac-readiness.md).
+See [Security Architecture](architecture/security-architecture.md), [Privacy and Compliance-Readiness](architecture/privacy-and-compliance.md), and [Security and RBAC Readiness](docs/security-and-rbac-readiness.md).
 
-## Observability Readiness
+## Audit Logging and Traceability
+
+Audit logging is modeled as append-style event history with safe metadata. Audit records support traceability by correlation ID, entity, event type, and source service. The audit design intentionally avoids full clinical note text and sensitive health details.
+
+See [Audit Logging Strategy](docs/audit-logging-strategy.md) and [Audit Logging Flow](architecture/diagrams/audit-logging-flow.md).
+
+## Observability and Production Readiness
 
 Each backend service exposes:
 
-- `GET /health/live` for process liveness.
-- `GET /health/ready` for dependency readiness.
-- `GET /health` as a readiness alias.
+- `GET /health/live`
+- `GET /health/ready`
+- `GET /health`
 
-The APIs propagate `X-Correlation-ID` through responses and logs. The React portal includes a `/system-health` dashboard for service readiness checks.
+The APIs propagate `X-Correlation-ID` through responses and logs. The React portal includes a `/system-health` dashboard. Application Insights and Log Analytics readiness are documented but not required locally.
 
-See [architecture/observability-architecture.md](architecture/observability-architecture.md) and [docs/application-insights-readiness.md](docs/application-insights-readiness.md).
+See [Observability Architecture](architecture/observability-architecture.md) and [Application Insights Readiness](docs/application-insights-readiness.md).
+
+## DevOps and Docker
+
+The repository includes:
+
+- Multi-stage backend Dockerfile for service projects.
+- React/Vite Dockerfile served through Nginx.
+- Docker Compose for local orchestration.
+- GitHub Actions CI for backend build/test, frontend type-check/build/test, and Docker build validation.
+- Lockfile-based frontend installs through `npm ci` in CI and container builds.
+
+Docker commands:
+
+```powershell
+docker compose up --build
+docker compose config
+docker compose down
+```
+
+See [Docker Guide](docs/docker-guide.md), [CI/CD Pipeline](docs/ci-cd.md), and [DevOps Guide](docs/devops-guide.md).
 
 ## Azure Deployment Blueprint
 
-The Azure blueprint uses Bicep under `infra/bicep/` and documents:
+The Azure blueprint is under `infra/bicep/` and includes:
 
-- Azure Static Web Apps for the React portal.
 - Azure Container Apps for backend APIs and worker services.
-- Azure Container Registry for container images.
+- Azure Static Web Apps for the React frontend.
 - Azure SQL Database for transactional data.
 - Azure Cosmos DB for documents and events.
-- Azure AI Language readiness for Text Analytics for Health.
-- Azure Service Bus readiness for asynchronous workflow events.
-- Azure Key Vault and managed identity for secrets.
-- Application Insights and Log Analytics for telemetry.
+- Azure AI Language readiness.
+- Azure Key Vault for secrets.
+- Azure Application Insights and Log Analytics for telemetry.
+- Azure Service Bus readiness for event-driven workflows.
+- GitHub Actions deployment workflow placeholders using OIDC and GitHub Secrets.
 
-See [architecture/deployment-architecture.md](architecture/deployment-architecture.md), [infra/bicep/README.md](infra/bicep/README.md), and [docs/azure-deployment-guide.md](docs/azure-deployment-guide.md).
+The blueprint does not include real credentials and must be configured separately for any Azure subscription.
+
+See [Deployment Architecture](architecture/deployment-architecture.md), [Bicep README](infra/bicep/README.md), and [Azure Deployment Guide](docs/azure-deployment-guide.md).
+
+## Demo Workflow
+
+Recommended portfolio demo path:
+
+1. Register a synthetic patient.
+2. Register a synthetic provider.
+3. Schedule an appointment.
+4. Create a care plan.
+5. Submit a synthetic clinical note.
+6. Generate mock clinical insights.
+7. Review the AI-assisted insight.
+8. Create a follow-up task.
+9. Simulate a notification.
+10. View the audit trail.
+11. Check system health.
 
 ## Local Development
 
@@ -162,8 +286,8 @@ Prerequisites:
 
 - .NET 8 SDK
 - Node.js 20 or later
-- Docker Desktop
 - npm
+- Docker Desktop
 
 Create local configuration:
 
@@ -171,13 +295,13 @@ Create local configuration:
 Copy-Item .env.example .env
 ```
 
-Run the full local stack:
+Run a backend API directly:
 
 ```powershell
-docker compose up --build -d
+dotnet run --project src/services/Patient.Api/Patient.Api.csproj
 ```
 
-Run the frontend only:
+Run the frontend:
 
 ```powershell
 cd src/web/healthcare-care-portal
@@ -185,13 +309,38 @@ npm install
 npm run dev
 ```
 
-Run an API service directly:
+Local default modes:
+
+- `AI_PROVIDER=Mock`
+- `CLINICAL_AI_PROVIDER_MODE=Mock`
+- `COSMOS_MODE=Mock`
+- `SECURITY_MODE=Demo`
+
+## Docker Setup
+
+Run the local stack:
 
 ```powershell
-dotnet run --project src/services/Patient.Api/Patient.Api.csproj
+docker compose up --build
 ```
 
-Open API documentation:
+Validate Compose:
+
+```powershell
+docker compose config
+```
+
+Stop the local stack:
+
+```powershell
+docker compose down
+```
+
+Portal: `http://localhost:5173`
+
+## API Documentation
+
+Swagger/OpenAPI endpoints when running through Docker Compose:
 
 - Patient API: `http://localhost:5080/swagger`
 - Provider API: `http://localhost:5081/swagger`
@@ -199,9 +348,10 @@ Open API documentation:
 - Care Plan API: `http://localhost:5083/swagger`
 - Clinical Insights API: `http://localhost:5084/swagger`
 - Audit API: `http://localhost:5085/swagger`
-- Portal: `http://localhost:5173`
 
-## Build And Test
+See [API Contracts](docs/api-contracts.md).
+
+## Testing
 
 Backend:
 
@@ -219,46 +369,53 @@ npm run build
 npm test
 ```
 
-Docker validation:
+Audit frontend dependencies:
 
 ```powershell
-docker compose config
-docker compose build patient-api portal
+cd src/web/healthcare-care-portal
+npm audit
 ```
 
 ## Repository Structure
 
 ```text
 healthcare-care-coordination-system/
-├── architecture/               Architecture views, diagrams, and ADRs
-├── docs/                       Setup, operations, security, AI, DevOps, and roadmap docs
-├── infra/bicep/                Azure deployment blueprint
-├── samples/                    Synthetic sample payloads only
-├── src/building-blocks/        Shared kernel, observability, security, compliance, AI, Cosmos, messaging
-├── src/services/               ASP.NET Core service boundaries
-├── src/web/healthcare-care-portal/
-├── tests/                      Backend test projects by boundary
-├── docker-compose.yml
-└── .github/workflows/
+|-- architecture/               Architecture views, diagrams, and ADRs
+|-- docs/                       Setup, operations, security, AI, DevOps, and roadmap docs
+|-- docs/screenshots/           Screenshot capture guidance and future images
+|-- infra/bicep/                Azure deployment blueprint
+|-- samples/                    Synthetic sample payloads only
+|-- src/building-blocks/        Shared kernel, observability, security, compliance, AI, Cosmos, messaging
+|-- src/services/               ASP.NET Core service boundaries
+|-- src/web/healthcare-care-portal/
+|-- tests/                      Backend test projects by boundary
+|-- docker-compose.yml
+|-- Makefile
+`-- .github/workflows/
 ```
 
 ## Screenshots
 
-Add current screenshots under `docs/screenshots/` before publishing the repository:
+Screenshot guidance is documented in [docs/screenshots/README.md](docs/screenshots/README.md).
 
-| Screen | Suggested file |
-|---|---|
-| Dashboard command center | `docs/screenshots/dashboard.png` |
-| Patient registration | `docs/screenshots/patient-registration.png` |
-| Appointment scheduling | `docs/screenshots/appointment-scheduling.png` |
-| Care plan workspace | `docs/screenshots/care-plan-workspace.png` |
-| Clinical insights review | `docs/screenshots/clinical-insights.png` |
-| Audit trail | `docs/screenshots/audit-trail.png` |
-| System health | `docs/screenshots/system-health.png` |
+Suggested screenshot placeholders:
+
+- `docs/screenshots/dashboard.png`
+- `docs/screenshots/patient-list.png`
+- `docs/screenshots/appointment-scheduling.png`
+- `docs/screenshots/care-plan-details.png`
+- `docs/screenshots/clinical-insights.png`
+- `docs/screenshots/follow-up-tasks.png`
+- `docs/screenshots/notification-simulation.png`
+- `docs/screenshots/audit-log.png`
+- `docs/screenshots/system-health.png`
+- [Azure deployment diagram](architecture/diagrams/azure-deployment.md)
+
+Do not add fake binary screenshots. Add real captures only after running the portal locally.
 
 ## Roadmap
 
-Completed MVP capabilities:
+Completed capabilities:
 
 - Patient Registration
 - Provider Management
@@ -274,19 +431,77 @@ Completed MVP capabilities:
 - DevOps and Docker
 - Azure Deployment Blueprint
 - Portfolio Polish
+- Final QA
+- Security and Responsible AI Review
+- GitHub Publishing Readiness
 
 Future improvements:
 
 - Real Azure AI Language integration in a controlled non-production environment.
-- Azure Entra ID authentication and full JWT authorization policies.
-- Azure API Management gateway.
+- Azure Entra ID authentication.
+- Real Azure Cosmos DB deployment.
 - Real Azure Service Bus eventing.
-- Advanced role-based workflows.
-- Production deployment pipeline with environment approvals.
-- Application Insights dashboards and alert rules.
-- Automated integration and synthetic E2E testing.
-- Accessibility and keyboard navigation improvements.
+- Azure API Management gateway.
+- Advanced role workflows.
+- Real dashboards in Azure Monitor.
+- E2E testing.
+- Accessibility improvements.
+- Deployment to a live Azure environment.
 
-## Portfolio Value
+See [Roadmap](docs/roadmap.md).
 
-This project demonstrates Solution Architect capability across healthcare workflow modeling, .NET API architecture, React frontend architecture, SQL Server and Cosmos DB data ownership, Azure AI Language readiness, responsible AI and human-review-first design, security and privacy architecture, audit logging, observability, Docker, CI/CD, and Azure cloud deployment planning.
+## Known Limitations
+
+- Uses synthetic data only.
+- Not a production medical system.
+- Does not provide medical advice.
+- Does not claim HIPAA compliance.
+- Mock AI provider is default locally.
+- Azure AI integration is readiness-focused unless configured.
+- Notification module simulates delivery only.
+- Azure deployment files are blueprint-level unless deployed separately.
+- Security model is demo/readiness-oriented, not production identity.
+- Test coverage is portfolio/MVP oriented and should be expanded before any production-style use.
+
+## GitHub Topics Recommendation
+
+Recommended repository name:
+
+```text
+healthcare-care-coordination-system
+```
+
+Recommended repository description:
+
+```text
+Cloud-native healthcare care coordination platform demo built with .NET, React, SQL Server, Cosmos DB, Azure AI Language readiness, RBAC, audit logging, observability, Docker, and Azure deployment architecture.
+```
+
+Recommended topics:
+
+```text
+dotnet
+react
+typescript
+azure
+healthcare
+cosmos-db
+sql-server
+azure-ai
+azure-ai-language
+microservices
+clean-architecture
+rbac
+audit-logging
+observability
+docker
+bicep
+azure-container-apps
+solution-architecture
+portfolio-project
+responsible-ai
+```
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

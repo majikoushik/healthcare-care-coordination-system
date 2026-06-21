@@ -17,6 +17,9 @@
 - Epic 12: DevOps and Docker with Docker Compose, multi-stage Dockerfiles, CI, and setup docs.
 - Epic 13: Azure Deployment Blueprint with Bicep, Key Vault, managed identity, Application Insights, Azure SQL, Cosmos DB, and Container Apps direction.
 - Epic 14: Portfolio Polish with improved README, documentation alignment, UI wording, roadmap, and validation guidance.
+- Final QA and Stabilization: Build/test verification, CI hardening, Dockerfile cleanup, Bicep workflow alignment, link checks, secret scans, and safety review.
+- Security and Responsible AI Review: Public safety review for secrets, synthetic data, AI disclaimers, safe logging, and unsupported compliance claims.
+- GitHub Publishing Readiness: Final README ordering, repository metadata recommendation, screenshot guidance, license reference, known limitations, and public portfolio checklist.
 
 ## Future Improvements
 
@@ -30,6 +33,7 @@
 - Automated integration testing.
 - Synthetic E2E test automation.
 - Advanced accessibility improvements.
+- Deployment to a live Azure environment.
 
 ## Boundaries
 
