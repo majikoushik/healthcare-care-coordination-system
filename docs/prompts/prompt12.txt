@@ -1,0 +1,358 @@
+Implement Epic 11: Observability and Production Readiness based on AGENTS.md and the existing repository.
+
+Build the next enterprise capability for the `healthcare-care-coordination-system` repository: Observability and Production Readiness.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0 through Epic 10.
+4. Review existing Patient, Provider, Appointment, Care Plan, Clinical Insights, Follow-up Task, Notification, Audit, Security, Privacy, and RBAC-readiness modules.
+5. Review SQL Server persistence, Cosmos DB-ready persistence, Azure AI provider readiness, React screens, tests, documentation, Docker setup, CI workflow, security guidance, audit logging strategy, and privacy guidance.
+6. Preserve the architecture direction, healthcare privacy guidance, responsible AI guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, security model, RBAC readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 11 Goal:
+
+Strengthen the application’s observability, troubleshooting, health monitoring, logging, correlation, and production-readiness patterns.
+
+This epic should demonstrate that the healthcare care coordination system is designed not only to work, but also to be monitored, diagnosed, supported, and operated in an enterprise cloud environment.
+
+Observability scope:
+
+1. Strengthen structured logging across backend services.
+2. Add or improve correlation ID propagation.
+3. Add request/response tracing readiness.
+4. Add OpenTelemetry readiness if practical.
+5. Add Azure Application Insights readiness.
+6. Add health checks.
+7. Add readiness and liveness endpoints.
+8. Add safe exception handling review.
+9. Add service-level operational metadata.
+10. Add dashboard/system-health UI improvements.
+11. Add documentation for operational support and troubleshooting.
+
+Backend observability expectations:
+
+Apply or strengthen common observability patterns across services:
+
+* `Patient.Api`
+* `Provider.Api`
+* `Appointment.Api`
+* `CarePlan.Api`
+* `ClinicalInsights.Api`
+* `Notification.Worker` or Notification API
+* `Audit.Api`
+
+Implement or improve:
+
+1. Correlation ID middleware.
+2. Correlation ID response header.
+3. Correlation ID logging enrichment.
+4. Request logging.
+5. Safe error logging.
+6. Service name enrichment.
+7. Environment name enrichment.
+8. Health check endpoints.
+9. Liveness endpoint.
+10. Readiness endpoint.
+11. Dependency readiness checks where practical.
+12. Centralized exception handling.
+13. Problem Details response consistency.
+14. Metrics-readiness documentation.
+15. Application Insights configuration placeholders.
+
+Recommended endpoints:
+
+* `GET /health`
+* `GET /health/live`
+* `GET /health/ready`
+
+Recommended response shape:
+
+```json
+{
+  "service": "Patient.Api",
+  "status": "Healthy",
+  "environment": "Development",
+  "correlationId": "correlation-id",
+  "timestamp": "2026-07-15T10:00:00Z",
+  "checks": [
+    {
+      "name": "self",
+      "status": "Healthy"
+    },
+    {
+      "name": "sql-server-readiness",
+      "status": "Healthy"
+    }
+  ]
+}
+```
+
+Do not expose secrets, connection strings, API keys, Azure AI endpoint details, Cosmos DB keys, SQL credentials, stack traces, or internal infrastructure secrets in health responses.
+
+Logging expectations:
+
+Use structured logging with safe metadata.
+
+Logs may include:
+
+* Correlation ID
+* Request path
+* HTTP method
+* Status code
+* Duration
+* Service name
+* Entity ID
+* Event type
+* Outcome
+* Source service
+* Provider mode, for AI module
+* Role name, where safe
+* Permission name, where safe
+
+Logs must not include:
+
+* Full patient profile
+* Full clinical note text
+* Full care plan clinical summary
+* Full care plan instructions
+* Full notification message content
+* Full AI raw response
+* Access tokens
+* API keys
+* Azure AI keys
+* Cosmos DB keys
+* SQL connection strings
+* Client secrets
+* Passwords
+* Stack traces in API responses
+
+OpenTelemetry readiness:
+
+If practical, add OpenTelemetry packages and configuration placeholders.
+
+Prepare for:
+
+* Traces
+* Metrics
+* Logs
+* ASP.NET Core instrumentation
+* HTTP client instrumentation
+* SQL client instrumentation where practical
+* Azure Monitor exporter readiness as optional/future
+
+If OpenTelemetry is not fully implemented, document the intended design clearly and create placeholders that do not break local development.
+
+Azure Application Insights readiness:
+
+Add safe configuration placeholders:
+
+```json
+{
+  "ApplicationInsights": {
+    "ConnectionString": "",
+    "EnableAdaptiveSampling": true,
+    "EnableLiveMetrics": false
+  }
+}
+```
+
+Rules:
+
+1. Do not hardcode real Application Insights connection strings.
+2. Do not require Azure credentials for local development.
+3. Do not expose telemetry connection strings in frontend or API responses.
+4. Document future integration with Azure Monitor and Log Analytics.
+5. Keep local development functional without Azure telemetry.
+
+Frontend scope:
+
+Improve the React System Health and operations UI.
+
+Implement or update:
+
+1. `/system-health` screen.
+2. Service health summary cards.
+3. Backend service health status display.
+4. Correlation ID visibility for failed API calls if practical.
+5. Recent audit events summary if already available.
+6. Recent notification failures summary if already available.
+7. AI provider mode status if already available.
+8. Privacy-safe operational messages.
+9. Error boundary readiness.
+10. Friendly API failure display.
+
+System Health screen should show:
+
+* Patient API health
+* Provider API health
+* Appointment API health
+* Care Plan API health
+* Clinical Insights API health
+* Notification module health
+* Audit API health
+* SQL Server readiness, if available
+* Cosmos DB readiness, if available
+* AI provider mode
+* Last checked timestamp
+
+Do not expose secrets or internal infrastructure details in the frontend.
+
+Production-readiness scope:
+
+Add or improve:
+
+1. Safe environment variable documentation.
+2. Runtime configuration documentation.
+3. Operational runbook.
+4. Troubleshooting guide.
+5. Incident response guide.
+6. Logging strategy.
+7. Monitoring strategy.
+8. Alerting strategy.
+9. Dashboard guide.
+10. Production readiness checklist.
+11. Failure mode documentation.
+12. Dependency health documentation.
+
+Recommended documentation files:
+
+* `docs/operational-runbook.md`
+* `docs/troubleshooting-guide.md`
+* `docs/monitoring-and-alerting.md`
+* `docs/production-readiness-checklist.md`
+* `docs/logging-strategy.md`
+* `docs/correlation-id-strategy.md`
+* `docs/application-insights-readiness.md`
+* `architecture/observability-architecture.md`
+* `architecture/deployment-architecture.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+
+Operational runbook should include:
+
+1. How to trace a request using correlation ID.
+2. How to investigate patient registration failure.
+3. How to investigate appointment scheduling failure.
+4. How to investigate care plan persistence failure.
+5. How to investigate clinical insight analysis failure.
+6. How to investigate notification simulation failure.
+7. How to investigate audit event failure.
+8. How to check service health.
+9. How to validate SQL Server readiness.
+10. How to validate Cosmos DB readiness.
+11. How to validate AI provider mode.
+12. What data must not be copied into logs or tickets.
+
+Alerting strategy should include example alert rules for:
+
+* API error rate increase
+* API latency increase
+* SQL dependency failure
+* Cosmos DB dependency failure
+* Notification simulated failure increase
+* Audit write failure
+* Clinical AI provider failure
+* Unauthorized/forbidden spike
+* Health endpoint failure
+
+Do not implement real Azure alert rules unless already supported safely through infrastructure placeholders.
+
+Architecture diagrams:
+
+Create or update:
+
+* `architecture/diagrams/observability-flow.md`
+* `architecture/diagrams/correlation-id-flow.md`
+* `architecture/diagrams/health-check-flow.md`
+* `architecture/diagrams/azure-monitoring-flow.md`
+
+Testing expectations:
+
+Add tests for:
+
+* Correlation ID is generated if missing.
+* Correlation ID is preserved if provided.
+* Correlation ID appears in response header.
+* Health endpoint returns healthy status.
+* Liveness endpoint does not require database dependencies.
+* Readiness endpoint checks configured dependencies where practical.
+* Health endpoint does not expose secrets.
+* Error response does not expose stack trace.
+* Structured logging does not include full clinical note text where practical.
+* Structured logging does not include secrets where practical.
+* Application Insights configuration can be missing without breaking local development.
+* System health frontend handles healthy response.
+* System health frontend handles failed service response.
+* Existing feature tests continue to pass.
+
+Security and privacy expectations:
+
+1. Do not log sensitive healthcare-like data.
+2. Do not expose secrets through health endpoints.
+3. Do not expose stack traces in API responses.
+4. Do not expose Azure configuration details in frontend.
+5. Do not log full AI inputs or full AI outputs.
+6. Do not log full notification content.
+7. Do not log full care plan summaries.
+8. Do not claim HIPAA compliance.
+9. Do not claim medical certification.
+10. Keep all data synthetic.
+
+Responsible AI expectations:
+
+For Clinical Insights observability:
+
+1. Log only safe metadata such as insight ID, provider mode, status, duration, and correlation ID.
+2. Do not log full clinical note text.
+3. Do not log raw AI response.
+4. Do not expose Azure AI secrets.
+5. Continue showing AI output as assistive and human-review-first.
+
+CI/CD expectations:
+
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
+
+If possible, add CI steps for:
+
+* Backend build
+* Backend tests
+* Frontend install
+* Frontend build
+* Frontend tests if configured
+* Basic lint/type-check if configured
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, audit, clinical note, care plan, notification, or client data.
+* Do not use real medical records.
+* Do not expose secrets through logs, health checks, frontend, API responses, or documentation examples.
+* Do not require Azure credentials for local development.
+* Do not implement unrelated business features.
+* Do not claim HIPAA compliance.
+* Do not claim medical certification.
+* Do not present AI output as medical advice or diagnosis.
+* Do not overbuild beyond Epic 11.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. Observability building blocks created or modified.
+4. Health check endpoints added or updated.
+5. Logging and correlation ID changes.
+6. Application Insights or OpenTelemetry readiness changes.
+7. Frontend files created or modified.
+8. System Health UI changes.
+9. Tests added.
+10. Documentation updated.
+11. Operational runbook notes.
+12. Monitoring and alerting notes.
+13. Security and privacy notes.
+14. Responsible AI observability notes.
+15. Commands to run locally.
+16. Commands to test.
+17. Any assumptions made.
+18. Recommended next epic.

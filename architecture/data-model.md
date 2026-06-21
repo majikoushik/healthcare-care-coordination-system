@@ -1,16 +1,23 @@
 # Data Model
 
-## SQL Server / Azure SQL
+This document describes the high-level data models used across the system, adhering to polyglot persistence principles.
 
-- Patients: profile, contact, emergency contact, consent status, timestamps.
-- Providers: specialty, department, availability status, timestamps.
-- Appointments: patient-provider association, scheduled time, status, timestamps.
+## Transactional Data (SQL Server)
 
-## Azure Cosmos DB
+### Patient
+- `Id` (Guid, PK)
+- `FullName` (string, max 200)
+- `DateOfBirth` (datetime)
+- `Gender` (enum)
+- `Email` (string, max 150)
+- `MobileNumber` (string, max 50)
+- `Address` (string, max 500)
+- `EmergencyContactName` (string, max 200)
+- `EmergencyContactNumber` (string, max 50)
+- `ConsentStatus` (enum: NotProvided, Provided, Withdrawn)
+- `CreatedAt` (datetimeoffset)
+- `UpdatedAt` (datetimeoffset, null)
 
-- CarePlans partitioned by `/patientId`.
-- ClinicalInsights partitioned by `/patientId`.
-- Notifications partitioned by `/entityId` or `/patientId`.
-- AuditEvents partitioned by `/correlationId` initially, with patient query design reviewed in audit epic.
+## Document Data (Azure Cosmos DB)
 
-All examples are synthetic and must not represent real patient data.
+*(To be implemented in future epics: Care Plans, Clinical Notes, Audit Events)*

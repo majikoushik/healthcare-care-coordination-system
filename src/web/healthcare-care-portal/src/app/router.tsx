@@ -1,10 +1,11 @@
 import { Activity, Bell, CalendarDays, ClipboardList, FileHeart, HeartPulse, LayoutDashboard, ShieldCheck, Stethoscope, UsersRound } from "lucide-react";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
 import { FeaturePlaceholderPage } from "../shared/components/FeaturePlaceholderPage";
+import { PatientList } from "../features/patients/PatientList";
 
 export const featureRoutes = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard, element: DashboardPage },
-  { path: "/patients", label: "Patients", icon: UsersRound, element: () => <FeaturePlaceholderPage title="Patients" domain="Patient registration and profile coordination" storage="SQL Server / Azure SQL" /> },
+  { path: "/patients", label: "Patients", icon: UsersRound, element: PatientList },
   { path: "/providers", label: "Providers", icon: Stethoscope, element: () => <FeaturePlaceholderPage title="Providers" domain="Provider profile and availability readiness" storage="SQL Server / Azure SQL" /> },
   { path: "/appointments", label: "Appointments", icon: CalendarDays, element: () => <FeaturePlaceholderPage title="Appointments" domain="Patient-provider scheduling workflow" storage="SQL Server / Azure SQL" /> },
   { path: "/care-plans", label: "Care Plans", icon: FileHeart, element: () => <FeaturePlaceholderPage title="Care Plans" domain="Care goals, instructions, and follow-up task documents" storage="Azure Cosmos DB" /> },
