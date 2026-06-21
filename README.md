@@ -31,6 +31,7 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 | 9 | Audit Logging (Cosmos DB) |
 | 10 | Security, Privacy & RBAC Readiness |
 | 11 | Observability & Production Readiness |
+| 12 | DevOps, Docker & CI/CD Readiness |
 
 ## System Health & Observability (Epic 11)
 
@@ -44,10 +45,32 @@ All services emit structured logs via **Serilog**, enriched with `CorrelationId`
 
 The React portal's `/system-health` route displays a live operational dashboard polling all 7 service `/health/ready` endpoints.
 
+## DevOps & Docker (Epic 12)
+
+The repository provides a complete local development orchestration using Docker Compose and cross-platform Makefiles.
+Backend API containers run as non-root users and the React frontend uses a multi-stage Nginx build.
+All configurations are driven by `.env` (refer to `.env.example`).
+GitHub Actions runs automated CI for both frontend and backend on `main` and `develop` branches.
+
 ## Run Locally
 
-Frontend:
+### Using Docker Compose (Recommended)
 
+First, copy `.env.example` to `.env`.
+
+Using Makefile:
+```powershell
+make up
+```
+
+Or Docker directly:
+```powershell
+docker compose up --build -d
+```
+
+### Without Docker
+
+Frontend:
 ```powershell
 cd src/web/healthcare-care-portal
 npm install
@@ -55,30 +78,26 @@ npm run dev
 ```
 
 Backend service example, after installing .NET 8 SDK:
-
 ```powershell
 dotnet run --project src/services/Patient.Api/Patient.Api.csproj
 ```
 
 Verify health endpoints:
-
 ```powershell
 curl http://localhost:5080/health/live
-curl http://localhost:5080/health/ready
-```
-
-Docker Compose foundation:
-
-```powershell
-docker compose up --build
 ```
 
 ## Build And Test
 
+Using Makefile:
 ```powershell
-dotnet build src/services/Patient.Api/Patient.Api.csproj
-dotnet test tests/ClinicalInsights.Api.Tests/ClinicalInsights.Api.Tests.csproj
-dotnet test tests/Observability.Tests/Observability.Tests.csproj
+make test-backend
+make build-frontend
+```
+
+Or explicitly:
+```powershell
+dotnet test tests/HealthcareCareCoordination.Tests.sln || dotnet test tests/
 cd src/web/healthcare-care-portal
 npm install
 npm run build
@@ -101,6 +120,11 @@ Target Azure architecture uses Azure Static Web Apps, Azure Container Apps, Azur
 Start with [architecture/README.md](architecture/README.md), [docs/setup.md](docs/setup.md), and [docs/roadmap.md](docs/roadmap.md).
 
 Key operational docs:
+- [DevOps Guide](docs/devops-guide.md)
+- [Docker Guide](docs/docker-guide.md)
+- [CI/CD Pipeline](docs/ci-cd.md)
+- [Troubleshooting](docs/troubleshooting-guide.md)
+- [Secure Configuration](docs/secure-configuration.md)
 - [Operational Runbook](docs/operational-runbook.md)
 - [Monitoring & Alerting](docs/monitoring-and-alerting.md)
 - [Production Readiness Checklist](docs/production-readiness-checklist.md)

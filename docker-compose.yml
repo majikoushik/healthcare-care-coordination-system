@@ -1,5 +1,6 @@
 services:
   patient-api:
+    container_name: patient-api
     build:
       context: .
       dockerfile: src/services/Dockerfile
@@ -7,12 +8,23 @@ services:
         SERVICE_PROJECT: src/services/Patient.Api/Patient.Api.csproj
         SERVICE_DLL: Patient.Api.dll
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
+      SQL_CONNECTION_STRING: ${SQL_CONNECTION_STRING}
       AI_PROVIDER: Mock
+      SECURITY_MODE: ${SECURITY_MODE:-Demo}
+      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
+      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
     ports:
       - "5080:8080"
+    networks:
+      - healthcare-network
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   provider-api:
+    container_name: provider-api
     build:
       context: .
       dockerfile: src/services/Dockerfile
@@ -20,12 +32,23 @@ services:
         SERVICE_PROJECT: src/services/Provider.Api/Provider.Api.csproj
         SERVICE_DLL: Provider.Api.dll
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
+      SQL_CONNECTION_STRING: ${SQL_CONNECTION_STRING}
       AI_PROVIDER: Mock
+      SECURITY_MODE: ${SECURITY_MODE:-Demo}
+      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
+      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
     ports:
       - "5081:8080"
+    networks:
+      - healthcare-network
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   appointment-api:
+    container_name: appointment-api
     build:
       context: .
       dockerfile: src/services/Dockerfile
@@ -33,12 +56,23 @@ services:
         SERVICE_PROJECT: src/services/Appointment.Api/Appointment.Api.csproj
         SERVICE_DLL: Appointment.Api.dll
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
+      SQL_CONNECTION_STRING: ${SQL_CONNECTION_STRING}
       AI_PROVIDER: Mock
+      SECURITY_MODE: ${SECURITY_MODE:-Demo}
+      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
+      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
     ports:
       - "5082:8080"
+    networks:
+      - healthcare-network
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   care-plan-api:
+    container_name: care-plan-api
     build:
       context: .
       dockerfile: src/services/Dockerfile
@@ -46,12 +80,23 @@ services:
         SERVICE_PROJECT: src/services/CarePlan.Api/CarePlan.Api.csproj
         SERVICE_DLL: CarePlan.Api.dll
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
+      COSMOS_MODE: ${COSMOS_MODE:-Mock}
+      COSMOS_ENDPOINT: ${COSMOS_ENDPOINT}
+      COSMOS_KEY: ${COSMOS_KEY}
+      COSMOS_DATABASE: ${COSMOS_DATABASE}
       AI_PROVIDER: Mock
+      SECURITY_MODE: ${SECURITY_MODE:-Demo}
+      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
+      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
     ports:
       - "5083:8080"
+    networks:
+      - healthcare-network
 
   clinical-insights-api:
+    container_name: clinical-insights-api
     build:
       context: .
       dockerfile: src/services/Dockerfile
@@ -59,12 +104,24 @@ services:
         SERVICE_PROJECT: src/services/ClinicalInsights.Api/ClinicalInsights.Api.csproj
         SERVICE_DLL: ClinicalInsights.Api.dll
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
+      COSMOS_MODE: ${COSMOS_MODE:-Mock}
+      COSMOS_ENDPOINT: ${COSMOS_ENDPOINT}
+      COSMOS_KEY: ${COSMOS_KEY}
+      COSMOS_DATABASE: ${COSMOS_DATABASE}
+      CLINICAL_AI_PROVIDER_MODE: ${CLINICAL_AI_PROVIDER_MODE:-Mock}
       AI_PROVIDER: Mock
+      SECURITY_MODE: ${SECURITY_MODE:-Demo}
+      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
+      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
     ports:
       - "5084:8080"
+    networks:
+      - healthcare-network
 
   audit-api:
+    container_name: audit-api
     build:
       context: .
       dockerfile: src/services/Dockerfile
@@ -72,12 +129,23 @@ services:
         SERVICE_PROJECT: src/services/Audit.Api/Audit.Api.csproj
         SERVICE_DLL: Audit.Api.dll
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
+      COSMOS_MODE: ${COSMOS_MODE:-Mock}
+      COSMOS_ENDPOINT: ${COSMOS_ENDPOINT}
+      COSMOS_KEY: ${COSMOS_KEY}
+      COSMOS_DATABASE: ${COSMOS_DATABASE}
       AI_PROVIDER: Mock
+      SECURITY_MODE: ${SECURITY_MODE:-Demo}
+      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
+      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
     ports:
       - "5085:8080"
+    networks:
+      - healthcare-network
 
   notification-worker:
+    container_name: notification-worker
     build:
       context: .
       dockerfile: src/services/Dockerfile
@@ -85,34 +153,66 @@ services:
         SERVICE_PROJECT: src/services/Notification.Worker/Notification.Worker.csproj
         SERVICE_DLL: Notification.Worker.dll
     environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      COSMOS_MODE: ${COSMOS_MODE:-Mock}
+      COSMOS_ENDPOINT: ${COSMOS_ENDPOINT}
+      COSMOS_KEY: ${COSMOS_KEY}
+      COSMOS_DATABASE: ${COSMOS_DATABASE}
       AI_PROVIDER: Mock
+      SECURITY_MODE: ${SECURITY_MODE:-Demo}
+    networks:
+      - healthcare-network
 
   portal:
+    container_name: healthcare-care-portal
     build:
       context: src/web/healthcare-care-portal
       dockerfile: Dockerfile
     environment:
-      VITE_API_BASE_URL: http://localhost:5080
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5080}
     ports:
-      - "5173:5173"
+      - "5173:80"
+    networks:
+      - healthcare-network
 
   sqlserver:
+    container_name: sqlserver
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "Change_this_local_demo_password_123!"
+      MSSQL_SA_PASSWORD: ${SQL_SERVER_PASSWORD:-Change_this_password_locally_only}
     ports:
       - "1433:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
+    networks:
+      - healthcare-network
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${SQL_SERVER_PASSWORD:-Change_this_password_locally_only}", "-C", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   cosmos-emulator-placeholder:
+    container_name: cosmos-emulator
     image: mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator:latest
     profiles: ["cosmos-emulator"]
     environment:
       AZURE_COSMOS_EMULATOR_PARTITION_COUNT: "3"
+      AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE: "true"
     ports:
       - "8081:8081"
+      - "10251:10251"
+      - "10252:10252"
+      - "10253:10253"
+      - "10254:10254"
+    networks:
+      - healthcare-network
+
+networks:
+  healthcare-network:
+    driver: bridge
 
 volumes:
   sqlserver-data:
