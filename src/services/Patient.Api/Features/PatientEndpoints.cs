@@ -4,6 +4,7 @@ using HealthcareCareCoordination.Patient.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
 using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
+using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,11 +16,20 @@ public static class PatientEndpoints
     {
         var group = routes.MapGroup("/api/v1/patients");
 
-        group.MapPost("/", RegisterPatient);
-        group.MapGet("/", GetPatients);
-        group.MapGet("/{id:guid}", GetPatientById);
-        group.MapPut("/{id:guid}", UpdatePatient);
-        group.MapPatch("/{id:guid}/consent-status", UpdateConsentStatus);
+        group.MapPost("/", RegisterPatient)
+             .RequireAuthorization(HealthcarePermissions.PatientProfileWrite);
+             
+        group.MapGet("/", GetPatients)
+             .RequireAuthorization(HealthcarePermissions.PatientProfileRead);
+             
+        group.MapGet("/{id:guid}", GetPatientById)
+             .RequireAuthorization(HealthcarePermissions.PatientProfileRead);
+             
+        group.MapPut("/{id:guid}", UpdatePatient)
+             .RequireAuthorization(HealthcarePermissions.PatientProfileWrite);
+             
+        group.MapPatch("/{id:guid}/consent-status", UpdateConsentStatus)
+             .RequireAuthorization(HealthcarePermissions.PatientProfileWrite);
     }
 
     private static async Task<IResult> RegisterPatient(

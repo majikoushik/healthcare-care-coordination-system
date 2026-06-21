@@ -3,6 +3,7 @@ using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.Provider.Api.Features;
 using HealthcareCareCoordination.Provider.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.Security;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,9 +18,11 @@ builder.Services.AddDbContext<ProviderDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
 app.UseHealthcareApiFoundation();
+app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/providers/readiness", (HttpContext context) =>
 {

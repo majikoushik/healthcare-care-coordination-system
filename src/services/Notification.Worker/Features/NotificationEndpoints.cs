@@ -4,6 +4,7 @@ using HealthcareCareCoordination.Notification.Worker.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
 using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
+using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthcareCareCoordination.Notification.Worker.Features;
@@ -46,14 +47,16 @@ public static class NotificationEndpoints
 
             var cid = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Created($"/api/v1/notifications/{notification.Id}", new ApiResponse<NotificationRecord>(notification, cid, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.NotificationWrite);
 
         group.MapGet("/", async (INotificationRepository repository, HttpContext context, CancellationToken cancellationToken) =>
         {
             var results = await repository.GetAllAsync(cancellationToken);
             var cid = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<IEnumerable<NotificationRecord>>(results, cid, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.NotificationRead);
 
         group.MapGet("/{id:guid}", async (Guid id, INotificationRepository repository, HttpContext context, CancellationToken cancellationToken) =>
         {
@@ -61,14 +64,16 @@ public static class NotificationEndpoints
             if (result == null) return Results.NotFound();
             var cid = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<NotificationRecord>(result, cid, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.NotificationRead);
 
         group.MapGet("/related/{relatedEntityType}/{relatedEntityId}", async (string relatedEntityType, string relatedEntityId, INotificationRepository repository, HttpContext context, CancellationToken cancellationToken) =>
         {
             var results = await repository.GetByRelatedEntityAsync(relatedEntityType, relatedEntityId, cancellationToken);
             var cid = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<IEnumerable<NotificationRecord>>(results, cid, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.NotificationRead);
 
         group.MapPost("/{id:guid}/simulate-send", async (
             Guid id, 
@@ -115,7 +120,8 @@ public static class NotificationEndpoints
 
             var cid = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<SimulateSendResponse>(response, cid, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.NotificationSimulateSend);
 
         var patientGroup = app.MapGroup("/api/v1/patients").WithTags("Notifications");
         patientGroup.MapGet("/{patientId:guid}/notifications", async (Guid patientId, INotificationRepository repository, HttpContext context, CancellationToken cancellationToken) =>
@@ -123,6 +129,7 @@ public static class NotificationEndpoints
             var results = await repository.GetByPatientIdAsync(patientId, cancellationToken);
             var cid = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<IEnumerable<NotificationRecord>>(results, cid, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.NotificationRead);
     }
 }

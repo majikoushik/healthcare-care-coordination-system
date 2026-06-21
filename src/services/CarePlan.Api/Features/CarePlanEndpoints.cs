@@ -4,6 +4,7 @@ using HealthcareCareCoordination.CarePlan.Api.DTOs;
 using HealthcareCareCoordination.CarePlan.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
 using HealthcareCareCoordination.Observability;
+using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthcareCareCoordination.CarePlan.Api.Features;
@@ -14,20 +15,36 @@ public static class CarePlanEndpoints
     {
         var group = routes.MapGroup("/api/v1/care-plans");
 
-        group.MapPost("/", CreateCarePlan);
-        group.MapGet("/", GetCarePlans);
-        group.MapGet("/{id:guid}", GetCarePlanById);
-        group.MapPatch("/{id:guid}/status", UpdateCarePlanStatus);
+        group.MapPost("/", CreateCarePlan)
+             .RequireAuthorization(HealthcarePermissions.CarePlanWrite);
+             
+        group.MapGet("/", GetCarePlans)
+             .RequireAuthorization(HealthcarePermissions.CarePlanRead);
+             
+        group.MapGet("/{id:guid}", GetCarePlanById)
+             .RequireAuthorization(HealthcarePermissions.CarePlanRead);
+             
+        group.MapPatch("/{id:guid}/status", UpdateCarePlanStatus)
+             .RequireAuthorization(HealthcarePermissions.CarePlanStatusUpdate);
         
-        group.MapPost("/{id:guid}/goals", AddGoal);
-        group.MapPatch("/{id:guid}/goals/{goalId:guid}/status", UpdateGoalStatus);
+        group.MapPost("/{id:guid}/goals", AddGoal)
+             .RequireAuthorization(HealthcarePermissions.CarePlanWrite);
+             
+        group.MapPatch("/{id:guid}/goals/{goalId:guid}/status", UpdateGoalStatus)
+             .RequireAuthorization(HealthcarePermissions.CarePlanWrite);
         
-        group.MapPost("/{id:guid}/tasks", AddTask);
-        group.MapPatch("/{id:guid}/tasks/{taskId:guid}/status", UpdateTaskStatus);
+        group.MapPost("/{id:guid}/tasks", AddTask)
+             .RequireAuthorization(HealthcarePermissions.FollowUpTaskWrite);
+             
+        group.MapPatch("/{id:guid}/tasks/{taskId:guid}/status", UpdateTaskStatus)
+             .RequireAuthorization(HealthcarePermissions.FollowUpTaskStatusUpdate);
 
         // Sub-resources mapping to Patient/Provider domains
-        routes.MapGet("/api/v1/patients/{patientId:guid}/care-plans", GetCarePlansByPatientId);
-        routes.MapGet("/api/v1/providers/{providerId:guid}/care-plans", GetCarePlansByProviderId);
+        routes.MapGet("/api/v1/patients/{patientId:guid}/care-plans", GetCarePlansByPatientId)
+              .RequireAuthorization(HealthcarePermissions.CarePlanRead);
+              
+        routes.MapGet("/api/v1/providers/{providerId:guid}/care-plans", GetCarePlansByProviderId)
+              .RequireAuthorization(HealthcarePermissions.CarePlanRead);
     }
 
     private static async Task<IResult> CreateCarePlan(

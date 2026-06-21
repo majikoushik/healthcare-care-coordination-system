@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { carePlanApi } from '../../core/api/carePlanApi';
 import { CarePlanDocument, CarePlanStatus } from './types';
+import { useSecurity } from '../../core/security/SecurityContext';
+import { PrivacyNotice } from '../../shared/ui/PrivacyNotice';
 
 export const CarePlanList: React.FC = () => {
   const [plans, setPlans] = useState<CarePlanDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { hasPermission } = useSecurity();
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -41,11 +44,14 @@ export const CarePlanList: React.FC = () => {
 
   return (
     <div className="page-section">
+      <PrivacyNotice />
       <div className="section-header">
         <h2>Care Plans</h2>
-        <Link to="/care-plans/new" style={{ background: '#21a67a', color: 'white', padding: '8px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 600 }}>
-          + New Plan
-        </Link>
+        {hasPermission("CarePlan.Write") && (
+          <Link to="/care-plans/new" style={{ background: '#21a67a', color: 'white', padding: '8px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 600 }}>
+            + New Plan
+          </Link>
+        )}
       </div>
 
       <div className="dashboard-intro" style={{ marginTop: '20px', display: 'block' }}>

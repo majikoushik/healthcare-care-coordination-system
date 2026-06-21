@@ -3,12 +3,15 @@ import { useParams, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { carePlanApi } from '../../core/api/carePlanApi';
 import { CarePlanDocument, CarePlanStatus, Priority, GoalStatus, TaskStatus } from './types';
+import { useSecurity } from '../../core/security/SecurityContext';
+import { PrivacyNotice } from '../../shared/ui/PrivacyNotice';
 
 export const CarePlanDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [plan, setPlan] = useState<CarePlanDocument | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { hasPermission } = useSecurity();
   const [updating, setUpdating] = useState(false);
 
   // Quick states for adding nested items
@@ -135,19 +138,26 @@ export const CarePlanDetails: React.FC = () => {
 
   return (
     <div className="page-section">
+      <PrivacyNotice />
       <div className="section-header" style={{ marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <Link to="/care-plans" style={{ textDecoration: 'none', color: '#62707d', fontWeight: 600 }}>&larr; Back</Link>
-          <h2 style={{ margin: 0 }}>Care Plan Details</h2>
+          <Link to="/care-plans" style={{ textDecoration: 'none', color: '#62707d', fontWeight: 600 }}>&larr; Back to Plans</Link>
+          <h2 style={{ margin: 0 }}>{plan.title}</h2>
           {getStatusBadge(plan.status)}
         </div>
+        {hasPermission("CarePlan.StatusUpdate") && plan.status === CarePlanStatus.Draft && (
+          <button 
+            onClick={() => handleStatusUpdate(CarePlanStatus.Active)}
+            style={{ background: '#1a365d', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>
+            Activate Plan
+          </button>
+        )}
       </div>
 
       {error && <div style={{ color: 'red', marginBottom: '16px', padding: '12px', background: '#ffe6e6', borderRadius: '4px' }}>{error}</div>}
 
       <div className="module-grid" style={{ gridTemplateColumns: '2fr 1fr' }}>
         
-        {/* Left Column: Document info and nested collections */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div className="info-panel">
             <h3>{plan.title}</h3>
@@ -177,10 +187,14 @@ export const CarePlanDetails: React.FC = () => {
             </div>
           </div>
 
-          <div className="info-panel">
+          <div className="info-panel" style={{ gridColumn: '1 / -1' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h3>Goals</h3>
-              <button onClick={() => setShowAddGoal(!showAddGoal)} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #d9e4e7', cursor: 'pointer' }}>+ Add Goal</button>
+              {hasPermission("CarePlan.Write") && (
+                <button onClick={() => setShowAddGoal(!showAddGoal)} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #d9e4e7', cursor: 'pointer' }}>
+                  {showAddGoal ? 'Cancel' : '+ Add Goal'}
+                </button>
+              )}
             </div>
             
             {showAddGoal && (
@@ -213,10 +227,14 @@ export const CarePlanDetails: React.FC = () => {
             </ul>
           </div>
 
-          <div className="info-panel">
+          <div className="info-panel" style={{ gridColumn: '1 / -1' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3>Tasks</h3>
-              <button onClick={() => setShowAddTask(!showAddTask)} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #d9e4e7', cursor: 'pointer' }}>+ Add Task</button>
+              <h3>Follow-up Tasks</h3>
+              {hasPermission("FollowUpTask.Write") && (
+                <button onClick={() => setShowAddTask(!showAddTask)} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #d9e4e7', cursor: 'pointer' }}>
+                  {showAddTask ? 'Cancel' : '+ Add Task'}
+                </button>
+              )}
             </div>
             
             {showAddTask && (

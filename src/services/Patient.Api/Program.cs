@@ -1,8 +1,9 @@
 using FluentValidation;
 using HealthcareCareCoordination.Observability;
-using HealthcareCareCoordination.Patient.Api.Features;
+using HealthcareCareCoordination.Patient.Api.Domain;
 using HealthcareCareCoordination.Patient.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.Security;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,9 +19,11 @@ builder.Services.AddDbContext<PatientDbContext>(options =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddAuditLogging(serviceName);
+builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
 app.UseHealthcareApiFoundation();
+app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/patients/readiness", (HttpContext context) =>
 {

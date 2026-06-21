@@ -13,13 +13,14 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 - Mock clinical AI provider for local development with Azure AI Language-ready provider abstraction.
 - Correlation ID, health check, Problem Details, structured logging, and Application Insights readiness.
 
-## Current Epic 9 Scope
+## Current Epic 10 Scope
 
-Epic 9 introduces Audit Logging:
-- Implemented `Audit.Api` Minimal API serving as a central, Cosmos DB-ready sink for traceability events partitioned by `/correlationId`.
-- Introduced `IAuditLogger` in the `SharedKernel` enabling loosely coupled async event publishing across the ecosystem.
-- Integrated Audit event emission across Patient Registration, Appointment Status transitions, and Notification Simulation scenarios.
-- Integrated an intuitive `Audit Logs` visual dashboard in the React portal outlining actionable security timelines and Safe Metadata exploration.
+Epic 10 introduces Security, Privacy, and RBAC Readiness:
+- Implemented `HealthcareCareCoordination.Security` building block with a native custom ASP.NET Core `ClaimsPrincipal` authorization pipeline.
+- Protected endpoints across 7 microservices using `[Authorize]` policy mappings tied to exact domain requirements (e.g. `PatientProfile.Write`).
+- Simulated an Enterprise Identity system using an innovative `DemoAuthenticationHandler` responding to `X-Demo-User-Role` headers.
+- Wired React Frontend up with a global `SecurityContext` allowing seamless hot-swapping between `Patient`, `Provider`, and `CareCoordinator` roles directly from the UI header to easily demonstrate security gates.
+- Explicitly defined strict `Safe Metadata` rules in the Audit structure and established Synthetic Demo Data disclaimers across patient-facing UI elements.
 
 ## Run Locally
 

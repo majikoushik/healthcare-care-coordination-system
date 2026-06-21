@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import type { PropsWithChildren } from "react";
 import { featureRoutes } from "../../app/router";
+import { DemoRoleSelector } from "./DemoRoleSelector";
 
 export function AppShell({ children }: PropsWithChildren) {
   return (
@@ -28,9 +29,12 @@ export function AppShell({ children }: PropsWithChildren) {
             <p className="eyebrow">Azure-ready healthcare platform demo</p>
             <h1>Care Coordination Command Center</h1>
           </div>
-          <div className="header-status">
-            <span className="status-dot" />
-            Mock AI local mode
+          <div className="flex items-center space-x-6">
+            <DemoRoleSelector />
+            <div className="header-status">
+              <span className="status-dot" />
+              Mock AI local mode
+            </div>
           </div>
         </header>
         {children}

@@ -4,6 +4,7 @@ using HealthcareCareCoordination.Provider.Api.DTOs;
 using HealthcareCareCoordination.Provider.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
 using HealthcareCareCoordination.Observability;
+using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,12 +16,23 @@ public static class ProviderEndpoints
     {
         var group = routes.MapGroup("/api/v1/providers");
 
-        group.MapPost("/", RegisterProvider);
-        group.MapGet("/", GetProviders);
-        group.MapGet("/{id:guid}", GetProviderById);
-        group.MapGet("/specialty/{specialty}", GetProvidersBySpecialty);
-        group.MapPut("/{id:guid}", UpdateProvider);
-        group.MapPatch("/{id:guid}/availability-status", UpdateAvailabilityStatus);
+        group.MapPost("/", RegisterProvider)
+             .RequireAuthorization(HealthcarePermissions.ProviderProfileWrite);
+             
+        group.MapGet("/", GetProviders)
+             .RequireAuthorization(HealthcarePermissions.ProviderProfileRead);
+             
+        group.MapGet("/{id:guid}", GetProviderById)
+             .RequireAuthorization(HealthcarePermissions.ProviderProfileRead);
+             
+        group.MapGet("/specialty/{specialty}", GetProvidersBySpecialty)
+             .RequireAuthorization(HealthcarePermissions.ProviderProfileRead);
+             
+        group.MapPut("/{id:guid}", UpdateProvider)
+             .RequireAuthorization(HealthcarePermissions.ProviderProfileWrite);
+             
+        group.MapPatch("/{id:guid}/availability-status", UpdateAvailabilityStatus)
+             .RequireAuthorization(HealthcarePermissions.ProviderProfileWrite);
     }
 
     private static async Task<IResult> RegisterProvider(

@@ -3,6 +3,7 @@ using HealthcareCareCoordination.Notification.Worker.Features;
 using HealthcareCareCoordination.Notification.Worker.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
 using HealthcareCareCoordination.Observability;
+using HealthcareCareCoordination.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 const string serviceName = "Notification.Worker";
@@ -14,10 +15,12 @@ builder.Services.AddSingleton<INotificationRepository, MockNotificationRepositor
 builder.Services.AddSingleton<ISimulatedNotificationDispatcher, SimulatedNotificationDispatcher>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddAuditLogging(serviceName);
+builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
 
 app.UseHealthcareApiFoundation();
+app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/notifications/readiness", (HttpContext context) =>
 {

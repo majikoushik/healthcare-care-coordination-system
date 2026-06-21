@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { patientApi } from '../../core/api/patientApi';
 import { Patient, Gender, ConsentStatus } from './types';
+import { PrivacyNotice } from '../../shared/ui/PrivacyNotice';
 
 export const PatientDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -49,6 +50,7 @@ export const PatientDetails: React.FC = () => {
 
   return (
     <div className="page-section">
+      <PrivacyNotice />
       <div className="section-header" style={{ marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <Link to="/patients" style={{ textDecoration: 'none', color: '#62707d', fontWeight: 600 }}>&larr; Back to Patients</Link>

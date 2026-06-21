@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { clinicalInsightApi } from '../../core/api/clinicalInsightApi';
 import { ClinicalNoteInsight, HumanReviewStatus } from './types';
+import { useSecurity } from '../../core/security/SecurityContext';
+import { PrivacyNotice } from '../../shared/ui/PrivacyNotice';
 
 export const ClinicalInsightList: React.FC = () => {
   const [insights, setInsights] = useState<ClinicalNoteInsight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { hasPermission } = useSecurity();
 
   useEffect(() => {
     const fetchInsights = async () => {
@@ -41,11 +44,14 @@ export const ClinicalInsightList: React.FC = () => {
 
   return (
     <div className="page-section">
+      <PrivacyNotice />
       <div className="section-header">
         <h2>Clinical Insights</h2>
-        <Link to="/clinical-insights/new" style={{ background: '#21a67a', color: 'white', padding: '8px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 600 }}>
-          + Analyze Note
-        </Link>
+        {hasPermission("ClinicalInsight.Analyze") && (
+          <Link to="/clinical-insights/new" style={{ background: '#21a67a', color: 'white', padding: '8px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 600 }}>
+            + Analyze Note
+          </Link>
+        )}
       </div>
 
       <div className="dashboard-intro" style={{ marginTop: '20px', display: 'block' }}>

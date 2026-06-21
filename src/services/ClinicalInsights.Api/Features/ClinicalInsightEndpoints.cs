@@ -5,6 +5,7 @@ using HealthcareCareCoordination.ClinicalInsights.Api.Infrastructure;
 using HealthcareCareCoordination.ClinicalAI;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthcareCareCoordination.ClinicalInsights.Api.Features;
@@ -69,7 +70,8 @@ public static class ClinicalInsightEndpoints
 
             return Results.Created($"/api/v1/clinical-insights/{savedInsight.Id}", 
                 new ApiResponse<ClinicalNoteInsight>(savedInsight, correlationId, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.ClinicalInsightAnalyze);
 
         group.MapGet("/clinical-insights", async (
             [FromServices] IClinicalInsightRepository repository,
@@ -79,7 +81,8 @@ public static class ClinicalInsightEndpoints
             var insights = await repository.GetAllAsync(cancellationToken);
             var correlationId = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<IEnumerable<ClinicalNoteInsight>>(insights, correlationId, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.ClinicalInsightRead);
 
         group.MapGet("/clinical-insights/{id}", async (
             string id,
@@ -92,7 +95,8 @@ public static class ClinicalInsightEndpoints
 
             var correlationId = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<ClinicalNoteInsight>(insight, correlationId, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.ClinicalInsightRead);
 
         group.MapGet("/patients/{patientId}/clinical-insights", async (
             string patientId,
@@ -103,7 +107,8 @@ public static class ClinicalInsightEndpoints
             var insights = await repository.GetByPatientIdAsync(patientId, cancellationToken);
             var correlationId = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<IEnumerable<ClinicalNoteInsight>>(insights, correlationId, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.ClinicalInsightRead);
 
         group.MapGet("/care-plans/{carePlanId}/clinical-insights", async (
             string carePlanId,
@@ -114,7 +119,8 @@ public static class ClinicalInsightEndpoints
             var insights = await repository.GetByCarePlanIdAsync(carePlanId, cancellationToken);
             var correlationId = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<IEnumerable<ClinicalNoteInsight>>(insights, correlationId, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.ClinicalInsightRead);
 
         group.MapPatch("/clinical-insights/{id}/review-status", async (
             string id,
@@ -154,7 +160,8 @@ public static class ClinicalInsightEndpoints
             await repository.UpdateAsync(insight, cancellationToken);
 
             return Results.Ok(new ApiResponse<ClinicalNoteInsight>(insight, correlationId, DateTimeOffset.UtcNow));
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.ClinicalInsightReview);
 
         group.MapGet("/clinical-insights/ai-provider/status", (
             [FromServices] Microsoft.Extensions.Options.IOptions<HealthcareCareCoordination.ClinicalAI.ClinicalAIConfiguration> options,
@@ -174,6 +181,7 @@ public static class ClinicalInsightEndpoints
             };
 
             return Results.Ok(status);
-        });
+        })
+        .RequireAuthorization(HealthcarePermissions.ClinicalInsightRead);
     }
 }

@@ -5,6 +5,7 @@ using HealthcareCareCoordination.ClinicalInsights.Api.Features;
 using HealthcareCareCoordination.ClinicalInsights.Api.Infrastructure;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.Security;
 
 using HealthcareCareCoordination.ClinicalAI;
 
@@ -33,9 +34,11 @@ else
 builder.Services.AddSingleton<IClinicalInsightRepository, MockClinicalInsightRepository>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
 app.UseHealthcareApiFoundation();
+app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/clinical-insights/readiness", (HttpContext context) =>
 {

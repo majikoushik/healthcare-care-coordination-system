@@ -4,6 +4,7 @@ using HealthcareCareCoordination.CarePlan.Api.Features;
 using HealthcareCareCoordination.CarePlan.Api.Infrastructure;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 const string serviceName = "CarePlan.Api";
@@ -14,9 +15,11 @@ builder.Services.AddHealthcareApiFoundation(serviceName);
 builder.Services.AddSingleton<ICarePlanRepository, MockCarePlanRepository>();
 builder.Services.AddSingleton<IFollowUpTaskRepository, MockFollowUpTaskRepository>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
 app.UseHealthcareApiFoundation();
+app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/care-plans/readiness", (HttpContext context) =>
 {

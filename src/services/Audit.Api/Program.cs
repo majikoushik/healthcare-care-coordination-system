@@ -1,6 +1,7 @@
 using HealthcareCareCoordination.Cosmos;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.Security;
 using HealthcareCareCoordination.Audit.Api.Infrastructure;
 using HealthcareCareCoordination.Audit.Api.Features;
 using FluentValidation;
@@ -12,9 +13,11 @@ builder.Services.AddHealthcareApiFoundation(serviceName);
 
 builder.Services.AddSingleton<IAuditEventRepository, MockAuditEventRepository>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
 app.UseHealthcareApiFoundation();
+app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/audit/readiness", (HttpContext context) =>
 {

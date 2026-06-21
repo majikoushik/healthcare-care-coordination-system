@@ -5,6 +5,7 @@ using HealthcareCareCoordination.Appointment.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
 using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
+using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,16 +17,30 @@ public static class AppointmentEndpoints
     {
         var group = routes.MapGroup("/api/v1/appointments");
 
-        group.MapPost("/", ScheduleAppointment);
-        group.MapGet("/", GetAppointments);
-        group.MapGet("/{id:guid}", GetAppointmentById);
-        group.MapGet("/date/{date:datetime}", GetAppointmentsByDate);
-        group.MapPut("/{id:guid}", UpdateAppointment);
-        group.MapPatch("/{id:guid}/status", UpdateAppointmentStatus);
+        group.MapPost("/", ScheduleAppointment)
+             .RequireAuthorization(HealthcarePermissions.AppointmentWrite);
+             
+        group.MapGet("/", GetAppointments)
+             .RequireAuthorization(HealthcarePermissions.AppointmentRead);
+             
+        group.MapGet("/{id:guid}", GetAppointmentById)
+             .RequireAuthorization(HealthcarePermissions.AppointmentRead);
+             
+        group.MapGet("/date/{date:datetime}", GetAppointmentsByDate)
+             .RequireAuthorization(HealthcarePermissions.AppointmentRead);
+             
+        group.MapPut("/{id:guid}", UpdateAppointment)
+             .RequireAuthorization(HealthcarePermissions.AppointmentWrite);
+             
+        group.MapPatch("/{id:guid}/status", UpdateAppointmentStatus)
+             .RequireAuthorization(HealthcarePermissions.AppointmentStatusUpdate);
 
         // Also map patient and provider specific endpoints at root level to adhere to REST
-        routes.MapGet("/api/v1/patients/{patientId:guid}/appointments", GetAppointmentsByPatientId);
-        routes.MapGet("/api/v1/providers/{providerId:guid}/appointments", GetAppointmentsByProviderId);
+        routes.MapGet("/api/v1/patients/{patientId:guid}/appointments", GetAppointmentsByPatientId)
+              .RequireAuthorization(HealthcarePermissions.AppointmentRead);
+              
+        routes.MapGet("/api/v1/providers/{providerId:guid}/appointments", GetAppointmentsByProviderId)
+              .RequireAuthorization(HealthcarePermissions.AppointmentRead);
     }
 
     private static async Task<IResult> ScheduleAppointment(
