@@ -11,6 +11,8 @@ import { CarePlanRegistrationForm } from "../features/care-plans/CarePlanRegistr
 import { CarePlanDetails } from "../features/care-plans/CarePlanDetails";
 import { ClinicalInsightAnalysisForm } from "../features/clinical-insights/ClinicalInsightAnalysisForm";
 import { ClinicalInsightDetails } from "../features/clinical-insights/ClinicalInsightDetails";
+import { FollowUpTaskRegistrationForm } from "../features/follow-up-tasks/FollowUpTaskRegistrationForm";
+import { FollowUpTaskDetails } from "../features/follow-up-tasks/FollowUpTaskDetails";
 
 export function App() {
   return (
@@ -30,6 +32,8 @@ export function App() {
         <Route path="/care-plans/:id" element={<CarePlanDetails />} />
         <Route path="/clinical-insights/new" element={<ClinicalInsightAnalysisForm />} />
         <Route path="/clinical-insights/:id" element={<ClinicalInsightDetails />} />
+        <Route path="/follow-up-tasks/new" element={<FollowUpTaskRegistrationForm />} />
+        <Route path="/follow-up-tasks/:id" element={<FollowUpTaskDetails />} />
       </Routes>
     </AppShell>
   );

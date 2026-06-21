@@ -6,6 +6,7 @@ import { ProviderList } from "../features/providers/ProviderList";
 import { AppointmentList } from "../features/appointments/AppointmentList";
 import { CarePlanList } from "../features/care-plans/CarePlanList";
 import { ClinicalInsightList } from "../features/clinical-insights/ClinicalInsightList";
+import { FollowUpTaskList } from "../features/follow-up-tasks/FollowUpTaskList";
 
 export const featureRoutes = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard, element: DashboardPage },
@@ -14,7 +15,7 @@ export const featureRoutes = [
   { path: "/appointments", label: "Appointments", icon: CalendarDays, element: AppointmentList },
   { path: "/care-plans", label: "Care Plans", icon: FileHeart, element: CarePlanList },
   { path: "/clinical-insights", label: "Clinical Insights", icon: HeartPulse, element: ClinicalInsightList },
-  { path: "/follow-up-tasks", label: "Follow-up Tasks", icon: ClipboardList, element: () => <FeaturePlaceholderPage title="Follow-up Tasks" domain="Task tracking embedded in care coordination workflows" storage="Azure Cosmos DB" /> },
+  { path: "/follow-up-tasks", label: "Follow-up Tasks", icon: ClipboardList, element: FollowUpTaskList },
   { path: "/notifications", label: "Notifications", icon: Bell, element: () => <FeaturePlaceholderPage title="Notifications" domain="Email, SMS, and portal notification simulation" storage="Cosmos DB or Service Bus-ready event model" /> },
   { path: "/audit", label: "Audit", icon: ShieldCheck, element: () => <FeaturePlaceholderPage title="Audit" domain="Traceability, event review, and safe audit metadata" storage="Azure Cosmos DB" /> },
   { path: "/system-health", label: "System Health", icon: Activity, element: () => <FeaturePlaceholderPage title="System Health" domain="Health checks, correlation IDs, and observability readiness" storage="Application Insights-ready telemetry" /> }

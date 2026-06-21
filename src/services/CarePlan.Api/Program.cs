@@ -12,6 +12,7 @@ builder.Services.AddHealthcareApiFoundation(serviceName);
 
 // Use a singleton mock repository to simulate an Azure Cosmos DB container for local development
 builder.Services.AddSingleton<ICarePlanRepository, MockCarePlanRepository>();
+builder.Services.AddSingleton<IFollowUpTaskRepository, MockFollowUpTaskRepository>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 var app = builder.Build();

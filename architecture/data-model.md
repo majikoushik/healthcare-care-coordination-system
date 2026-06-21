@@ -36,6 +36,14 @@ This document describes the high-level data models used across the system, adher
 - `AppointmentDateTime` (datetimeoffset)
 - `VisitReason` (string, max 500)
 - `Type` (enum: Consultation, FollowUp, LabReview, MedicationReview, CarePlanReview)
+-| Domain | Storage | Persistence Strategy |
+|---|---|---|
+| **Patient** | SQL Server | Relational tables (`Patients`) |
+| **Provider** | SQL Server | Relational tables (`Providers`) |
+| **Appointment** | SQL Server | Relational tables (`Appointments`) |
+| **Care Plan** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
+| **Follow-up Task** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
+| **Clinical Insights** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
 - `Status` (enum: Requested, Scheduled, CheckedIn, Completed, Cancelled, NoShow)
 - `Notes` (string, max 2000)
 - `CreatedAt` (datetimeoffset)

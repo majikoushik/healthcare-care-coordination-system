@@ -13,13 +13,13 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 - Mock clinical AI provider for local development with Azure AI Language-ready provider abstraction.
 - Correlation ID, health check, Problem Details, structured logging, and Application Insights readiness.
 
-## Current Epic 6 Scope
+## Current Epic 7 Scope
 
-Epic 6 introduces Azure AI Language Readiness:
-- Implemented `AzureTextAnalyticsForHealthProvider` abstraction allowing seamless toggle between mock and cognitive services.
-- `ClinicalAIConfiguration` with safe, secretless `.env` handling preventing accidental key check-ins.
-- Responsible AI React views specifically distinguishing Azure cognitive outputs from deterministic Mocks.
-- Fail-safe runtime defaults: System gracefully reverts to `MockClinicalTextAnalyzer` if Azure settings are misconfigured, ensuring local development remains undisturbed.
+Epic 7 introduces Follow-up Task Tracking:
+- Completely independent `FollowUpTaskDocument` structure within Cosmos DB, partitioned by `/patientId` to enable cross-care-plan timeline queries while keeping horizontal scale boundaries intact.
+- Global Dashboard metrics to pull `overdue` and `due-today` tasks across the entire healthcare system.
+- Robust finite state machine enforcing strict clinical lifecycle bounds: `Pending -> InProgress -> Completed` and automatically auditing `CompletionNotes`.
+- Direct linkage to AI-driven `ClinicalInsight` documents, giving Care Coordinators the ability to turn AI text insights into actionable workflow tracking.
 
 ## Run Locally
 
