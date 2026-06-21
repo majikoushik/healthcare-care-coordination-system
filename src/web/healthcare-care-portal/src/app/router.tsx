@@ -10,6 +10,7 @@ import { FollowUpTaskList } from "../features/follow-up-tasks/FollowUpTaskList";
 import { FollowUpTaskRegistrationForm } from '../features/follow-up-tasks/FollowUpTaskRegistrationForm';
 import { FollowUpTaskDetails } from '../features/follow-up-tasks/FollowUpTaskDetails';
 import { NotificationList } from '../features/notifications/NotificationList';
+import { AuditList } from '../features/audit/AuditList';
 import { NotificationSimulationForm } from '../features/notifications/NotificationSimulationForm';
 import { NotificationDetails } from '../features/notifications/NotificationDetails';
 
@@ -22,6 +23,6 @@ export const featureRoutes = [
   { path: "/clinical-insights", label: "Clinical Insights", icon: HeartPulse, element: ClinicalInsightList },
   { path: "/follow-up-tasks", label: "Follow-up Tasks", icon: ClipboardList, element: FollowUpTaskList },
   { path: "/notifications", label: "Notifications", icon: Bell, element: NotificationList },
-  { path: "/audit", label: "Audit", icon: ShieldCheck, element: () => <FeaturePlaceholderPage title="Audit" domain="Traceability, event review, and safe audit metadata" storage="Azure Cosmos DB" /> },
+  { path: "/audit", label: "Audit", icon: ShieldCheck, element: AuditList },
   { path: "/system-health", label: "System Health", icon: Activity, element: () => <FeaturePlaceholderPage title="System Health" domain="Health checks, correlation IDs, and observability readiness" storage="Application Insights-ready telemetry" /> }
 ] as const;

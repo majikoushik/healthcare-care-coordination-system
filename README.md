@@ -13,13 +13,13 @@ This repository is a Solution Architect portfolio project. It uses synthetic dem
 - Mock clinical AI provider for local development with Azure AI Language-ready provider abstraction.
 - Correlation ID, health check, Problem Details, structured logging, and Application Insights readiness.
 
-## Current Epic 8 Scope
+## Current Epic 9 Scope
 
-Epic 8 introduces Notification Simulation:
-- Migrated `Notification.Worker` from a background service to a full Minimal API Host to accommodate `/api/v1/notifications` REST calls.
-- Simulated delivery of synthetic notifications to showcase Azure Service Bus/Event Hub readiness without leaking real PII or hitting external boundaries.
-- Storing `NotificationRecord` entities in Cosmos DB partitioned by `/patientId` for rapid querying per user.
-- Comprehensive React workflow enabling the Care Coordinator to trigger a `Simulate Dispatch` event, visualizing the backend transition from `Queued` to `SimulatedSent`.
+Epic 9 introduces Audit Logging:
+- Implemented `Audit.Api` Minimal API serving as a central, Cosmos DB-ready sink for traceability events partitioned by `/correlationId`.
+- Introduced `IAuditLogger` in the `SharedKernel` enabling loosely coupled async event publishing across the ecosystem.
+- Integrated Audit event emission across Patient Registration, Appointment Status transitions, and Notification Simulation scenarios.
+- Integrated an intuitive `Audit Logs` visual dashboard in the React portal outlining actionable security timelines and Safe Metadata exploration.
 
 ## Run Locally
 

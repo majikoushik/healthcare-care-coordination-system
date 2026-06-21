@@ -17,6 +17,7 @@ builder.Services.AddDbContext<AppointmentDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddAuditLogging(serviceName);
 
 var app = builder.Build();
 app.UseHealthcareApiFoundation();

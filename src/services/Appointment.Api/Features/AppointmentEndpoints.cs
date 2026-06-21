@@ -3,6 +3,7 @@ using HealthcareCareCoordination.Appointment.Api.Domain;
 using HealthcareCareCoordination.Appointment.Api.DTOs;
 using HealthcareCareCoordination.Appointment.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -179,10 +180,12 @@ public static class AppointmentEndpoints
         UpdateAppointmentStatusRequest request,
         IValidator<UpdateAppointmentStatusRequest> validator,
         AppointmentDbContext dbContext,
+        IAuditLogger auditLogger,
         HttpContext context,
-        ILogger<Program> logger)
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
@@ -214,7 +217,21 @@ public static class AppointmentEndpoints
         logger.LogInformation("Appointment status updated for ID: {AppointmentId} from {OldStatus} to {NewStatus}. Reason: {Reason}, UpdatedBy: {UpdatedBy}", 
             appointment.Id, oldStatus, appointment.Status, request.Reason, request.UpdatedBy);
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        await auditLogger.LogEventAsync(
+            eventType: "AppointmentStatusChanged",
+            entityType: "Appointment",
+            entityId: appointment.Id.ToString(),
+            action: "UpdateAppointmentStatus",
+            outcome: "Success",
+            summary: $"Appointment status was transitioned from {oldStatus} to {appointment.Status}.",
+            metadata: new { OldStatus = oldStatus.ToString(), NewStatus = appointment.Status.ToString(), Reason = request.Reason },
+            patientId: appointment.PatientId.ToString(),
+            providerId: appointment.ProviderId.ToString(),
+            actorType: "User",
+            actorId: request.UpdatedBy ?? "Unknown",
+            cancellationToken: cancellationToken);
 
         return Results.Ok(new ApiResponse<AppointmentResponse>(
             MapToResponse(appointment),

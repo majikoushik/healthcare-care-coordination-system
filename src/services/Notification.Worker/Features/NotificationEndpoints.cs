@@ -2,6 +2,7 @@ using FluentValidation;
 using HealthcareCareCoordination.Notification.Worker.Domain;
 using HealthcareCareCoordination.Notification.Worker.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,6 +73,7 @@ public static class NotificationEndpoints
         group.MapPost("/{id:guid}/simulate-send", async (
             Guid id, 
             ISimulatedNotificationDispatcher dispatcher, 
+            IAuditLogger auditLogger,
             HttpContext context,
             CancellationToken cancellationToken) =>
         {
@@ -94,6 +96,22 @@ public static class NotificationEndpoints
                 result.Record.SentAt ?? DateTimeOffset.UtcNow,
                 result.Message
             );
+
+            await auditLogger.LogEventAsync(
+                eventType: "NotificationSimulatedSent",
+                entityType: "Notification",
+                entityId: result.Record.Id.ToString(),
+                action: "SimulateSend",
+                outcome: "Success",
+                summary: $"Notification was successfully simulated for channel {result.Record.Channel}.",
+                metadata: new { 
+                    Channel = result.Record.Channel, 
+                    Status = result.Record.Status, 
+                    RecipientType = result.Record.RecipientType 
+                },
+                patientId: result.Record.PatientId?.ToString(),
+                providerId: result.Record.ProviderId?.ToString(),
+                cancellationToken: cancellationToken);
 
             var cid = context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier;
             return Results.Ok(new ApiResponse<SimulateSendResponse>(response, cid, DateTimeOffset.UtcNow));

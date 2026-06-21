@@ -200,6 +200,32 @@ Mimics pulling the notification from an Event Bus and dispatching it to an exter
 Fetches all notification records targeting a specific patient.
 - **Response**: `200 OK` with `ApiResponse<IEnumerable<NotificationRecord>>`
 
+## Audit.Api
+
+Base path: `/api/v1/audit-events`
+
+### `POST /` (Log Audit Event)
+Records a new safe audit event.
+- **Request Body**: `CreateAuditEventRequest`
+- **Response**: `201 Created` with `ApiResponse<AuditEventDocument>`
+- **Errors**: `400 Bad Request`
+
+### `GET /` (List Audit Events)
+Fetches all recent audit events.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<AuditEventDocument>>`
+
+### `GET /{id}` (Get Audit Event)
+Fetches a specific audit event by ID.
+- **Response**: `200 OK` with `ApiResponse<AuditEventDocument>`
+
+### `GET /correlation/{correlationId}` (Get by Correlation ID)
+Fetches all events within a transaction boundary.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<AuditEventDocument>>`
+
+### `GET /entity/{entityType}/{entityId}` (Get by Entity)
+Fetches all events acting upon a specific entity.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<AuditEventDocument>>`
+
 ## Common Response Format
 
 ```json

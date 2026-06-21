@@ -2,6 +2,19 @@
 
 This document describes the high-level data models used across the system, adhering to polyglot persistence principles.
 
+## Polyglot Persistence Strategy
+
+| Domain | Storage | Persistence Strategy |
+|---|---|---|
+| **Patient** | SQL Server | Relational tables (`Patients`) |
+| **Provider** | SQL Server | Relational tables (`Providers`) |
+| **Appointment** | SQL Server | Relational tables (`Appointments`) |
+| **Care Plan** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
+| **Follow-up Task** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
+| **Clinical Insights** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
+| **Notification Record** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
+| **Audit Event** | Azure Cosmos DB | JSON Documents (Partition Key: `/correlationId`) |
+
 ## Transactional Data (SQL Server)
 
 ### Patient
@@ -36,15 +49,6 @@ This document describes the high-level data models used across the system, adher
 - `AppointmentDateTime` (datetimeoffset)
 - `VisitReason` (string, max 500)
 - `Type` (enum: Consultation, FollowUp, LabReview, MedicationReview, CarePlanReview)
--| Domain | Storage | Persistence Strategy |
-|---|---|---|
-| **Patient** | SQL Server | Relational tables (`Patients`) |
-| **Provider** | SQL Server | Relational tables (`Providers`) |
-| **Appointment** | SQL Server | Relational tables (`Appointments`) |
-| **Care Plan** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
-| **Follow-up Task** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
-| **Clinical Insights** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
-| **Notification Record** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
 - `Status` (enum: Requested, Scheduled, CheckedIn, Completed, Cancelled, NoShow)
 - `Notes` (string, max 2000)
 - `CreatedAt` (datetimeoffset)
@@ -125,4 +129,27 @@ This document describes the high-level data models used across the system, adher
 }
 ```
 
-*(To be implemented in future epics: Audit Events)*
+### AuditEvent
+**Partition Key:** `/correlationId`
+
+*Document Structure:*
+```json
+{
+  "id": "guid",
+  "correlationId": "string",
+  "eventType": "string",
+  "entityType": "string",
+  "entityId": "string",
+  "patientId": "string (optional)",
+  "providerId": "string (optional)",
+  "actorType": "string",
+  "actorId": "string",
+  "action": "string",
+  "outcome": "string",
+  "summary": "string",
+  "sourceService": "string",
+  "severity": "string",
+  "metadata": "object (Safe metadata only, no secrets or PII)",
+  "createdAt": "datetimeoffset"
+}
+```

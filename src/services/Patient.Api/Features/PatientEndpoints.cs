@@ -2,6 +2,7 @@ using FluentValidation;
 using HealthcareCareCoordination.Patient.Api.DTOs;
 using HealthcareCareCoordination.Patient.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,10 +26,12 @@ public static class PatientEndpoints
         RegisterPatientRequest request,
         IValidator<RegisterPatientRequest> validator,
         PatientDbContext dbContext,
+        IAuditLogger auditLogger,
         HttpContext context,
-        ILogger<Program> logger)
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
@@ -48,7 +51,18 @@ public static class PatientEndpoints
         };
 
         dbContext.Patients.Add(patient);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        await auditLogger.LogEventAsync(
+            eventType: "PatientRegistered",
+            entityType: "Patient",
+            entityId: patient.Id.ToString(),
+            action: "RegisterPatient",
+            outcome: "Success",
+            summary: "Synthetic patient profile was registered successfully.",
+            metadata: new { patient.ConsentStatus },
+            patientId: patient.Id.ToString(),
+            cancellationToken: cancellationToken);
 
         logger.LogInformation("Patient registered with ID: {PatientId}", patient.Id);
 
@@ -59,11 +73,11 @@ public static class PatientEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetPatients(PatientDbContext dbContext, HttpContext context)
+    private static async Task<IResult> GetPatients(PatientDbContext dbContext, HttpContext context, CancellationToken cancellationToken)
     {
         var patients = await dbContext.Patients
             .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var response = patients.Select(MapToResponse).ToList();
         return Results.Ok(new ApiResponse<IEnumerable<PatientResponse>>(
@@ -72,9 +86,9 @@ public static class PatientEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetPatientById(Guid id, PatientDbContext dbContext, HttpContext context, ILogger<Program> logger)
+    private static async Task<IResult> GetPatientById(Guid id, PatientDbContext dbContext, HttpContext context, ILogger<Program> logger, CancellationToken cancellationToken)
     {
-        var patient = await dbContext.Patients.FindAsync(id);
+        var patient = await dbContext.Patients.FindAsync(new object[] { id }, cancellationToken);
         if (patient == null)
         {
             logger.LogWarning("Patient not found with ID: {PatientId}", id);
@@ -95,15 +109,16 @@ public static class PatientEndpoints
         IValidator<UpdatePatientRequest> validator,
         PatientDbContext dbContext,
         HttpContext context,
-        ILogger<Program> logger)
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var patient = await dbContext.Patients.FindAsync(id);
+        var patient = await dbContext.Patients.FindAsync(new object[] { id }, cancellationToken);
         if (patient == null)
         {
             return Results.NotFound(new ProblemDetails { Title = "Patient not found", Status = 404 });
@@ -117,7 +132,7 @@ public static class PatientEndpoints
         patient.EmergencyContactNumber = request.EmergencyContactNumber;
         patient.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Patient updated with ID: {PatientId}", patient.Id);
 
@@ -132,16 +147,18 @@ public static class PatientEndpoints
         UpdateConsentStatusRequest request,
         IValidator<UpdateConsentStatusRequest> validator,
         PatientDbContext dbContext,
+        IAuditLogger auditLogger,
         HttpContext context,
-        ILogger<Program> logger)
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var patient = await dbContext.Patients.FindAsync(id);
+        var patient = await dbContext.Patients.FindAsync(new object[] { id }, cancellationToken);
         if (patient == null)
         {
             return Results.NotFound(new ProblemDetails { Title = "Patient not found", Status = 404 });
@@ -150,7 +167,18 @@ public static class PatientEndpoints
         patient.ConsentStatus = request.ConsentStatus;
         patient.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        await auditLogger.LogEventAsync(
+            eventType: "ConsentStatusUpdated",
+            entityType: "Patient",
+            entityId: patient.Id.ToString(),
+            action: "UpdateConsentStatus",
+            outcome: "Success",
+            summary: "Patient consent status was updated.",
+            metadata: new { patient.ConsentStatus },
+            patientId: patient.Id.ToString(),
+            cancellationToken: cancellationToken);
 
         logger.LogInformation("Patient consent status updated for ID: {PatientId}", patient.Id);
 
