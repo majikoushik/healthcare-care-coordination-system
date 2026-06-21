@@ -3,6 +3,7 @@ using HealthcareCareCoordination.Provider.Api.Domain;
 using HealthcareCareCoordination.Provider.Api.DTOs;
 using HealthcareCareCoordination.Provider.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -40,9 +41,11 @@ public static class ProviderEndpoints
         IValidator<RegisterProviderRequest> validator,
         ProviderDbContext dbContext,
         HttpContext context,
-        ILogger<Program> logger)
+        IAuditLogger auditLogger,
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
@@ -59,9 +62,22 @@ public static class ProviderEndpoints
         };
 
         dbContext.Providers.Add(provider);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Provider created with ID: {ProviderId}", provider.Id);
+
+        await auditLogger.LogEventAsync(
+            eventType: "ProviderRegistered",
+            entityType: "Provider",
+            entityId: provider.Id.ToString(),
+            action: "RegisterProvider",
+            outcome: "Success",
+            summary: "Provider profile was registered.",
+            metadata: new { provider.Specialty, provider.Department, provider.AvailabilityStatus },
+            providerId: provider.Id.ToString(),
+            actorType: "User",
+            actorId: context.User.Identity?.Name ?? "DemoUser",
+            cancellationToken: cancellationToken);
 
         var response = MapToResponse(provider);
         return Results.Created($"/api/v1/providers/{provider.Id}", new ApiResponse<ProviderResponse>(
@@ -70,11 +86,11 @@ public static class ProviderEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetProviders(ProviderDbContext dbContext, HttpContext context)
+    private static async Task<IResult> GetProviders(ProviderDbContext dbContext, HttpContext context, CancellationToken cancellationToken)
     {
         var providers = await dbContext.Providers
             .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var response = providers.Select(MapToResponse).ToList();
         return Results.Ok(new ApiResponse<IEnumerable<ProviderResponse>>(
@@ -83,9 +99,9 @@ public static class ProviderEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetProviderById(Guid id, ProviderDbContext dbContext, HttpContext context, ILogger<Program> logger)
+    private static async Task<IResult> GetProviderById(Guid id, ProviderDbContext dbContext, HttpContext context, ILogger<Program> logger, CancellationToken cancellationToken)
     {
-        var provider = await dbContext.Providers.FindAsync(id);
+        var provider = await dbContext.Providers.FindAsync([id], cancellationToken);
         if (provider == null)
         {
             logger.LogWarning("Provider not found with ID: {ProviderId}", id);
@@ -100,12 +116,12 @@ public static class ProviderEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetProvidersBySpecialty(Specialty specialty, ProviderDbContext dbContext, HttpContext context)
+    private static async Task<IResult> GetProvidersBySpecialty(Specialty specialty, ProviderDbContext dbContext, HttpContext context, CancellationToken cancellationToken)
     {
         var providers = await dbContext.Providers
             .Where(p => p.Specialty == specialty)
             .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var response = providers.Select(MapToResponse).ToList();
         return Results.Ok(new ApiResponse<IEnumerable<ProviderResponse>>(
@@ -120,15 +136,16 @@ public static class ProviderEndpoints
         IValidator<UpdateProviderRequest> validator,
         ProviderDbContext dbContext,
         HttpContext context,
-        ILogger<Program> logger)
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var provider = await dbContext.Providers.FindAsync(id);
+        var provider = await dbContext.Providers.FindAsync([id], cancellationToken);
         if (provider == null)
         {
             return Results.NotFound(new ProblemDetails { Title = "Provider not found", Status = 404 });
@@ -141,7 +158,7 @@ public static class ProviderEndpoints
         provider.Department = request.Department;
         provider.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Provider updated with ID: {ProviderId}", provider.Id);
 
@@ -157,15 +174,16 @@ public static class ProviderEndpoints
         IValidator<UpdateAvailabilityStatusRequest> validator,
         ProviderDbContext dbContext,
         HttpContext context,
-        ILogger<Program> logger)
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var provider = await dbContext.Providers.FindAsync(id);
+        var provider = await dbContext.Providers.FindAsync([id], cancellationToken);
         if (provider == null)
         {
             return Results.NotFound(new ProblemDetails { Title = "Provider not found", Status = 404 });
@@ -174,7 +192,7 @@ public static class ProviderEndpoints
         provider.AvailabilityStatus = request.AvailabilityStatus;
         provider.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Provider availability status updated for ID: {ProviderId}", provider.Id);
 

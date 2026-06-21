@@ -4,6 +4,7 @@ using HealthcareCareCoordination.CarePlan.Api.Features;
 using HealthcareCareCoordination.CarePlan.Api.Infrastructure;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Security;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddHealthcareApiFoundation(serviceName);
 builder.Services.AddSingleton<ICarePlanRepository, MockCarePlanRepository>();
 builder.Services.AddSingleton<IFollowUpTaskRepository, MockFollowUpTaskRepository>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddAuditLogging(serviceName);
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();

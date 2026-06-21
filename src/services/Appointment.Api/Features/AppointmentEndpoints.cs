@@ -48,9 +48,11 @@ public static class AppointmentEndpoints
         IValidator<ScheduleAppointmentRequest> validator,
         AppointmentDbContext dbContext,
         HttpContext context,
-        ILogger<Program> logger)
+        IAuditLogger auditLogger,
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
@@ -68,9 +70,28 @@ public static class AppointmentEndpoints
         };
 
         dbContext.Appointments.Add(appointment);
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Appointment scheduled with ID: {AppointmentId} for Patient ID: {PatientId} and Provider ID: {ProviderId}", appointment.Id, appointment.PatientId, appointment.ProviderId);
+
+        await auditLogger.LogEventAsync(
+            eventType: "AppointmentScheduled",
+            entityType: "Appointment",
+            entityId: appointment.Id.ToString(),
+            action: "ScheduleAppointment",
+            outcome: "Success",
+            summary: "Appointment scheduling request was created.",
+            metadata: new
+            {
+                appointment.AppointmentDateTime,
+                appointment.Type,
+                appointment.Status
+            },
+            patientId: appointment.PatientId.ToString(),
+            providerId: appointment.ProviderId.ToString(),
+            actorType: "User",
+            actorId: context.User.Identity?.Name ?? "DemoUser",
+            cancellationToken: cancellationToken);
 
         var response = MapToResponse(appointment);
         return Results.Created($"/api/v1/appointments/{appointment.Id}", new ApiResponse<AppointmentResponse>(
@@ -79,11 +100,11 @@ public static class AppointmentEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetAppointments(AppointmentDbContext dbContext, HttpContext context)
+    private static async Task<IResult> GetAppointments(AppointmentDbContext dbContext, HttpContext context, CancellationToken cancellationToken)
     {
         var appointments = await dbContext.Appointments
             .OrderByDescending(p => p.AppointmentDateTime)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var response = appointments.Select(MapToResponse).ToList();
         return Results.Ok(new ApiResponse<IEnumerable<AppointmentResponse>>(
@@ -92,9 +113,9 @@ public static class AppointmentEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetAppointmentById(Guid id, AppointmentDbContext dbContext, HttpContext context, ILogger<Program> logger)
+    private static async Task<IResult> GetAppointmentById(Guid id, AppointmentDbContext dbContext, HttpContext context, ILogger<Program> logger, CancellationToken cancellationToken)
     {
-        var appointment = await dbContext.Appointments.FindAsync(id);
+        var appointment = await dbContext.Appointments.FindAsync([id], cancellationToken);
         if (appointment == null)
         {
             logger.LogWarning("Appointment not found with ID: {AppointmentId}", id);
@@ -109,12 +130,12 @@ public static class AppointmentEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetAppointmentsByPatientId(Guid patientId, AppointmentDbContext dbContext, HttpContext context)
+    private static async Task<IResult> GetAppointmentsByPatientId(Guid patientId, AppointmentDbContext dbContext, HttpContext context, CancellationToken cancellationToken)
     {
         var appointments = await dbContext.Appointments
             .Where(a => a.PatientId == patientId)
             .OrderByDescending(a => a.AppointmentDateTime)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var response = appointments.Select(MapToResponse).ToList();
         return Results.Ok(new ApiResponse<IEnumerable<AppointmentResponse>>(
@@ -123,12 +144,12 @@ public static class AppointmentEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetAppointmentsByProviderId(Guid providerId, AppointmentDbContext dbContext, HttpContext context)
+    private static async Task<IResult> GetAppointmentsByProviderId(Guid providerId, AppointmentDbContext dbContext, HttpContext context, CancellationToken cancellationToken)
     {
         var appointments = await dbContext.Appointments
             .Where(a => a.ProviderId == providerId)
             .OrderByDescending(a => a.AppointmentDateTime)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var response = appointments.Select(MapToResponse).ToList();
         return Results.Ok(new ApiResponse<IEnumerable<AppointmentResponse>>(
@@ -137,7 +158,7 @@ public static class AppointmentEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetAppointmentsByDate(DateTime date, AppointmentDbContext dbContext, HttpContext context)
+    private static async Task<IResult> GetAppointmentsByDate(DateTime date, AppointmentDbContext dbContext, HttpContext context, CancellationToken cancellationToken)
     {
         var startOfDay = new DateTimeOffset(date.Date, TimeSpan.Zero);
         var endOfDay = startOfDay.AddDays(1);
@@ -145,7 +166,7 @@ public static class AppointmentEndpoints
         var appointments = await dbContext.Appointments
             .Where(a => a.AppointmentDateTime >= startOfDay && a.AppointmentDateTime < endOfDay)
             .OrderBy(a => a.AppointmentDateTime)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var response = appointments.Select(MapToResponse).ToList();
         return Results.Ok(new ApiResponse<IEnumerable<AppointmentResponse>>(
@@ -160,15 +181,16 @@ public static class AppointmentEndpoints
         IValidator<UpdateAppointmentRequest> validator,
         AppointmentDbContext dbContext,
         HttpContext context,
-        ILogger<Program> logger)
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var appointment = await dbContext.Appointments.FindAsync(id);
+        var appointment = await dbContext.Appointments.FindAsync([id], cancellationToken);
         if (appointment == null)
         {
             return Results.NotFound(new ProblemDetails { Title = "Appointment not found", Status = 404 });
@@ -180,7 +202,7 @@ public static class AppointmentEndpoints
         appointment.Notes = request.Notes ?? string.Empty;
         appointment.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         logger.LogInformation("Appointment updated with ID: {AppointmentId}", appointment.Id);
 
@@ -206,7 +228,7 @@ public static class AppointmentEndpoints
             return Results.ValidationProblem(validationResult.ToDictionary());
         }
 
-        var appointment = await dbContext.Appointments.FindAsync(id);
+        var appointment = await dbContext.Appointments.FindAsync([id], cancellationToken);
         if (appointment == null)
         {
             return Results.NotFound(new ProblemDetails { Title = "Appointment not found", Status = 404 });

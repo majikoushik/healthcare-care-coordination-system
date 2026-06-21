@@ -15,9 +15,8 @@ public class DemoAuthenticationHandler : AuthenticationHandler<AuthenticationSch
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        ISystemClock clock,
         IOptions<SecurityConfiguration> securityConfiguration)
-        : base(options, logger, encoder, clock)
+        : base(options, logger, encoder)
     {
         _securityConfiguration = securityConfiguration.Value;
     }

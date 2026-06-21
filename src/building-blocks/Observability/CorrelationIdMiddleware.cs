@@ -32,3 +32,13 @@ public sealed class CorrelationIdMiddleware(RequestDelegate next, ILogger<Correl
         }
     }
 }
+
+public static class CorrelationIdHttpContextExtensions
+{
+    public static string GetCorrelationId(this HttpContext context)
+    {
+        return context.Items.TryGetValue(CorrelationIdMiddleware.HeaderName, out var correlationId)
+            ? correlationId?.ToString() ?? context.TraceIdentifier
+            : context.TraceIdentifier;
+    }
+}

@@ -50,7 +50,7 @@ public class HttpAuditLogger(
             };
 
             // Fire and forget or await. We will await for strict consistency in this demo.
-            var response = await httpClient.PostAsJsonAsync("/api/v1/audit-events", payload, cancellationToken);
+            var response = await httpClient.PostAsJsonAsync("/api/v1/audit/events", payload, cancellationToken);
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogWarning("Failed to emit audit event {EventType}. Status: {StatusCode}", eventType, response.StatusCode);

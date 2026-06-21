@@ -8,11 +8,26 @@ export const axiosClient = axios.create({
   }
 });
 
+const getDemoUserId = () => {
+  const existing = localStorage.getItem("demoUserId");
+  if (existing) {
+    return existing;
+  }
+
+  const generated =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `demo-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+  localStorage.setItem("demoUserId", generated);
+  return generated;
+};
+
 axiosClient.interceptors.request.use((config) => {
   config.headers[apiConfig.correlationHeaderName] = crypto.randomUUID();
   
   const role = localStorage.getItem("demoRole") || "CareCoordinator";
-  const userId = "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d";
+  const userId = getDemoUserId();
   
   config.headers["X-Demo-User-Role"] = role;
   config.headers["X-Demo-User-Id"] = userId;

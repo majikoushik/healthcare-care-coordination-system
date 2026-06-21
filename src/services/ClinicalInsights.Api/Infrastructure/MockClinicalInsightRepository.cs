@@ -1,10 +1,11 @@
+using System.Collections.Concurrent;
 using HealthcareCareCoordination.ClinicalInsights.Api.Domain;
 
 namespace HealthcareCareCoordination.ClinicalInsights.Api.Infrastructure;
 
 public class MockClinicalInsightRepository : IClinicalInsightRepository
 {
-    private readonly Dictionary<string, ClinicalNoteInsight> _insights = new();
+    private readonly ConcurrentDictionary<string, ClinicalNoteInsight> _insights = new();
 
     public Task<ClinicalNoteInsight> CreateAsync(ClinicalNoteInsight insight, CancellationToken cancellationToken = default)
     {

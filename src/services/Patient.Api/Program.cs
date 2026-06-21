@@ -15,7 +15,7 @@ builder.AddHealthcareObservability(serviceName);
 builder.Services.AddHealthcareApiFoundation(serviceName);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-                       ?? "Server=localhost,1433;Database=PatientDb;User Id=sa;Password=Change_this_local_demo_password_123!;TrustServerCertificate=True;";
+                       ?? throw new InvalidOperationException("ConnectionStrings:DefaultConnection must be configured for Patient.Api. Use user secrets, environment variables, or docker-compose overrides; do not hardcode database credentials.");
 
 builder.Services.AddDbContext<PatientDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -43,8 +43,14 @@ app.MapPatientEndpoints();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PatientDbContext>();
-    // Create database automatically on startup for local development demo
-    db.Database.EnsureCreated();
+    if (db.Database.GetMigrations().Any())
+    {
+        db.Database.Migrate();
+    }
+    else
+    {
+        db.Database.EnsureCreated();
+    }
 }
 
 app.Run();

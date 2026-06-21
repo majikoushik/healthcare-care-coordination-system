@@ -4,10 +4,10 @@ namespace HealthcareCareCoordination.CarePlan.Api.Infrastructure;
 
 public interface ICarePlanRepository
 {
-    Task<CarePlanDocument?> GetByIdAsync(Guid id);
-    Task<IEnumerable<CarePlanDocument>> GetAllAsync();
-    Task<IEnumerable<CarePlanDocument>> GetByPatientIdAsync(Guid patientId);
-    Task<IEnumerable<CarePlanDocument>> GetByProviderIdAsync(Guid providerId);
-    Task<CarePlanDocument> CreateAsync(CarePlanDocument document);
-    Task<CarePlanDocument> UpdateAsync(CarePlanDocument document);
+    Task<CarePlanDocument?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IEnumerable<CarePlanDocument>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<CarePlanDocument>> GetByPatientIdAsync(Guid patientId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<CarePlanDocument>> GetByProviderIdAsync(Guid providerId, CancellationToken cancellationToken = default);
+    Task<CarePlanDocument> CreateAsync(CarePlanDocument document, CancellationToken cancellationToken = default);
+    Task<CarePlanDocument> UpdateAsync(CarePlanDocument document, CancellationToken cancellationToken = default);
 }

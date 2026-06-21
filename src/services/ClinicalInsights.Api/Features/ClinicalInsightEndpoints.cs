@@ -5,6 +5,7 @@ using HealthcareCareCoordination.ClinicalInsights.Api.Infrastructure;
 using HealthcareCareCoordination.ClinicalAI;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ public static class ClinicalInsightEndpoints
             [FromServices] IValidator<AnalyzeNoteRequest> validator,
             [FromServices] IClinicalTextAnalyzer analyzer,
             [FromServices] IClinicalInsightRepository repository,
+            [FromServices] IAuditLogger auditLogger,
             ILogger<Program> logger,
             HttpContext context,
             CancellationToken cancellationToken) =>
@@ -62,11 +64,32 @@ public static class ClinicalInsightEndpoints
                 SuggestedFollowUpTopics = aiResult.FollowUpSuggestionsForReview.ToList(),
                 
                 AiProviderName = aiResult.ProviderName,
-                AiProviderMode = AiProviderMode.Mock,
+                AiProviderMode = aiResult.ProviderName == "AzureTextAnalyticsForHealth" ? AiProviderMode.AzureAIReady : AiProviderMode.Mock,
                 HumanReviewStatus = HumanReviewStatus.PendingReview
             };
 
             var savedInsight = await repository.CreateAsync(insight, cancellationToken);
+
+            await auditLogger.LogEventAsync(
+                eventType: "ClinicalInsightGenerated",
+                entityType: "ClinicalInsight",
+                entityId: savedInsight.Id,
+                action: "AnalyzeClinicalNote",
+                outcome: "Success",
+                summary: "Synthetic clinical note insight was generated and queued for human review.",
+                metadata: new
+                {
+                    savedInsight.AiProviderName,
+                    savedInsight.AiProviderMode,
+                    EntityCount = savedInsight.ExtractedEntities.Count,
+                    FollowUpTopicCount = savedInsight.SuggestedFollowUpTopics.Count,
+                    savedInsight.HumanReviewStatus
+                },
+                patientId: savedInsight.PatientId,
+                providerId: savedInsight.ProviderId,
+                actorType: "User",
+                actorId: context.User.Identity?.Name ?? "DemoUser",
+                cancellationToken: cancellationToken);
 
             return Results.Created($"/api/v1/clinical-insights/{savedInsight.Id}", 
                 new ApiResponse<ClinicalNoteInsight>(savedInsight, correlationId, DateTimeOffset.UtcNow));

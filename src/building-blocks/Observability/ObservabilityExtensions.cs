@@ -68,6 +68,15 @@ public static class ObservabilityExtensions
 
         services.AddHealthcareHealthChecks(serviceName);
         services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new()
+            {
+                Title = serviceName,
+                Version = "v1",
+                Description = "Healthcare platform demo API with synthetic demo data only and compliance-readiness patterns."
+            });
+        });
         
         return services;
     }
@@ -111,6 +120,13 @@ public static class ObservabilityExtensions
         });
 
         app.MapHealthcareHealthChecks(serviceName, app.Environment.EnvironmentName);
+
+        app.UseSwagger();
+        app.UseSwaggerUI(options =>
+        {
+            options.SwaggerEndpoint("/swagger/v1/swagger.json", $"{serviceName} v1");
+            options.RoutePrefix = "swagger";
+        });
 
         return app;
     }

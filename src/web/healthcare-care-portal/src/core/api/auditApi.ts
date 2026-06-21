@@ -4,17 +4,17 @@ import { AuditEvent } from '../../features/audit/types';
 
 export const auditApi = {
   getAuditEvents: async (): Promise<ApiResponse<AuditEvent[]>> => {
-    const response = await axiosClient.get('/api/v1/audit-events');
+    const response = await axiosClient.get('/api/v1/audit/events');
     return response.data;
   },
 
   getAuditEventById: async (id: string): Promise<ApiResponse<AuditEvent>> => {
-    const response = await axiosClient.get(`/api/v1/audit-events/${id}`);
+    const response = await axiosClient.get(`/api/v1/audit/events/${id}`);
     return response.data;
   },
 
   getAuditEventsByCorrelationId: async (correlationId: string): Promise<ApiResponse<AuditEvent[]>> => {
-    const response = await axiosClient.get(`/api/v1/audit-events/correlation/${correlationId}`);
+    const response = await axiosClient.get(`/api/v1/audit/events/correlation/${correlationId}`);
     return response.data;
   },
 

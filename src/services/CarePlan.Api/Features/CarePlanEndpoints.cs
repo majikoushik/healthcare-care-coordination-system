@@ -3,6 +3,7 @@ using HealthcareCareCoordination.CarePlan.Api.Domain;
 using HealthcareCareCoordination.CarePlan.Api.DTOs;
 using HealthcareCareCoordination.CarePlan.Api.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -52,9 +53,11 @@ public static class CarePlanEndpoints
         IValidator<CreateCarePlanRequest> validator,
         ICarePlanRepository repository,
         HttpContext context,
-        ILogger<Program> logger)
+        IAuditLogger auditLogger,
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             return Results.ValidationProblem(validationResult.ToDictionary());
@@ -86,10 +89,24 @@ public static class CarePlanEndpoints
             }).ToList()
         };
 
-        var created = await repository.CreateAsync(carePlan);
+        var created = await repository.CreateAsync(carePlan, cancellationToken);
 
         // Privacy rule: Do not log full clinical summaries
         logger.LogInformation("Care Plan created with ID: {CarePlanId} for Patient: {PatientId}", created.Id, created.PatientId);
+
+        await auditLogger.LogEventAsync(
+            eventType: "CarePlanCreated",
+            entityType: "CarePlan",
+            entityId: created.Id.ToString(),
+            action: "CreateCarePlan",
+            outcome: "Success",
+            summary: "Care plan document was created.",
+            metadata: new { created.Status, GoalCount = created.Goals.Count, TaskCount = created.Tasks.Count },
+            patientId: created.PatientId.ToString(),
+            providerId: created.ProviderId.ToString(),
+            actorType: "User",
+            actorId: context.User.Identity?.Name ?? "DemoUser",
+            cancellationToken: cancellationToken);
 
         return Results.Created($"/api/v1/care-plans/{created.Id}", new ApiResponse<CarePlanDocument>(
             created,
@@ -97,18 +114,18 @@ public static class CarePlanEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetCarePlans(ICarePlanRepository repository, HttpContext context)
+    private static async Task<IResult> GetCarePlans(ICarePlanRepository repository, HttpContext context, CancellationToken cancellationToken)
     {
-        var plans = await repository.GetAllAsync();
+        var plans = await repository.GetAllAsync(cancellationToken);
         return Results.Ok(new ApiResponse<IEnumerable<CarePlanDocument>>(
             plans,
             context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier,
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetCarePlanById(Guid id, ICarePlanRepository repository, HttpContext context, ILogger<Program> logger)
+    private static async Task<IResult> GetCarePlanById(Guid id, ICarePlanRepository repository, HttpContext context, ILogger<Program> logger, CancellationToken cancellationToken)
     {
-        var plan = await repository.GetByIdAsync(id);
+        var plan = await repository.GetByIdAsync(id, cancellationToken);
         if (plan == null)
         {
             return Results.NotFound(new ProblemDetails { Title = "Care Plan not found", Status = 404 });
@@ -120,18 +137,18 @@ public static class CarePlanEndpoints
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetCarePlansByPatientId(Guid patientId, ICarePlanRepository repository, HttpContext context)
+    private static async Task<IResult> GetCarePlansByPatientId(Guid patientId, ICarePlanRepository repository, HttpContext context, CancellationToken cancellationToken)
     {
-        var plans = await repository.GetByPatientIdAsync(patientId);
+        var plans = await repository.GetByPatientIdAsync(patientId, cancellationToken);
         return Results.Ok(new ApiResponse<IEnumerable<CarePlanDocument>>(
             plans,
             context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier,
             DateTimeOffset.UtcNow));
     }
 
-    private static async Task<IResult> GetCarePlansByProviderId(Guid providerId, ICarePlanRepository repository, HttpContext context)
+    private static async Task<IResult> GetCarePlansByProviderId(Guid providerId, ICarePlanRepository repository, HttpContext context, CancellationToken cancellationToken)
     {
-        var plans = await repository.GetByProviderIdAsync(providerId);
+        var plans = await repository.GetByProviderIdAsync(providerId, cancellationToken);
         return Results.Ok(new ApiResponse<IEnumerable<CarePlanDocument>>(
             plans,
             context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier,
@@ -144,12 +161,14 @@ public static class CarePlanEndpoints
         IValidator<UpdateCarePlanStatusRequest> validator,
         ICarePlanRepository repository,
         HttpContext context,
-        ILogger<Program> logger)
+        IAuditLogger auditLogger,
+        ILogger<Program> logger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
 
-        var plan = await repository.GetByIdAsync(id);
+        var plan = await repository.GetByIdAsync(id, cancellationToken);
         if (plan == null) return Results.NotFound(new ProblemDetails { Title = "Care Plan not found", Status = 404 });
 
         if (!CarePlanStatusMachine.CanTransition(plan.Status, request.Status))
@@ -158,10 +177,25 @@ public static class CarePlanEndpoints
             return Results.BadRequest(new ProblemDetails { Title = "Invalid status transition", Status = 400 });
         }
 
+        var oldStatus = plan.Status;
         plan.Status = request.Status;
-        var updated = await repository.UpdateAsync(plan);
+        var updated = await repository.UpdateAsync(plan, cancellationToken);
 
         logger.LogInformation("Care Plan {CarePlanId} status updated to {Status}", updated.Id, updated.Status);
+
+        await auditLogger.LogEventAsync(
+            eventType: "CarePlanUpdated",
+            entityType: "CarePlan",
+            entityId: updated.Id.ToString(),
+            action: "UpdateCarePlanStatus",
+            outcome: "Success",
+            summary: $"Care plan status was transitioned from {oldStatus} to {updated.Status}.",
+            metadata: new { OldStatus = oldStatus.ToString(), NewStatus = updated.Status.ToString() },
+            patientId: updated.PatientId.ToString(),
+            providerId: updated.ProviderId.ToString(),
+            actorType: "User",
+            actorId: context.User.Identity?.Name ?? "DemoUser",
+            cancellationToken: cancellationToken);
 
         return Results.Ok(new ApiResponse<CarePlanDocument>(
             updated,
@@ -174,12 +208,13 @@ public static class CarePlanEndpoints
         AddCarePlanGoalRequest request,
         IValidator<AddCarePlanGoalRequest> validator,
         ICarePlanRepository repository,
-        HttpContext context)
+        HttpContext context,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
 
-        var plan = await repository.GetByIdAsync(id);
+        var plan = await repository.GetByIdAsync(id, cancellationToken);
         if (plan == null) return Results.NotFound(new ProblemDetails { Title = "Care Plan not found", Status = 404 });
 
         plan.Goals.Add(new CarePlanGoal
@@ -189,7 +224,7 @@ public static class CarePlanEndpoints
             Priority = request.Priority
         });
 
-        var updated = await repository.UpdateAsync(plan);
+        var updated = await repository.UpdateAsync(plan, cancellationToken);
 
         return Results.Ok(new ApiResponse<CarePlanDocument>(
             updated,
@@ -203,19 +238,20 @@ public static class CarePlanEndpoints
         UpdateCarePlanGoalStatusRequest request,
         IValidator<UpdateCarePlanGoalStatusRequest> validator,
         ICarePlanRepository repository,
-        HttpContext context)
+        HttpContext context,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
 
-        var plan = await repository.GetByIdAsync(id);
+        var plan = await repository.GetByIdAsync(id, cancellationToken);
         if (plan == null) return Results.NotFound(new ProblemDetails { Title = "Care Plan not found", Status = 404 });
 
         var goal = plan.Goals.FirstOrDefault(g => g.GoalId == goalId);
         if (goal == null) return Results.NotFound(new ProblemDetails { Title = "Goal not found", Status = 404 });
 
         goal.Status = request.Status;
-        var updated = await repository.UpdateAsync(plan);
+        var updated = await repository.UpdateAsync(plan, cancellationToken);
 
         return Results.Ok(new ApiResponse<CarePlanDocument>(
             updated,
@@ -228,12 +264,13 @@ public static class CarePlanEndpoints
         AddCarePlanTaskRequest request,
         IValidator<AddCarePlanTaskRequest> validator,
         ICarePlanRepository repository,
-        HttpContext context)
+        HttpContext context,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
 
-        var plan = await repository.GetByIdAsync(id);
+        var plan = await repository.GetByIdAsync(id, cancellationToken);
         if (plan == null) return Results.NotFound(new ProblemDetails { Title = "Care Plan not found", Status = 404 });
 
         plan.Tasks.Add(new CarePlanTask
@@ -245,7 +282,7 @@ public static class CarePlanEndpoints
             AssignedTo = request.AssignedTo
         });
 
-        var updated = await repository.UpdateAsync(plan);
+        var updated = await repository.UpdateAsync(plan, cancellationToken);
 
         return Results.Ok(new ApiResponse<CarePlanDocument>(
             updated,
@@ -259,24 +296,41 @@ public static class CarePlanEndpoints
         UpdateCarePlanTaskStatusRequest request,
         IValidator<UpdateCarePlanTaskStatusRequest> validator,
         ICarePlanRepository repository,
-        HttpContext context)
+        HttpContext context,
+        IAuditLogger auditLogger,
+        CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(request);
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid) return Results.ValidationProblem(validationResult.ToDictionary());
 
-        var plan = await repository.GetByIdAsync(id);
+        var plan = await repository.GetByIdAsync(id, cancellationToken);
         if (plan == null) return Results.NotFound(new ProblemDetails { Title = "Care Plan not found", Status = 404 });
 
         var task = plan.Tasks.FirstOrDefault(t => t.TaskId == taskId);
         if (task == null) return Results.NotFound(new ProblemDetails { Title = "Task not found", Status = 404 });
 
+        var oldStatus = task.Status;
         task.Status = request.Status;
         if (request.Status == Domain.TaskStatus.Completed)
         {
             task.CompletedTimestamp = DateTimeOffset.UtcNow;
         }
 
-        var updated = await repository.UpdateAsync(plan);
+        var updated = await repository.UpdateAsync(plan, cancellationToken);
+
+        await auditLogger.LogEventAsync(
+            eventType: request.Status == Domain.TaskStatus.Completed ? "CarePlanTaskCompleted" : "CarePlanUpdated",
+            entityType: "CarePlanTask",
+            entityId: task.TaskId.ToString(),
+            action: "UpdateCarePlanTaskStatus",
+            outcome: "Success",
+            summary: $"Care plan task status was transitioned from {oldStatus} to {task.Status}.",
+            metadata: new { CarePlanId = updated.Id, OldStatus = oldStatus.ToString(), NewStatus = task.Status.ToString(), task.Priority },
+            patientId: updated.PatientId.ToString(),
+            providerId: updated.ProviderId.ToString(),
+            actorType: "User",
+            actorId: context.User.Identity?.Name ?? "DemoUser",
+            cancellationToken: cancellationToken);
 
         return Results.Ok(new ApiResponse<CarePlanDocument>(
             updated,

@@ -5,6 +5,7 @@ using HealthcareCareCoordination.ClinicalInsights.Api.Features;
 using HealthcareCareCoordination.ClinicalInsights.Api.Infrastructure;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Security;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,8 +19,13 @@ builder.Services.Configure<ClinicalAIConfiguration>(builder.Configuration.GetSec
 var aiConfig = builder.Configuration.GetSection(ClinicalAIConfiguration.SectionName).Get<ClinicalAIConfiguration>() ?? new ClinicalAIConfiguration();
 
 // Configure AI Provider Abstraction
-if (aiConfig.ProviderMode == "AzureAIConfigured" && !string.IsNullOrEmpty(aiConfig.AzureLanguage.Endpoint))
+if (aiConfig.ProviderMode == "AzureAIConfigured")
 {
+    if (string.IsNullOrWhiteSpace(aiConfig.AzureLanguage.Endpoint) || string.IsNullOrWhiteSpace(aiConfig.AzureLanguage.Key))
+    {
+        throw new InvalidOperationException("ClinicalAI:AzureLanguage:Endpoint and ClinicalAI:AzureLanguage:Key must be configured when ClinicalAI:ProviderMode is AzureAIConfigured. Use Key Vault, user secrets, or environment variables; do not hardcode secrets.");
+    }
+
     // Use Azure Provider if explicitly configured
     builder.Services.AddSingleton<IClinicalTextAnalyzer, AzureTextAnalyticsForHealthProvider>();
 }
@@ -33,6 +39,7 @@ else
 builder.Services.AddSingleton<IClinicalInsightRepository, MockClinicalInsightRepository>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddAuditLogging(serviceName);
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();

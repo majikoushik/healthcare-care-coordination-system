@@ -24,6 +24,21 @@ const defaultContext: SecurityContextState = {
 
 export const SecurityContext = createContext<SecurityContextState>(defaultContext);
 
+const getOrCreateDemoUserId = () => {
+  const existing = localStorage.getItem("demoUserId");
+  if (existing) {
+    return existing;
+  }
+
+  const generated =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID()
+      : `demo-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+  localStorage.setItem("demoUserId", generated);
+  return generated;
+};
+
 // Hardcoded permission mapping for the frontend Demo Mode UI to avoid unnecessary API roundtrips
 const rolePermissions: Record<DemoRole, string[]> = {
   Patient: [
@@ -65,7 +80,7 @@ export const SecurityProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRoleState] = useState<DemoRole>(() => {
     return (localStorage.getItem("demoRole") as DemoRole) || "CareCoordinator";
   });
-  const [userId] = useState("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d"); // Static demo ID
+  const [userId] = useState(getOrCreateDemoUserId);
 
   const setRole = (newRole: DemoRole) => {
     localStorage.setItem("demoRole", newRole);
