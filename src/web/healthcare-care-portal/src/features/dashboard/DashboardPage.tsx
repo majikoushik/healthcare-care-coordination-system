@@ -4,6 +4,7 @@ import { providerApi } from '../../core/api/providerApi';
 import { appointmentApi } from '../../core/api/appointmentApi';
 import { carePlanApi } from '../../core/api/carePlanApi';
 import { followUpTaskApi } from '../../core/api/followUpTaskApi';
+import { notificationApi } from '../../core/api/notificationApi';
 import { Link } from 'react-router-dom';
 
 const workstreams = [
@@ -22,28 +23,33 @@ export function DashboardPage() {
     appointments: 0,
     carePlans: 0,
     overdueTasks: 0,
-    dueTodayTasks: 0
+    dueTodayTasks: 0,
+    queuedNotifications: 0
   });
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [patients, providers, appointments, carePlans, overdue, dueToday] = await Promise.all([
+        const [patients, providers, appointments, carePlans, overdue, dueToday, notifications] = await Promise.all([
           patientApi.getPatients(),
           providerApi.getProviders(),
           appointmentApi.getAppointments(),
           carePlanApi.getCarePlans(),
           followUpTaskApi.getOverdue(),
-          followUpTaskApi.getDueToday()
+          followUpTaskApi.getDueToday(),
+          notificationApi.getNotifications()
         ]);
         
+        const queued = notifications.filter(n => n.status === 1 || n.status === 0).length;
+
         setStats({ 
           patients: patients.length, 
           providers: providers.length, 
           appointments: appointments.length, 
           carePlans: carePlans.length, 
           overdueTasks: overdue.length, 
-          dueTodayTasks: dueToday.length 
+          dueTodayTasks: dueToday.length,
+          queuedNotifications: queued
         });
       } catch (err) {
         console.error("Failed to load dashboard stats", err);
@@ -80,6 +86,13 @@ export function DashboardPage() {
               <div style={{ background: stats.dueTodayTasks > 0 ? '#feebc8' : '#f7fafc', padding: '12px', borderRadius: '4px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: stats.dueTodayTasks > 0 ? '#dd6b20' : '#4a5568', fontWeight: 'bold' }}>Tasks Due Today</span>
                 <span style={{ fontWeight: 'bold' }}>{stats.dueTodayTasks}</span>
+              </div>
+            </Link>
+
+            <Link to="/notifications" style={{ textDecoration: 'none', display: 'block' }}>
+              <div style={{ background: stats.queuedNotifications > 0 ? '#ebf8ff' : '#f7fafc', padding: '12px', borderRadius: '4px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: stats.queuedNotifications > 0 ? '#3182ce' : '#4a5568', fontWeight: 'bold' }}>Pending Notifications</span>
+                <span style={{ fontWeight: 'bold' }}>{stats.queuedNotifications}</span>
               </div>
             </Link>
           </div>

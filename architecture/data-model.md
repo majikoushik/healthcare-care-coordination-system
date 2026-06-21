@@ -44,6 +44,7 @@ This document describes the high-level data models used across the system, adher
 | **Care Plan** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
 | **Follow-up Task** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
 | **Clinical Insights** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
+| **Notification Record** | Azure Cosmos DB | JSON Documents (Partition Key: `/patientId`) |
 - `Status` (enum: Requested, Scheduled, CheckedIn, Completed, Cancelled, NoShow)
 - `Notes` (string, max 2000)
 - `CreatedAt` (datetimeoffset)

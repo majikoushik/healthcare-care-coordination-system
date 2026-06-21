@@ -13,6 +13,8 @@ import { ClinicalInsightAnalysisForm } from "../features/clinical-insights/Clini
 import { ClinicalInsightDetails } from "../features/clinical-insights/ClinicalInsightDetails";
 import { FollowUpTaskRegistrationForm } from "../features/follow-up-tasks/FollowUpTaskRegistrationForm";
 import { FollowUpTaskDetails } from "../features/follow-up-tasks/FollowUpTaskDetails";
+import { NotificationSimulationForm } from "../features/notifications/NotificationSimulationForm";
+import { NotificationDetails } from "../features/notifications/NotificationDetails";
 
 export function App() {
   return (
@@ -34,6 +36,8 @@ export function App() {
         <Route path="/clinical-insights/:id" element={<ClinicalInsightDetails />} />
         <Route path="/follow-up-tasks/new" element={<FollowUpTaskRegistrationForm />} />
         <Route path="/follow-up-tasks/:id" element={<FollowUpTaskDetails />} />
+        <Route path="/notifications/new" element={<NotificationSimulationForm />} />
+        <Route path="/notifications/:id" element={<NotificationDetails />} />
       </Routes>
     </AppShell>
   );

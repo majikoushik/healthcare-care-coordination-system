@@ -1,19 +1,32 @@
-using HealthcareCareCoordination.Compliance;
+using FluentValidation;
+using HealthcareCareCoordination.Notification.Worker.Features;
+using HealthcareCareCoordination.Notification.Worker.Infrastructure;
+using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.Observability;
 
-var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<Worker>();
+var builder = WebApplication.CreateBuilder(args);
+const string serviceName = "Notification.Worker";
 
-var host = builder.Build();
-host.Run();
+builder.Services.AddHealthcareApiFoundation(serviceName);
 
-public sealed class Worker(ILogger<Worker> logger) : BackgroundService
+// Add Services
+builder.Services.AddSingleton<INotificationRepository, MockNotificationRepository>();
+builder.Services.AddSingleton<ISimulatedNotificationDispatcher, SimulatedNotificationDispatcher>();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+var app = builder.Build();
+
+app.UseHealthcareApiFoundation();
+
+app.MapGet("/api/v1/notifications/readiness", (HttpContext context) =>
 {
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        logger.LogInformation("Notification.Worker readiness started. Policy: {Policy}", SensitiveDataPolicy.ComplianceReadinessOnly);
-        while (!stoppingToken.IsCancellationRequested)
-        {
-            await Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
-        }
-    }
-}
+    var metadata = new ServiceMetadata(serviceName, "Notification Simulation", "Azure Cosmos DB (Mocked locally)");
+    return Results.Ok(new ApiResponse<ServiceMetadata>(
+        metadata,
+        context.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? context.TraceIdentifier,
+        DateTimeOffset.UtcNow));
+});
+
+app.MapNotificationEndpoints();
+
+app.Run();

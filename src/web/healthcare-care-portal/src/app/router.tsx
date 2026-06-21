@@ -7,6 +7,11 @@ import { AppointmentList } from "../features/appointments/AppointmentList";
 import { CarePlanList } from "../features/care-plans/CarePlanList";
 import { ClinicalInsightList } from "../features/clinical-insights/ClinicalInsightList";
 import { FollowUpTaskList } from "../features/follow-up-tasks/FollowUpTaskList";
+import { FollowUpTaskRegistrationForm } from '../features/follow-up-tasks/FollowUpTaskRegistrationForm';
+import { FollowUpTaskDetails } from '../features/follow-up-tasks/FollowUpTaskDetails';
+import { NotificationList } from '../features/notifications/NotificationList';
+import { NotificationSimulationForm } from '../features/notifications/NotificationSimulationForm';
+import { NotificationDetails } from '../features/notifications/NotificationDetails';
 
 export const featureRoutes = [
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard, element: DashboardPage },
@@ -16,7 +21,7 @@ export const featureRoutes = [
   { path: "/care-plans", label: "Care Plans", icon: FileHeart, element: CarePlanList },
   { path: "/clinical-insights", label: "Clinical Insights", icon: HeartPulse, element: ClinicalInsightList },
   { path: "/follow-up-tasks", label: "Follow-up Tasks", icon: ClipboardList, element: FollowUpTaskList },
-  { path: "/notifications", label: "Notifications", icon: Bell, element: () => <FeaturePlaceholderPage title="Notifications" domain="Email, SMS, and portal notification simulation" storage="Cosmos DB or Service Bus-ready event model" /> },
+  { path: "/notifications", label: "Notifications", icon: Bell, element: NotificationList },
   { path: "/audit", label: "Audit", icon: ShieldCheck, element: () => <FeaturePlaceholderPage title="Audit" domain="Traceability, event review, and safe audit metadata" storage="Azure Cosmos DB" /> },
   { path: "/system-health", label: "System Health", icon: Activity, element: () => <FeaturePlaceholderPage title="System Health" domain="Health checks, correlation IDs, and observability readiness" storage="Application Insights-ready telemetry" /> }
 ] as const;

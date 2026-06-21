@@ -169,6 +169,37 @@ Allows a Human Reviewer to approve or reject the AI generated output.
 Returns the active configuration and AI Provider mode (Mock vs Azure-Ready). Never leaks secrets.
 - **Response**: `200 OK` with `status object`
 
+## Notification.Worker
+
+Base path: `/api/v1/notifications`
+
+### `POST /` (Queue Notification)
+Registers a new simulated notification payload.
+- **Request Body**: `CreateNotificationRequest`
+- **Response**: `201 Created` with `ApiResponse<NotificationRecord>`
+- **Errors**: `400 Bad Request`
+
+### `GET /` (List Notifications)
+Fetches all simulated notification dispatches.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<NotificationRecord>>`
+
+### `GET /{id}` (Get Notification)
+Fetches a specific notification record by ID.
+- **Response**: `200 OK` with `ApiResponse<NotificationRecord>`
+
+### `GET /related/{relatedEntityType}/{relatedEntityId}` (Get Notifications By Related Entity)
+Fetches all notification records linked to a specific entity (e.g. Appointment, FollowUpTask).
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<NotificationRecord>>`
+
+### `POST /{id}/simulate-send` (Simulate Notification Dispatch)
+Mimics pulling the notification from an Event Bus and dispatching it to an external provider (Email/SMS). Increments attempt counters and locks state.
+- **Response**: `200 OK` with `ApiResponse<SimulateSendResponse>`
+- **Errors**: `400 Bad Request`
+
+### `GET /api/v1/patients/{patientId}/notifications`
+Fetches all notification records targeting a specific patient.
+- **Response**: `200 OK` with `ApiResponse<IEnumerable<NotificationRecord>>`
+
 ## Common Response Format
 
 ```json
