@@ -2,6 +2,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\building-blocks\Cosmos\Cosmos.csproj" />
     <ProjectReference Include="..\..\building-blocks\Observability\Observability.csproj" />
+    <ProjectReference Include="..\..\building-blocks\Security\Security.csproj" />
     <ProjectReference Include="..\..\building-blocks\SharedKernel\SharedKernel.csproj" />
   </ItemGroup>
   <ItemGroup>

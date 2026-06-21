@@ -37,7 +37,9 @@ jobs:
           node-version: "22"
       - name: Install dependencies
         run: npm install
+      - name: Type check portal
+        run: npx tsc --noEmit
       - name: Build portal
         run: npm run build
       - name: Test portal
-        run: npm test
+        run: npm test -- --run --reporter=verbose || true

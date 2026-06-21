@@ -54,7 +54,7 @@ const rolePermissions: Record<DemoRole, string[]> = {
   ],
   Auditor: [
     "Audit.Read", "PatientProfile.Read", "ProviderProfile.Read", "Appointment.Read",
-    "CarePlan.Read", "ClinicalInsight.Read", "Notification.Read"
+    "CarePlan.Read", "ClinicalInsight.Read", "Notification.Read", "SystemHealth.Read"
   ],
   System: [
     "Audit.Write", "Notification.Write", "SystemHealth.Read"

@@ -9,6 +9,7 @@ using HealthcareCareCoordination.Security;
 var builder = WebApplication.CreateBuilder(args);
 const string serviceName = "CarePlan.Api";
 
+builder.AddHealthcareObservability(serviceName);
 builder.Services.AddHealthcareApiFoundation(serviceName);
 
 // Use a singleton mock repository to simulate an Azure Cosmos DB container for local development
@@ -18,7 +19,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
-app.UseHealthcareApiFoundation();
+app.UseHealthcareApiFoundation(serviceName);
 app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/care-plans/readiness", (HttpContext context) =>

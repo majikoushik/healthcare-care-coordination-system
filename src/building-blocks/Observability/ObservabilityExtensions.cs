@@ -2,12 +2,56 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using Serilog;
 
 namespace HealthcareCareCoordination.Observability;
 
 public static class ObservabilityExtensions
 {
+    public static WebApplicationBuilder AddHealthcareObservability(this WebApplicationBuilder builder, string serviceName)
+    {
+        // 1. Serilog Integration
+        builder.Host.UseSerilog((context, services, configuration) => configuration
+            .ReadFrom.Configuration(context.Configuration)
+            .Enrich.FromLogContext()
+            .Enrich.WithProperty("Service", serviceName)
+            .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
+            .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{Service}] [{CorrelationId}] {Message:lj}{NewLine}{Exception}"));
+
+        // 2. OpenTelemetry & Azure Monitor Readiness
+        var appInsightsConnString = builder.Configuration["ApplicationInsights:ConnectionString"];
+        var isAppInsightsEnabled = !string.IsNullOrWhiteSpace(appInsightsConnString);
+
+        if (isAppInsightsEnabled)
+        {
+            // If connection string is provided, setup Application Insights fully.
+            builder.Services.AddApplicationInsightsTelemetry(options => 
+            {
+                options.ConnectionString = appInsightsConnString;
+                options.EnableAdaptiveSampling = true;
+            });
+        }
+
+        builder.Services.AddOpenTelemetry()
+            .WithTracing(tracing =>
+            {
+                tracing.AddAspNetCoreInstrumentation();
+                tracing.AddHttpClientInstrumentation();
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics.AddAspNetCoreInstrumentation();
+                metrics.AddHttpClientInstrumentation();
+            });
+
+        return builder;
+    }
+
     public static IServiceCollection AddHealthcareApiFoundation(this IServiceCollection services, string serviceName)
     {
         services.AddProblemDetails(options =>
@@ -21,14 +65,28 @@ public static class ObservabilityExtensions
                         : context.HttpContext.TraceIdentifier;
             };
         });
-        services.AddHealthChecks();
+
+        services.AddHealthcareHealthChecks(serviceName);
         services.AddEndpointsApiExplorer();
+        
         return services;
     }
 
-    public static WebApplication UseHealthcareApiFoundation(this WebApplication app)
+    public static WebApplication UseHealthcareApiFoundation(this WebApplication app, string serviceName)
     {
         app.UseMiddleware<CorrelationIdMiddleware>();
+        
+        // Serilog Request Logging can be added here if desired:
+        app.UseSerilogRequestLogging(options =>
+        {
+            options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms. CorrelationId: {CorrelationId}";
+            options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+            {
+                var correlationId = httpContext.Items[CorrelationIdMiddleware.HeaderName]?.ToString() ?? httpContext.TraceIdentifier;
+                diagnosticContext.Set("CorrelationId", correlationId);
+            };
+        });
+
         app.UseExceptionHandler(errorApp =>
         {
             errorApp.Run(async context =>
@@ -42,18 +100,18 @@ public static class ObservabilityExtensions
                     Type = "https://example.com/problems/internal-error"
                 };
                 problem.Extensions["correlationId"] = context.Items[CorrelationIdMiddleware.HeaderName] ?? context.TraceIdentifier;
+                
+                // Only leak exception type to response, never full stack trace.
+                // Stack trace is safely logged by the default exception handler logger.
                 problem.Extensions["exceptionType"] = feature?.Error.GetType().Name;
+                
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 await context.Response.WriteAsJsonAsync(problem);
             });
         });
-        app.MapHealthChecks("/health");
-        app.MapGet("/api/v1/operational-readiness", (HttpContext context) => new
-        {
-            status = "Ready for Epic implementation",
-            correlationId = context.Items[CorrelationIdMiddleware.HeaderName] ?? context.TraceIdentifier,
-            timestamp = DateTimeOffset.UtcNow
-        });
+
+        app.MapHealthcareHealthChecks(serviceName, app.Environment.EnvironmentName);
+
         return app;
     }
 }

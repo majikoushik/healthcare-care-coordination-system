@@ -7,11 +7,10 @@ using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
 using HealthcareCareCoordination.Security;
 
-using HealthcareCareCoordination.ClinicalAI;
-
 var builder = WebApplication.CreateBuilder(args);
 const string serviceName = "ClinicalInsights.Api";
 
+builder.AddHealthcareObservability(serviceName);
 builder.Services.AddHealthcareApiFoundation(serviceName);
 
 // Bind Configuration
@@ -37,7 +36,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
-app.UseHealthcareApiFoundation();
+app.UseHealthcareApiFoundation(serviceName);
 app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/clinical-insights/readiness", (HttpContext context) =>

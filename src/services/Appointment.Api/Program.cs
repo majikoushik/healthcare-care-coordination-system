@@ -3,12 +3,14 @@ using HealthcareCareCoordination.Appointment.Api.Features;
 using HealthcareCareCoordination.Appointment.Api.Infrastructure;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Security;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 const string serviceName = "Appointment.Api";
 
+builder.AddHealthcareObservability(serviceName);
 builder.Services.AddHealthcareApiFoundation(serviceName);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
@@ -19,10 +21,11 @@ builder.Services.AddDbContext<AppointmentDbContext>(options =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddAuditLogging(serviceName);
+builder.Services.AddSqlServerReadiness<AppointmentDbContext>(); // Adds /health/ready dependency check
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
-app.UseHealthcareApiFoundation();
+app.UseHealthcareApiFoundation(serviceName);
 app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/appointments/readiness", (HttpContext context) =>

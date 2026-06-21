@@ -1,6 +1,6 @@
 import { Activity, Bell, CalendarDays, ClipboardList, FileHeart, HeartPulse, LayoutDashboard, ShieldCheck, Stethoscope, UsersRound } from "lucide-react";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
-import { FeaturePlaceholderPage } from "../shared/components/FeaturePlaceholderPage";
+import { SystemHealthDashboard } from "../features/system-health/SystemHealthDashboard";
 import { PatientList } from "../features/patients/PatientList";
 import { ProviderList } from "../features/providers/ProviderList";
 import { AppointmentList } from "../features/appointments/AppointmentList";
@@ -24,5 +24,5 @@ export const featureRoutes = [
   { path: "/follow-up-tasks", label: "Follow-up Tasks", icon: ClipboardList, element: FollowUpTaskList },
   { path: "/notifications", label: "Notifications", icon: Bell, element: NotificationList },
   { path: "/audit", label: "Audit", icon: ShieldCheck, element: AuditList },
-  { path: "/system-health", label: "System Health", icon: Activity, element: () => <FeaturePlaceholderPage title="System Health" domain="Health checks, correlation IDs, and observability readiness" storage="Application Insights-ready telemetry" /> }
+  { path: "/system-health", label: "System Health", icon: Activity, element: SystemHealthDashboard }
 ] as const;

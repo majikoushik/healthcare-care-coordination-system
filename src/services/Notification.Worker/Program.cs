@@ -2,12 +2,14 @@ using FluentValidation;
 using HealthcareCareCoordination.Notification.Worker.Features;
 using HealthcareCareCoordination.Notification.Worker.Infrastructure;
 using HealthcareCareCoordination.SharedKernel;
+using HealthcareCareCoordination.SharedKernel.Audit;
 using HealthcareCareCoordination.Observability;
 using HealthcareCareCoordination.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 const string serviceName = "Notification.Worker";
 
+builder.AddHealthcareObservability(serviceName);
 builder.Services.AddHealthcareApiFoundation(serviceName);
 
 // Add Services
@@ -19,7 +21,7 @@ builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseHealthcareApiFoundation();
+app.UseHealthcareApiFoundation(serviceName);
 app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/notifications/readiness", (HttpContext context) =>

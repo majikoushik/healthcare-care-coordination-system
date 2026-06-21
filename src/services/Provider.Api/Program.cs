@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 const string serviceName = "Provider.Api";
 
+builder.AddHealthcareObservability(serviceName);
 builder.Services.AddHealthcareApiFoundation(serviceName);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
@@ -18,10 +19,11 @@ builder.Services.AddDbContext<ProviderDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddSqlServerReadiness<ProviderDbContext>(); // Adds /health/ready dependency check
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
-app.UseHealthcareApiFoundation();
+app.UseHealthcareApiFoundation(serviceName);
 app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/providers/readiness", (HttpContext context) =>

@@ -9,6 +9,7 @@ using FluentValidation;
 var builder = WebApplication.CreateBuilder(args);
 const string serviceName = "Audit.Api";
 
+builder.AddHealthcareObservability(serviceName);
 builder.Services.AddHealthcareApiFoundation(serviceName);
 
 builder.Services.AddSingleton<IAuditEventRepository, MockAuditEventRepository>();
@@ -16,7 +17,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
-app.UseHealthcareApiFoundation();
+app.UseHealthcareApiFoundation(serviceName);
 app.UseHealthcareSecurity();
 
 app.MapGet("/api/v1/audit/readiness", (HttpContext context) =>
