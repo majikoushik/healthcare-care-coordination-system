@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\..\building-blocks\ClinicalAI\ClinicalAI.csproj" />
+    <ProjectReference Include="..\..\building-blocks\Cosmos\Cosmos.csproj" />
+    <ProjectReference Include="..\..\building-blocks\Observability\Observability.csproj" />
+    <ProjectReference Include="..\..\building-blocks\SharedKernel\SharedKernel.csproj" />
+  </ItemGroup>
+</Project>

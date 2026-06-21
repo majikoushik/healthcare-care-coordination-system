@@ -1,0 +1,12 @@
+{
+  "patientId": "demo-patient-001",
+  "fullName": "Alex Demo",
+  "dateOfBirth": "1985-04-12",
+  "gender": "NotSpecified",
+  "email": "alex.demo@example.test",
+  "mobileNumber": "+1-555-0100",
+  "address": "Synthetic address for demo use only",
+  "emergencyContactName": "Jordan Demo",
+  "emergencyContactNumber": "+1-555-0101",
+  "consentStatus": "Granted"
+}

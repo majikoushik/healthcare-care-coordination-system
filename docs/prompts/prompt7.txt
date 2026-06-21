@@ -1,0 +1,249 @@
+Implement Epic 6: Azure AI Language Provider Readiness based on AGENTS.md and the existing repository.
+
+Build the next capability for the `healthcare-care-coordination-system` repository: Azure AI Language Provider Readiness for Clinical Note Insights.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0 through Epic 5.
+4. Review `ClinicalInsights.Api`, the existing mock AI provider, AI provider abstraction, Cosmos DB-ready clinical insight persistence, React clinical insight screens, tests, documentation, Docker setup, and CI workflow.
+5. Preserve the architecture direction, healthcare privacy guidance, responsible AI guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 6 Goal:
+
+Prepare the Clinical Note Insights module for Azure AI Language / Text Analytics for Health integration without requiring real Azure credentials for local development.
+
+This epic should introduce a clean Azure AI provider implementation path, configuration model, feature toggle, documentation, and safe fallback behavior.
+
+The application must continue to work locally using the existing mock AI provider.
+
+Important:
+
+Do not hardcode real Azure AI credentials.
+
+Do not require a real Azure AI endpoint or key for local development.
+
+Do not use real patient data or real clinical notes.
+
+Do not present Azure AI output as medical advice or diagnosis.
+
+Backend scope:
+
+1. Extend the existing clinical AI provider abstraction.
+2. Add an Azure AI Language provider implementation placeholder or optional implementation.
+3. Add configuration classes for Azure AI Language settings.
+4. Add provider selection using configuration.
+5. Keep the mock provider as the default provider for local development.
+6. Add safe fallback behavior if Azure AI settings are missing.
+7. Add dependency injection registration for mock and Azure-ready providers.
+8. Add health/readiness checks for AI provider configuration if appropriate.
+9. Add structured logging with safe metadata only.
+10. Add tests for provider selection and fallback behavior.
+11. Update Swagger/OpenAPI documentation where needed.
+12. Preserve Cosmos DB-ready persistence for clinical insight results.
+
+Recommended provider modes:
+
+* `Mock`
+* `AzureAIReady`
+* `AzureAIConfigured`
+
+Suggested configuration section:
+
+```json
+{
+  "ClinicalAI": {
+    "ProviderMode": "Mock",
+    "AzureLanguage": {
+      "Endpoint": "",
+      "Key": "",
+      "Region": "",
+      "ModelVersion": "latest"
+    }
+  }
+}
+```
+
+Expected behavior:
+
+1. If `ProviderMode` is `Mock`, use `MockClinicalTextAnalyzer`.
+2. If `ProviderMode` is `AzureAIReady` but credentials are missing, return a clear configuration-readiness response or fallback safely to mock depending on existing architecture.
+3. If `ProviderMode` is `AzureAIConfigured` and valid configuration is present, route through the Azure provider implementation path.
+4. If the actual SDK integration is added, it must be isolated behind the provider abstraction.
+5. If the actual SDK integration is not added yet, create a clean placeholder with documentation and tests explaining the future integration point.
+
+Azure AI provider expectations:
+
+Create or update a provider such as:
+
+* `AzureLanguageClinicalTextAnalyzer`
+* `AzureTextAnalyticsForHealthProvider`
+* or similarly clear naming
+
+The Azure provider should:
+
+1. Implement the same interface used by the mock provider.
+2. Accept clinical note text through the same request model.
+3. Return the same normalized clinical insight response model.
+4. Map Azure AI entity output into the project’s internal entity model.
+5. Avoid leaking Azure-specific response models into controllers or frontend.
+6. Avoid logging full clinical note text.
+7. Avoid logging Azure AI keys, endpoint secrets, or raw full responses.
+8. Be testable through mocked dependencies.
+9. Be documented as Azure-ready and optional.
+
+Responsible AI expectations:
+
+Ensure the implementation clearly communicates:
+
+1. Azure AI output is assistive only.
+2. Azure AI output is not a confirmed diagnosis.
+3. Azure AI output is not medical advice.
+4. Azure AI output requires human review.
+5. Azure AI integration must use synthetic demo notes only in this project.
+6. The project does not claim HIPAA compliance or medical certification.
+7. The system demonstrates AI-readiness patterns, not clinical production certification.
+
+Security and configuration expectations:
+
+1. Add safe placeholder configuration only.
+2. Update `.env.example` if present.
+3. Do not commit real `.env` files.
+4. Do not commit real Azure AI endpoint values.
+5. Do not commit real Azure AI keys.
+6. Do not hardcode subscription ID, tenant ID, client ID, client secret, endpoint, or key.
+7. Document that production configuration should use Azure Key Vault or managed identity where applicable.
+8. Document local development with mock provider as the default.
+
+Frontend scope:
+
+Update the React Clinical Insights UI only if required.
+
+Recommended frontend enhancements:
+
+1. Show AI provider mode on insight details.
+2. Show whether the insight came from `Mock` or Azure-ready provider.
+3. Add a small responsible AI disclaimer on clinical insight screens.
+4. Add a provider-readiness panel if a system health screen already exists.
+5. Do not expose Azure AI keys or endpoint details in the frontend.
+6. Do not let users enter Azure AI secrets through the frontend.
+7. Keep the UI professional and suitable for a healthcare operations portal.
+
+Suggested UI disclaimer:
+
+```text
+Clinical insight output is generated for demo purposes using synthetic data. It is assistive only, requires human review, and must not be treated as medical advice or diagnosis.
+```
+
+API expectations:
+
+Keep existing Clinical Insights APIs stable.
+
+If adding any readiness endpoint, keep it safe and non-sensitive.
+
+Optional endpoint:
+
+* `GET /api/v1/clinical-insights/ai-provider/status`
+
+The status endpoint may return safe information only:
+
+```json
+{
+  "providerMode": "Mock",
+  "azureLanguageConfigured": false,
+  "activeProvider": "MockClinicalTextAnalyzer",
+  "message": "Local development is using the mock clinical text analyzer."
+}
+```
+
+Do not return endpoint URLs, keys, secrets, or sensitive configuration details.
+
+Testing expectations:
+
+Add tests for:
+
+* Mock provider remains default.
+* Provider selection uses mock mode correctly.
+* Azure-ready mode does not require real credentials.
+* Missing Azure AI configuration does not crash local development.
+* Provider status endpoint does not expose secrets if implemented.
+* Azure provider maps normalized output correctly using mocked dependencies if implementation exists.
+* Full clinical note text is not logged where practical.
+* Azure AI key and endpoint are not returned through API responses.
+* Clinical insight workflow still works with mock provider after this epic.
+* Existing Epic 5 mock AI tests still pass.
+
+Documentation scope:
+
+Update or create relevant documentation:
+
+* `README.md`
+* `docs/azure-ai-language-readiness.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/local-development.md`
+* `docs/deployment.md`
+* `docs/api-contracts.md`
+* `docs/testing-strategy.md`
+* `architecture/clinical-ai-architecture.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/deployment-architecture.md`
+* `architecture/diagrams/clinical-insights-flow.md`
+
+Documentation must explain:
+
+1. Why Azure AI Language / Text Analytics for Health fits this module.
+2. Why the mock provider is default for local development.
+3. How provider selection works.
+4. What configuration is required for future Azure integration.
+5. How secrets should be managed.
+6. Why AI output requires human review.
+7. Why the project does not claim medical compliance or diagnostic capability.
+
+Architecture expectations:
+
+1. Keep controllers thin.
+2. Keep AI provider logic behind an abstraction.
+3. Keep Azure-specific SDK or integration details out of controllers.
+4. Keep frontend independent of provider implementation details.
+5. Keep response models normalized.
+6. Keep the system locally runnable without Azure credentials.
+7. Do not overbuild beyond Azure AI provider readiness.
+8. Do not implement unrelated healthcare features in this epic.
+9. Keep the implementation portfolio-grade and Solution Architect quality.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, clinical note, care plan, or client data.
+* Do not use real medical records.
+* Do not log full clinical note text by default.
+* Do not expose Azure AI keys or endpoint details.
+* Do not require Azure AI credentials for local development.
+* Do not claim diagnostic capability.
+* Do not claim HIPAA compliance.
+* Do not present AI output as medical advice.
+* Do not implement Notification Simulation yet.
+* Do not implement Audit Logging yet unless only lightweight readiness hooks already exist.
+* Do not overbuild beyond Epic 6.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. AI provider abstraction changes.
+4. Azure AI provider readiness files created or modified.
+5. Configuration changes.
+6. Frontend files created or modified, if any.
+7. API endpoints added or updated.
+8. Tests added.
+9. Documentation updated.
+10. Responsible AI notes.
+11. Security and secret-handling notes.
+12. Healthcare privacy and safe data handling notes.
+13. Commands to run locally.
+14. Commands to test.
+15. Any assumptions made.
+16. Recommended next epic.

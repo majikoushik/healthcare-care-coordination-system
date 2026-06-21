@@ -1,0 +1,19 @@
+{
+  "carePlanId": "demo-care-plan-001",
+  "patientId": "demo-patient-001",
+  "providerId": "demo-provider-001",
+  "title": "Synthetic care coordination plan",
+  "clinicalSummary": "Synthetic summary for architecture demo only.",
+  "goals": ["Review follow-up needs", "Coordinate next appointment"],
+  "instructions": "Demo instructions requiring qualified professional review before any real use.",
+  "followUpDate": "2026-07-24",
+  "status": "Draft",
+  "tasks": [
+    {
+      "taskId": "demo-task-001",
+      "title": "Confirm follow-up appointment",
+      "status": "Pending",
+      "priority": "Medium"
+    }
+  ]
+}

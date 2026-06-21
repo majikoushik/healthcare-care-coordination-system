@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    env:
+      AI_PROVIDER: Mock
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Restore backend projects
+        run: |
+          find src tests -name "*.csproj" -print0 | xargs -0 -n1 dotnet restore
+      - name: Build backend projects
+        run: |
+          find src -name "*.csproj" -print0 | xargs -0 -n1 dotnet build --configuration Release --no-restore
+      - name: Run backend tests
+        run: |
+          find tests -name "*.csproj" -print0 | xargs -0 -n1 dotnet test --configuration Release
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/web/healthcare-care-portal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install
+      - name: Build portal
+        run: npm run build
+      - name: Test portal
+        run: npm test

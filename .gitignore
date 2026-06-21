@@ -1,0 +1,57 @@
+# Build outputs
+**/bin/
+**/obj/
+**/dist/
+**/build/
+**/out/
+**/publish/
+
+# .NET test and coverage artifacts
+**/TestResults/
+**/coverage/
+*.coverage
+*.coveragexml
+coverage.cobertura.xml
+
+# Node, Vite, and frontend caches
+**/node_modules/
+**/.vite/
+**/.vitest/
+**/.turbo/
+**/.cache/
+**/.parcel-cache/
+**/.eslintcache
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+secrets/
+*.pfx
+*.pem
+*.key
+
+# Local databases and emulator files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+cosmos-emulator/
+sqlserver-data/
+
+# IDE and OS files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.DS_Store
+Thumbs.db

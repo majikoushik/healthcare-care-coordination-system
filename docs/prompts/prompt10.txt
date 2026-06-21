@@ -1,0 +1,480 @@
+Implement Epic 9: Audit Logging with Cosmos DB based on AGENTS.md and the existing repository.
+
+Build the next enterprise capability for the `healthcare-care-coordination-system` repository: Audit Logging using Cosmos DB-ready document persistence.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0 through Epic 8.
+4. Review existing Patient, Provider, Appointment, Care Plan, Clinical Insights, Follow-up Task, and Notification modules.
+5. Review SQL Server persistence, Cosmos DB-ready document persistence, Azure AI provider readiness, React screens, tests, documentation, Docker setup, and CI workflow.
+6. Preserve the architecture direction, healthcare privacy guidance, responsible AI guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 9 Goal:
+
+Implement a centralized audit logging capability for important healthcare care coordination actions.
+
+Audit Logging should demonstrate traceability, compliance-readiness, event history, safe metadata capture, append-only audit design, Cosmos DB document storage, and operational visibility.
+
+This epic must not store full clinical notes, full care plan summaries, full notification messages, or unnecessary sensitive healthcare content inside audit logs.
+
+Audit logs must use safe metadata only.
+
+Backend scope:
+
+1. Implement Audit Logging in `Audit.Api`.
+2. Create a clean domain/application model for `AuditEvent`.
+3. Store audit events using Cosmos DB-ready persistence.
+4. Add an audit writer abstraction that other modules can use later.
+5. Add request and response DTOs.
+6. Add validation for all required fields.
+7. Add safe metadata handling.
+8. Add structured logging with safe metadata only.
+9. Use correlation ID support if already available.
+10. Add proper error handling using Problem Details or the existing global error-handling pattern.
+11. Add Swagger/OpenAPI documentation readiness.
+12. Add health check readiness if not already present.
+13. Add unit tests and API/integration tests where practical.
+
+Audit Event fields:
+
+* Audit Event ID
+* Correlation ID
+* Event type
+* Entity type
+* Entity ID
+* Patient ID, optional
+* Provider ID, optional
+* Actor type
+* Actor ID
+* Action
+* Outcome
+* Summary
+* Source service
+* Severity
+* Metadata as safe JSON
+* Created timestamp
+
+Supported event types:
+
+* PatientRegistered
+* PatientUpdated
+* PatientConsentStatusChanged
+* ProviderRegistered
+* ProviderUpdated
+* ProviderAvailabilityChanged
+* AppointmentScheduled
+* AppointmentUpdated
+* AppointmentStatusChanged
+* CarePlanCreated
+* CarePlanUpdated
+* CarePlanStatusChanged
+* CarePlanGoalAdded
+* CarePlanTaskAdded
+* ClinicalInsightGenerated
+* ClinicalInsightReviewStatusChanged
+* FollowUpTaskCreated
+* FollowUpTaskUpdated
+* FollowUpTaskStatusChanged
+* NotificationRequested
+* NotificationStatusChanged
+* NotificationSimulatedSent
+* SystemHealthChecked
+* SecurityEvent
+* ConfigurationEvent
+
+Supported entity types:
+
+* Patient
+* Provider
+* Appointment
+* CarePlan
+* ClinicalInsight
+* FollowUpTask
+* Notification
+* System
+
+Supported actor types:
+
+* Patient
+* Provider
+* CareCoordinator
+* Admin
+* Auditor
+* System
+
+Supported outcomes:
+
+* Success
+* Failure
+* ValidationFailed
+* NotFound
+* Unauthorized
+* Forbidden
+* Simulated
+
+Supported severities:
+
+* Info
+* Warning
+* Error
+* Critical
+
+Validation rules:
+
+* Correlation ID is required.
+* Event type is required.
+* Entity type is required.
+* Entity ID is required.
+* Actor type is required.
+* Actor ID is required.
+* Action is required.
+* Outcome is required.
+* Source service is required.
+* Severity is required.
+* Summary is required.
+* Summary must not contain sensitive clinical details.
+* Metadata must be safe JSON only.
+* Metadata must not contain full clinical notes, full care plan summaries, full notification content, real patient data, secrets, access tokens, API keys, or connection strings.
+* Created timestamp should be system generated.
+
+Suggested API endpoints:
+
+* `POST /api/v1/audit-events`
+* `GET /api/v1/audit-events`
+* `GET /api/v1/audit-events/{auditEventId}`
+* `GET /api/v1/audit-events/correlation/{correlationId}`
+* `GET /api/v1/audit-events/entity/{entityType}/{entityId}`
+* `GET /api/v1/patients/{patientId}/audit-events`
+* `GET /api/v1/providers/{providerId}/audit-events`
+* `GET /api/v1/audit-events/event-type/{eventType}`
+* `GET /api/v1/audit-events/source-service/{sourceService}`
+
+Suggested create request:
+
+```json id="6hx3zp"
+{
+  "correlationId": "correlation-id",
+  "eventType": "AppointmentScheduled",
+  "entityType": "Appointment",
+  "entityId": "appointment-id",
+  "patientId": "patient-id",
+  "providerId": "provider-id",
+  "actorType": "CareCoordinator",
+  "actorId": "system-demo-user",
+  "action": "ScheduleAppointment",
+  "outcome": "Success",
+  "summary": "Synthetic appointment scheduling audit event for demo workflow.",
+  "sourceService": "Appointment.Api",
+  "severity": "Info",
+  "metadata": {
+    "appointmentType": "Consultation",
+    "status": "Scheduled"
+  }
+}
+```
+
+Suggested response:
+
+```json id="p3tx45"
+{
+  "auditEventId": "audit-event-id",
+  "correlationId": "correlation-id",
+  "eventType": "AppointmentScheduled",
+  "entityType": "Appointment",
+  "entityId": "appointment-id",
+  "outcome": "Success",
+  "sourceService": "Appointment.Api",
+  "severity": "Info",
+  "createdAt": "2026-07-15T10:00:00Z"
+}
+```
+
+Audit writer abstraction expectations:
+
+Create an abstraction that future modules can use without coupling directly to `Audit.Api`.
+
+Recommended abstraction names:
+
+* `IAuditEventWriter`
+* `IAuditLogger`
+* `IAuditEventPublisher`
+* `AuditEventClient`
+
+The abstraction should support:
+
+1. Writing audit events with safe metadata.
+2. Including correlation ID automatically where practical.
+3. Including source service name.
+4. Avoiding sensitive data.
+5. Being replaceable by an event-driven implementation later.
+6. Being testable.
+
+Do not over-integrate every existing module if it causes excessive changes.
+
+At minimum:
+
+1. Implement the audit capability.
+2. Add sample audit logging integration to one or two modules if practical.
+3. Document how other modules should emit audit events in future.
+
+Suggested initial integrations:
+
+* Patient registration emits `PatientRegistered`.
+* Appointment status update emits `AppointmentStatusChanged`.
+* Clinical insight review status update emits `ClinicalInsightReviewStatusChanged`.
+* Notification simulate-send emits `NotificationSimulatedSent`.
+
+If integration across modules is too disruptive, implement audit logging as a standalone API and document future integration points clearly.
+
+Cosmos DB persistence expectations:
+
+1. Store audit events as append-only documents.
+2. Use a Cosmos DB-ready repository abstraction.
+3. Recommended partition key: `/correlationId` or `/patientId`.
+4. Choose the partition key based on likely query patterns and document the decision.
+5. Support querying by correlation ID, entity type/entity ID, patient ID, event type, and source service.
+6. Use safe metadata only.
+7. Do not require real Azure Cosmos DB credentials for local development.
+8. If using local mock/in-memory Cosmos repository for MVP, document the future Cosmos DB adapter clearly.
+9. Add safe placeholder configuration only.
+
+Suggested Cosmos document shape:
+
+```json id="mns7kw"
+{
+  "id": "audit-1001",
+  "correlationId": "corr-1001",
+  "eventType": "AppointmentScheduled",
+  "entityType": "Appointment",
+  "entityId": "appointment-301",
+  "patientId": "patient-501",
+  "providerId": "provider-201",
+  "actorType": "CareCoordinator",
+  "actorId": "system-demo-user",
+  "action": "ScheduleAppointment",
+  "outcome": "Success",
+  "summary": "Synthetic appointment scheduling audit event.",
+  "sourceService": "Appointment.Api",
+  "severity": "Info",
+  "metadata": {
+    "appointmentType": "Consultation",
+    "status": "Scheduled"
+  },
+  "createdAt": "2026-07-15T10:00:00Z"
+}
+```
+
+Append-only expectations:
+
+Audit events should normally not be updated or deleted.
+
+If update/delete APIs exist for development only, avoid exposing them as normal workflow endpoints.
+
+Document that audit events are append-only for compliance-readiness.
+
+Frontend scope:
+
+1. Implement Audit Log UI in React.
+2. Use the existing feature-based React structure.
+3. Add audit event list screen.
+4. Add audit event details screen.
+5. Add filters for:
+
+   * Event type
+   * Entity type
+   * Entity ID
+   * Patient ID
+   * Provider ID
+   * Correlation ID
+   * Source service
+   * Severity
+   * Outcome
+6. Show audit severity using professional badges.
+7. Show outcome using professional badges.
+8. Show event type clearly.
+9. Show correlation ID clearly.
+10. Show source service clearly.
+11. Show safe metadata in a readable JSON viewer or formatted section.
+12. Add patient-specific audit event view if practical.
+13. Add entity-specific audit event view if practical.
+14. Use typed React models and API services.
+15. Do not call APIs directly from components; use a dedicated audit API service or data hook.
+16. Keep the UI professional, clean, and suitable for a healthcare operations portal.
+
+Frontend route expectations:
+
+* `/audit`
+* `/audit/:id`
+* `/audit/correlation/:correlationId`
+* `/patients/:patientId/audit-events`
+* Optional: link recent audit events from `/dashboard`
+* Optional: show related audit events inside patient, appointment, care plan, clinical insight, follow-up task, and notification details screens
+
+Dashboard update:
+
+Update the dashboard if practical to show:
+
+* Recent audit events
+* Warning and error audit events
+* Events by source service
+* Recent patient-related audit events
+* Latest care coordination traceability activity
+
+Healthcare privacy and compliance-readiness expectations:
+
+Audit logs are critical in healthcare systems, but they can also create privacy risk if misused.
+
+Ensure implementation and documentation state:
+
+1. Only synthetic audit data is used.
+2. This is not a production healthcare system.
+3. The project does not claim HIPAA compliance or medical certification.
+4. Audit logging demonstrates compliance-readiness and traceability patterns only.
+5. Audit summaries must not contain real clinical details.
+6. Metadata must not contain full clinical notes, full care plan instructions, full notification messages, secrets, tokens, API keys, or connection strings.
+7. Logs should use safe metadata such as audit event ID, correlation ID, entity type, entity ID, patient ID, source service, event type, and outcome.
+8. Full healthcare content must not be logged in application logs or audit events by default.
+9. Future authentication and role-based access control should be documented.
+10. Future production audit design would require retention policy, access control, encryption, tamper resistance, legal review, and regulatory assessment.
+
+Responsible AI expectations:
+
+For audit events connected to Clinical Insights:
+
+1. Audit clinical insight generation using safe metadata only.
+2. Audit human review status changes.
+3. Do not store full AI input note text in audit metadata.
+4. Do not store full raw AI response in audit metadata.
+5. AI output must remain assistive and human-review-first.
+6. Do not present audit events as proof of clinical correctness.
+
+Documentation scope:
+
+Update or create relevant documentation:
+
+* `README.md`
+* `docs/api-contracts.md`
+* `docs/local-development.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/roadmap.md`
+* `docs/deployment.md`
+* `architecture/lld.md`
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/deployment-architecture.md`
+
+Also create or update:
+
+* `docs/audit-logging-strategy.md`
+* `architecture/diagrams/audit-logging-flow.md`
+
+Documentation must explain:
+
+1. Why audit logging is needed.
+2. What events are captured.
+3. What data must never be captured.
+4. How audit logs differ from application logs.
+5. Why Cosmos DB fits audit/event documents.
+6. The chosen partition key strategy.
+7. Append-only audit design.
+8. How audit events support troubleshooting using correlation ID.
+9. How future services should emit audit events.
+10. What production-grade audit logging would additionally require.
+
+Architecture expectations:
+
+1. Keep controllers thin.
+2. Keep validation and business rules out of controllers.
+3. Keep audit writing behind an abstraction.
+4. Use clear application/domain/infrastructure boundaries.
+5. Use healthcare-friendly naming.
+6. Document the Audit service responsibility clearly.
+7. Use Cosmos DB-ready design for audit event records.
+8. Keep audit events append-only.
+9. Do not store sensitive healthcare content in audit metadata.
+10. Do not implement unrelated healthcare features in this epic.
+11. Keep the implementation ready for future Azure Service Bus integration.
+12. Keep the implementation portfolio-grade and Solution Architect quality.
+
+Testing expectations:
+
+Add tests for:
+
+* Successful audit event creation
+* Missing correlation ID
+* Missing event type
+* Missing entity type
+* Missing entity ID
+* Missing actor type
+* Missing actor ID
+* Missing action
+* Missing outcome
+* Missing source service
+* Missing severity
+* Missing summary
+* Invalid event type
+* Invalid entity type
+* Invalid actor type
+* Invalid outcome
+* Invalid severity
+* Fetching all audit events
+* Fetching audit event by ID
+* Fetching audit events by correlation ID
+* Fetching audit events by entity type and entity ID
+* Fetching audit events by patient ID
+* Fetching audit events by provider ID
+* Fetching audit events by event type
+* Fetching audit events by source service
+* Audit event not found scenario
+* Metadata rejects or sanitizes unsafe keys where practical
+* Audit logs do not store full clinical notes where practical
+* Audit logs do not store secrets where practical
+* Audit events are not updated after creation where practical
+* Cosmos repository abstraction can persist and retrieve audit event documents where practical
+* Sample integration emits audit event if integration is implemented
+
+CI/CD expectation:
+
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, audit, clinical note, care plan, notification, or client data.
+* Do not use real medical records.
+* Do not log full clinical note text.
+* Do not log full care plan summaries or instructions.
+* Do not log full notification message content.
+* Do not store secrets, tokens, API keys, connection strings, or raw credentials in audit metadata.
+* Do not implement production compliance claims.
+* Do not claim HIPAA compliance or medical certification.
+* Do not implement unrelated features.
+* Do not overbuild beyond Epic 9.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. Audit writer abstraction files created or modified.
+4. Cosmos DB or Cosmos-ready persistence files created or modified.
+5. Frontend files created or modified.
+6. API endpoints added.
+7. Audit event model and validation rules implemented.
+8. Sample audit integrations added, if any.
+9. Tests added.
+10. Documentation updated.
+11. Healthcare privacy and safe audit logging notes.
+12. Responsible AI audit notes.
+13. Cosmos DB design notes.
+14. Commands to run locally.
+15. Commands to test.
+16. Any assumptions made.
+17. Recommended next epic.

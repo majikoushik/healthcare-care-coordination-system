@@ -1,0 +1,409 @@
+Implement Epic 7: Follow-up Task Tracking based on AGENTS.md and the existing repository.
+
+Build the next business capability for the `healthcare-care-coordination-system` repository: Follow-up Task Tracking.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0 through Epic 6.
+4. Review existing Patient, Provider, Appointment, Care Plan, and Clinical Insights modules.
+5. Review SQL Server persistence, Cosmos DB-ready document persistence, Azure AI provider readiness, React screens, tests, documentation, Docker setup, and CI workflow.
+6. Preserve the architecture direction, healthcare privacy guidance, responsible AI guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 7 Goal:
+
+Allow users to create, view, update, and track follow-up tasks connected to care plans, patients, providers, and clinical insight recommendations.
+
+Follow-up Task Tracking should demonstrate healthcare coordination workflow, task ownership, priority management, due-date tracking, overdue detection, and care-plan execution visibility.
+
+This epic should build on the existing Care Plan and Clinical Insights modules.
+
+Backend scope:
+
+1. Implement Follow-up Task Tracking.
+2. Reuse or extend the existing Care Plan task model if it already exists.
+3. If a separate follow-up task model is more appropriate, create a clean `FollowUpTask` model.
+4. Store follow-up tasks using Cosmos DB-ready persistence, because tasks are part of flexible care coordination documents/events.
+5. Support linking follow-up tasks to:
+
+   * Patient
+   * Provider
+   * Care Plan
+   * Clinical Insight, optional
+   * Appointment, optional
+6. Add request and response DTOs.
+7. Add validation for all required fields.
+8. Add status lifecycle logic.
+9. Add due-date and overdue detection logic.
+10. Add structured logging with safe metadata only.
+11. Use correlation ID support if already available.
+12. Add proper error handling using Problem Details or the existing global error-handling pattern.
+13. Add Swagger/OpenAPI documentation readiness.
+14. Add health check readiness if not already present.
+15. Add unit tests and API/integration tests where practical.
+
+Follow-up Task fields:
+
+* Task ID
+* Patient ID
+* Provider ID, optional
+* Care Plan ID
+* Clinical Insight ID, optional
+* Appointment ID, optional
+* Title
+* Description
+* Task type
+* Priority
+* Status
+* Due date
+* Assigned to
+* Completed timestamp, optional
+* Completion notes, optional
+* Created timestamp
+* Updated timestamp
+* Correlation ID
+
+Supported task types:
+
+* LabTest
+* MedicationReview
+* FollowUpAppointment
+* LifestyleCounseling
+* CarePlanReview
+* PatientEducation
+* General
+
+Supported priorities:
+
+* Low
+* Medium
+* High
+* Critical
+
+Supported task statuses:
+
+* Pending
+* InProgress
+* Completed
+* Overdue
+* Cancelled
+
+Recommended status transition rules:
+
+* Pending → InProgress
+* Pending → Completed
+* Pending → Cancelled
+* Pending → Overdue
+* InProgress → Completed
+* InProgress → Cancelled
+* InProgress → Overdue
+* Overdue → InProgress
+* Overdue → Completed
+* Overdue → Cancelled
+* Completed → no further transition
+* Cancelled → no further transition
+
+Validation rules:
+
+* Patient ID is required.
+* Care Plan ID is required.
+* Title is required.
+* Title should have a reasonable length limit.
+* Description is required.
+* Description should have a reasonable length limit.
+* Task type must be a supported value.
+* Priority must be a supported value.
+* Status must be a supported value.
+* Due date is required.
+* Due date should not be in the past for new pending tasks.
+* Assigned to is required.
+* Completion notes should have a reasonable length limit.
+* Completed timestamp should be set when task status becomes Completed.
+* Created timestamp should be system generated.
+* Updated timestamp should be system generated or updated automatically.
+
+Suggested API endpoints:
+
+* `POST /api/v1/follow-up-tasks`
+* `GET /api/v1/follow-up-tasks`
+* `GET /api/v1/follow-up-tasks/{taskId}`
+* `GET /api/v1/patients/{patientId}/follow-up-tasks`
+* `GET /api/v1/care-plans/{carePlanId}/follow-up-tasks`
+* `GET /api/v1/clinical-insights/{clinicalInsightId}/follow-up-tasks`
+* `GET /api/v1/follow-up-tasks/due-today`
+* `GET /api/v1/follow-up-tasks/overdue`
+* `PATCH /api/v1/follow-up-tasks/{taskId}/status`
+* `PUT /api/v1/follow-up-tasks/{taskId}`
+
+Suggested create request:
+
+```json
+{
+  "patientId": "patient-id",
+  "providerId": "provider-id",
+  "carePlanId": "care-plan-id",
+  "clinicalInsightId": "clinical-insight-id",
+  "appointmentId": "appointment-id",
+  "title": "Schedule follow-up glucose test",
+  "description": "Synthetic follow-up task created for demo care coordination workflow.",
+  "taskType": "LabTest",
+  "priority": "High",
+  "dueDate": "2026-07-15",
+  "assignedTo": "CareCoordinator"
+}
+```
+
+Suggested status update request:
+
+```json
+{
+  "status": "Completed",
+  "updatedBy": "CareCoordinator",
+  "completionNotes": "Synthetic completion note for demo workflow."
+}
+```
+
+Clinical Insights integration expectation:
+
+If a clinical insight has suggested follow-up topics or risk indicators, allow a follow-up task to reference the clinical insight.
+
+Do not automatically create tasks from AI output unless the existing architecture already supports this safely.
+
+If adding an optional action such as “Create task from clinical insight,” keep it simple and human-controlled.
+
+Optional endpoint:
+
+* `POST /api/v1/clinical-insights/{clinicalInsightId}/follow-up-tasks`
+
+This endpoint should create a follow-up task from a reviewed clinical insight recommendation only if practical.
+
+Important responsible AI rule:
+
+AI-generated follow-up recommendations must not automatically become clinical tasks without human review or explicit user action.
+
+Cosmos DB persistence expectations:
+
+1. Store follow-up tasks as documents or embedded care-plan task documents depending on the existing design.
+2. Use a Cosmos DB-ready repository abstraction.
+3. Recommended partition key: `/patientId`.
+4. Document the partition key decision.
+5. Support querying by care plan ID and patient ID.
+6. Use synthetic healthcare task content only.
+7. Do not require real Azure Cosmos DB credentials for local development.
+8. If using local mock/in-memory Cosmos repository for MVP, document the future Cosmos DB adapter clearly.
+9. Add safe placeholder configuration only.
+
+Suggested Cosmos document shape:
+
+```json
+{
+  "id": "followup-task-1001",
+  "patientId": "patient-501",
+  "providerId": "provider-201",
+  "carePlanId": "careplan-1001",
+  "clinicalInsightId": "insight-1001",
+  "appointmentId": "appointment-301",
+  "title": "Schedule follow-up glucose test",
+  "description": "Synthetic follow-up task for demo workflow.",
+  "taskType": "LabTest",
+  "priority": "High",
+  "status": "Pending",
+  "dueDate": "2026-07-15",
+  "assignedTo": "CareCoordinator",
+  "createdAt": "2026-06-21T10:00:00Z",
+  "updatedAt": "2026-06-21T10:00:00Z"
+}
+```
+
+Frontend scope:
+
+1. Implement Follow-up Task Tracking UI in React.
+2. Use the existing feature-based React structure.
+3. Add follow-up task list screen.
+4. Add follow-up task creation form.
+5. Add follow-up task details screen.
+6. Add patient-specific follow-up task view.
+7. Add care-plan-specific follow-up task view.
+8. Add clinical-insight-specific task creation link if practical.
+9. Show task status using professional badges.
+10. Show priority using professional badges.
+11. Show overdue tasks clearly.
+12. Show due-today tasks clearly.
+13. Add task status update action.
+14. Show only valid next statuses where practical.
+15. Use React Hook Form or the existing form approach.
+16. Use Zod or the existing validation approach if already configured.
+17. Add field-level and form-level validation.
+18. Show user-friendly validation messages.
+19. Show loading state during API calls.
+20. Show success message after task creation or status update.
+21. Show API error message when creation, fetch, or status update fails.
+22. Use typed React models and API services.
+23. Do not call APIs directly from components; use a dedicated follow-up task API service or data hook.
+24. Keep the UI professional, clean, and suitable for a healthcare operations portal.
+
+Frontend route expectations:
+
+* `/follow-up-tasks`
+* `/follow-up-tasks/new`
+* `/follow-up-tasks/:id`
+* `/patients/:patientId/follow-up-tasks`
+* `/care-plans/:carePlanId/follow-up-tasks`
+* `/clinical-insights/:clinicalInsightId/follow-up-tasks`
+* Optional: link pending and overdue tasks from `/dashboard`
+* Optional: show tasks inside `/care-plans/:id`
+
+React implementation expectations:
+
+1. Use React + TypeScript.
+2. Use React Router for routes.
+3. Use a typed API client or API service.
+4. Use TanStack Query if it is already configured or appropriate.
+5. Reuse shared components from previous epics where practical:
+
+   * Page header
+   * Form field
+   * Textarea field
+   * Select field
+   * Status badge
+   * Priority badge
+   * Loading state
+   * Empty state
+   * Error alert
+   * Data table or list card
+6. Do not duplicate unnecessary UI logic.
+7. Keep components small and maintainable.
+
+Dashboard update:
+
+Update the dashboard if practical to show:
+
+* Pending follow-up tasks
+* Overdue follow-up tasks
+* Due today tasks
+* High-priority tasks
+* Recently completed tasks
+
+Healthcare privacy and compliance-readiness expectations:
+
+Follow-up tasks may reference healthcare-like activities. Safe data handling is required.
+
+Ensure implementation and documentation state:
+
+1. Only synthetic follow-up task data is used.
+2. This is not a production healthcare system.
+3. The project does not claim HIPAA compliance or medical certification.
+4. Follow-up tasks must not contain real patient data.
+5. Follow-up task descriptions and completion notes must not contain real clinical details.
+6. Logs should use safe metadata such as task ID, patient ID, care plan ID, and correlation ID.
+7. Do not log full task descriptions or completion notes by default.
+8. Future authentication and role-based access control should be documented.
+9. AI-assisted follow-up recommendations require human review before becoming workflow tasks.
+
+Documentation scope:
+
+Update or create relevant documentation:
+
+* `README.md`
+* `docs/api-contracts.md`
+* `docs/local-development.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/azure-ai-language-readiness.md`
+* `docs/roadmap.md`
+* `architecture/lld.md`
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/clinical-ai-architecture.md`
+* `architecture/diagrams/care-plan-flow.md`
+* `architecture/diagrams/clinical-insights-flow.md`
+
+Architecture expectations:
+
+1. Keep controllers thin.
+2. Keep validation and business rules out of controllers.
+3. Put status transition rules in the domain or application layer.
+4. Keep task creation from AI recommendations human-controlled.
+5. Use clear application/domain/infrastructure boundaries.
+6. Use healthcare-friendly naming.
+7. Document the Follow-up Task responsibility clearly.
+8. Use Cosmos DB-ready design for follow-up task documents.
+9. Do not implement Notification Simulation yet.
+10. Do not implement Audit Logging yet unless only lightweight readiness hooks already exist.
+11. Do not implement additional AI features beyond safe linkage to clinical insights.
+12. Do not use real Azure AI calls.
+13. Keep the implementation portfolio-grade and Solution Architect quality.
+
+Testing expectations:
+
+Add tests for:
+
+* Successful follow-up task creation
+* Missing patient ID
+* Missing care plan ID
+* Missing title
+* Missing description
+* Invalid task type
+* Invalid priority
+* Invalid status
+* Missing due date
+* Due date in the past for new pending task
+* Fetching all follow-up tasks
+* Fetching follow-up task by ID
+* Fetching tasks by patient ID
+* Fetching tasks by care plan ID
+* Fetching tasks by clinical insight ID
+* Fetching due-today tasks
+* Fetching overdue tasks
+* Follow-up task not found scenario
+* Updating follow-up task details
+* Valid status transition from Pending to InProgress
+* Valid status transition from InProgress to Completed
+* Valid status transition from Overdue to Completed
+* Invalid transition from Completed to Pending
+* Invalid transition from Cancelled to InProgress
+* Completed timestamp is set when status becomes Completed
+* Safe logging does not log full task description or completion notes where practical
+* Cosmos repository abstraction can persist and retrieve follow-up task documents where practical
+
+CI/CD expectation:
+
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, task, clinical note, care plan, or client data.
+* Do not use real medical records.
+* Do not log full task descriptions or completion notes by default.
+* Do not automatically convert AI output into tasks without human action.
+* Do not implement Notification Simulation yet.
+* Do not implement Audit Logging yet unless only lightweight readiness hooks already exist.
+* Do not implement real Azure AI calls.
+* Do not claim medical advice, diagnosis, HIPAA compliance, or clinical certification.
+* Do not overbuild beyond Epic 7.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. Cosmos DB or Cosmos-ready persistence files created or modified.
+4. Frontend files created or modified.
+5. API endpoints added.
+6. Follow-up task status transition rules implemented.
+7. Clinical Insights linkage added, if any.
+8. Tests added.
+9. Documentation updated.
+10. Responsible AI notes.
+11. Healthcare privacy and safe data handling notes.
+12. Cosmos DB design notes.
+13. Commands to run locally.
+14. Commands to test.
+15. Any assumptions made.
+16. Recommended next epic.

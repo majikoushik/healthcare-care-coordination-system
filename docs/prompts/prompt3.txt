@@ -1,0 +1,238 @@
+Implement Epic 2: Provider Management based on AGENTS.md and the existing repository.
+
+Build the next business capability for the `healthcare-care-coordination-system` repository: Provider Management.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0 and Epic 1.
+4. Review existing Patient API, React patient screens, SQL Server persistence setup, tests, documentation, Docker setup, Cosmos DB readiness, Azure AI readiness, and CI workflow.
+5. Preserve the architecture direction, healthcare privacy guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, error handling approach, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 2 Goal:
+
+Allow users to create, view, and manage synthetic healthcare provider profiles through backend APIs and React frontend.
+
+Provider Management represents doctors, specialists, clinicians, or care professionals who participate in patient appointments and care plans.
+
+Backend scope:
+
+1. Implement Provider Management in `Provider.Api`.
+2. Create a clean domain model for `Provider`.
+3. Use SQL Server / Azure SQL persistence direction for provider master data.
+4. Add request and response DTOs.
+5. Add validation for all required fields.
+6. Add persistence using Entity Framework Core.
+7. Add database migration support.
+8. Add synthetic seed data if appropriate.
+9. Add Swagger/OpenAPI documentation readiness.
+10. Add structured logging.
+11. Use correlation ID support if already available.
+12. Add proper error handling using Problem Details or the existing global error-handling pattern.
+13. Add health check readiness if not already present.
+14. Add unit tests and API/integration tests where practical.
+
+Provider fields:
+
+* Provider ID
+* Full name
+* Specialty
+* Email
+* Mobile number
+* Department
+* Availability status
+* Created timestamp
+* Updated timestamp
+
+Supported specialties for demo:
+
+* GeneralMedicine
+* Cardiology
+* Endocrinology
+* Orthopedics
+* Pediatrics
+* Neurology
+* Dermatology
+
+Supported availability statuses:
+
+* Available
+* Busy
+* OnLeave
+* Inactive
+
+Validation rules:
+
+* Full name is required.
+* Full name should have a reasonable length limit.
+* Specialty is required and must be a supported value.
+* Email is required and must be valid.
+* Mobile number is required and must be valid enough for demo use.
+* Department is required.
+* Availability status must be a supported value.
+* Created timestamp should be system generated.
+* Updated timestamp should be system generated or updated automatically.
+
+Suggested API endpoints:
+
+* `POST /api/v1/providers`
+* `GET /api/v1/providers`
+* `GET /api/v1/providers/{providerId}`
+* `GET /api/v1/providers/specialty/{specialty}`
+* `PUT /api/v1/providers/{providerId}`
+* `PATCH /api/v1/providers/{providerId}/availability-status`
+
+Use consistent API response and error response patterns according to `AGENTS.md`.
+
+Frontend scope:
+
+1. Implement Provider Management UI in React.
+2. Use the existing feature-based React structure.
+3. Add provider list screen.
+4. Add provider creation form.
+5. Add provider details screen.
+6. Add provider specialty display.
+7. Add availability status display using professional badges.
+8. Use React Hook Form or the existing form approach.
+9. Use Zod or the existing validation approach if already configured.
+10. Add field-level and form-level validation.
+11. Show user-friendly validation messages.
+12. Show loading state during API calls.
+13. Show success message after provider creation.
+14. Show API error message when creation or fetch fails.
+15. Use typed React models and API services.
+16. Do not call APIs directly from components; use a dedicated provider API service or data hook.
+17. Keep the UI professional, clean, and suitable for a healthcare operations portal.
+
+Frontend route expectations:
+
+* `/providers`
+* `/providers/new`
+* `/providers/:id`
+* Optional: link provider summary cards from `/dashboard`
+
+React implementation expectations:
+
+1. Use React + TypeScript.
+2. Use React Router for routes.
+3. Use a typed API client or API service.
+4. Use TanStack Query if it is already configured or appropriate.
+5. Reuse shared components created in Epic 1 where practical:
+
+   * Page header
+   * Form field
+   * Status badge
+   * Loading state
+   * Empty state
+   * Error alert
+6. Do not duplicate unnecessary UI logic.
+7. Keep components small and maintainable.
+
+Database scope:
+
+1. Use SQL Server for provider data.
+2. Add Entity Framework Core model configuration.
+3. Add migration support.
+4. Ensure local configuration uses safe placeholder values.
+5. Do not use Cosmos DB for provider master profile in this epic.
+6. Preserve Cosmos DB readiness for future Care Plan, Clinical Insights, Notification, and Audit modules.
+
+Healthcare privacy and compliance-readiness expectations:
+
+Provider data is less sensitive than patient clinical data, but the implementation should still follow safe enterprise handling.
+
+Ensure implementation and documentation state:
+
+1. Only synthetic provider data is used.
+2. This is not a production healthcare system.
+3. The project does not claim HIPAA compliance or medical certification.
+4. Logs should use safe metadata such as provider ID and correlation ID.
+5. Do not log full provider profile unnecessarily.
+6. Future authentication and role-based access control should be documented.
+7. Provider status is included as workflow-readiness, not a complete workforce management system.
+
+Documentation scope:
+
+Update or create relevant documentation:
+
+* `README.md`
+* `docs/api-contracts.md`
+* `docs/local-development.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/roadmap.md`
+* `architecture/lld.md`
+* `architecture/data-model.md`
+* `architecture/api-governance.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/polyglot-persistence.md`
+
+Architecture expectations:
+
+1. Keep controllers thin.
+2. Keep validation and business rules out of controllers.
+3. Use clear application/domain/infrastructure boundaries.
+4. Use healthcare-friendly naming.
+5. Document the Provider service responsibility clearly.
+6. Keep Provider service focused on provider master data.
+7. Do not implement Appointment Scheduling yet.
+8. Do not implement Care Plan Management yet.
+9. Do not implement Clinical AI features yet.
+10. Do not use real Azure AI calls.
+11. Keep the design ready for future Appointment, Care Plan, Clinical Insights, Notification, and Audit epics.
+
+Testing expectations:
+
+Add tests for:
+
+* Successful provider creation
+* Missing full name
+* Missing specialty
+* Invalid specialty
+* Missing email
+* Invalid email
+* Missing mobile number
+* Missing department
+* Invalid availability status
+* Fetching all providers
+* Fetching provider by ID
+* Fetching providers by specialty
+* Provider not found scenario
+* Updating provider details
+* Updating availability status
+* Safe logging does not log full provider profile where practical
+
+CI/CD expectation:
+
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real provider, hospital, patient, or client data.
+* Do not log full provider profile unnecessarily.
+* Do not implement Appointment Scheduling yet.
+* Do not implement Care Plan Management yet.
+* Do not implement Clinical AI features yet.
+* Do not implement real Azure AI calls.
+* Do not overbuild beyond Epic 2.
+* Keep the project Azure-ready.
+* Keep the implementation portfolio-grade and Solution Architect quality.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. Frontend files created or modified.
+4. Database/migration changes.
+5. API endpoints added.
+6. Tests added.
+7. Documentation updated.
+8. Healthcare privacy and safe data handling notes.
+9. Commands to run locally.
+10. Commands to test.
+11. Any assumptions made.
+12. Recommended next epic.

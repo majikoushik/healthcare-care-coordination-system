@@ -1,0 +1,9 @@
+{
+  "providerId": "demo-provider-001",
+  "fullName": "Dr. Taylor Demo",
+  "specialty": "Primary Care",
+  "email": "taylor.demo@example.test",
+  "mobileNumber": "+1-555-0120",
+  "department": "Care Coordination",
+  "availabilityStatus": "Available"
+}

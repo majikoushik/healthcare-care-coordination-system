@@ -1,0 +1,240 @@
+Implement Epic 1: Patient Registration based on AGENTS.md and the existing repository foundation.
+
+Build the first business capability for the `healthcare-care-coordination-system` repository: Patient Registration.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the repository structure created in Epic 0.
+3. Review existing backend solution, React frontend structure, database readiness, Cosmos DB readiness, Azure AI readiness, architecture documents, ADRs, Docker setup, tests, and CI workflow.
+4. Preserve the architecture direction, healthcare privacy guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, error handling approach, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 1 Goal:
+
+Allow users to register and view synthetic patient profiles through backend APIs and React frontend.
+
+Patient data in this project must be synthetic only. This feature demonstrates secure healthcare data handling patterns, not a production medical record system.
+
+Backend scope:
+
+1. Implement Patient Registration in `Patient.Api`.
+2. Create a clean domain model for `Patient`.
+3. Use SQL Server / Azure SQL persistence direction for patient master data.
+4. Add request and response DTOs.
+5. Add validation for all required fields.
+6. Add persistence using Entity Framework Core.
+7. Add database migration support.
+8. Add synthetic seed data if appropriate.
+9. Add Swagger/OpenAPI documentation readiness.
+10. Add structured logging.
+11. Use correlation ID support if already available from Epic 0.
+12. Add proper error handling using Problem Details or the existing global error-handling pattern.
+13. Add health check readiness if not already present.
+14. Add unit tests and API/integration tests where practical.
+
+Patient registration fields:
+
+* Patient ID
+* Full name
+* Date of birth
+* Gender
+* Email
+* Mobile number
+* Address
+* Emergency contact name
+* Emergency contact number
+* Consent status
+* Created timestamp
+* Updated timestamp
+
+Supported consent statuses:
+
+* NotProvided
+* Provided
+* Withdrawn
+
+Supported gender values for demo:
+
+* Male
+* Female
+* Other
+* PreferNotToSay
+
+Validation rules:
+
+* Full name is required.
+* Full name should have a reasonable length limit.
+* Date of birth is required.
+* Patient must not have a future date of birth.
+* Email is required and must be valid.
+* Mobile number is required and must be valid enough for demo use.
+* Address is required.
+* Emergency contact name is required.
+* Emergency contact number is required.
+* Consent status must be a supported value.
+* Created timestamp should be system generated.
+* Updated timestamp should be system generated or updated automatically.
+
+Suggested API endpoints:
+
+* `POST /api/v1/patients`
+* `GET /api/v1/patients`
+* `GET /api/v1/patients/{patientId}`
+* `PUT /api/v1/patients/{patientId}`
+* `PATCH /api/v1/patients/{patientId}/consent-status`
+
+Use consistent API response and error response patterns according to `AGENTS.md`.
+
+Frontend scope:
+
+1. Implement Patient Registration UI in React.
+2. Use the existing feature-based React structure.
+3. Add a patient list screen.
+4. Add a patient registration form.
+5. Add a patient details screen.
+6. Add consent status display using professional badges.
+7. Use React Hook Form or the existing form approach.
+8. Use Zod or the existing validation approach if already configured.
+9. Add field-level and form-level validation.
+10. Show user-friendly validation messages.
+11. Show loading state during API calls.
+12. Show success message after patient registration.
+13. Show API error message when registration or fetch fails.
+14. Use typed React models and API services.
+15. Do not call APIs directly from components; use a dedicated patient API service or data hook.
+16. Keep the UI professional, clean, and suitable for a healthcare operations portal.
+
+Frontend route expectations:
+
+* `/patients`
+* `/patients/new`
+* `/patients/:id`
+* Optional: link patient summary cards from `/dashboard`
+
+React implementation expectations:
+
+1. Use React + TypeScript.
+2. Use React Router for routes.
+3. Use a typed API client or API service.
+4. Use TanStack Query if it is already configured or appropriate.
+5. Use reusable shared components for:
+
+   * Page header
+   * Form field
+   * Status badge
+   * Loading state
+   * Empty state
+   * Error alert
+6. Do not place all logic directly inside page components.
+7. Keep components small and maintainable.
+
+Database scope:
+
+1. Use SQL Server for patient data.
+2. Add Entity Framework Core model configuration.
+3. Add migration support.
+4. Ensure local configuration uses safe placeholder values.
+5. Do not use Cosmos DB for patient master profile in this epic.
+6. Preserve Cosmos DB readiness for future Care Plan, Clinical Insights, Notification, and Audit modules.
+
+Healthcare privacy and compliance-readiness expectations:
+
+This epic handles synthetic patient profile data, so safe healthcare data handling must be emphasized.
+
+Ensure implementation and documentation state:
+
+1. Only synthetic patient data is used.
+2. This is not a production medical record system.
+3. The project does not claim HIPAA compliance or medical certification.
+4. Patient data should not be logged in full.
+5. Logs should use safe metadata such as patient ID and correlation ID.
+6. Sensitive health details should not be stored in patient profile metadata.
+7. Future authentication and role-based access control should be documented.
+8. Consent status is included as a compliance-readiness pattern, not a complete consent management system.
+
+Documentation scope:
+
+Update or create relevant documentation:
+
+* `README.md`
+* `docs/api-contracts.md`
+* `docs/local-development.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/roadmap.md`
+* `architecture/lld.md`
+* `architecture/data-model.md`
+* `architecture/api-governance.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/polyglot-persistence.md`
+
+Architecture expectations:
+
+1. Keep controllers thin.
+2. Keep validation and business rules out of controllers.
+3. Use clear application/domain/infrastructure boundaries.
+4. Use healthcare-friendly naming.
+5. Document the Patient service responsibility clearly.
+6. Do not implement Provider Management yet.
+7. Do not implement Appointment Scheduling yet.
+8. Do not implement Care Plan Management yet.
+9. Do not implement Clinical AI features yet.
+10. Do not use real Azure AI calls.
+11. Keep the design ready for future Provider, Appointment, Care Plan, Clinical Insights, Notification, and Audit epics.
+
+Testing expectations:
+
+Add tests for:
+
+* Successful patient registration
+* Missing full name
+* Missing date of birth
+* Future date of birth
+* Missing email
+* Invalid email
+* Missing mobile number
+* Missing address
+* Missing emergency contact name
+* Missing emergency contact number
+* Invalid consent status
+* Fetching all patients
+* Fetching patient by ID
+* Patient not found scenario
+* Updating patient details
+* Updating consent status
+* Safe logging does not log full patient profile where practical
+
+CI/CD expectation:
+
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient data.
+* Do not use real medical records.
+* Do not log full patient profile data.
+* Do not implement Provider Management yet.
+* Do not implement Appointment Scheduling yet.
+* Do not implement Care Plan Management yet.
+* Do not implement real Azure AI calls.
+* Do not overbuild beyond Epic 1.
+* Keep the project Azure-ready.
+* Keep the implementation portfolio-grade and Solution Architect quality.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. Frontend files created or modified.
+4. Database/migration changes.
+5. API endpoints added.
+6. Tests added.
+7. Documentation updated.
+8. Healthcare privacy and safe data handling notes.
+9. Commands to run locally.
+10. Commands to test.
+11. Any assumptions made.
+12. Recommended next epic.

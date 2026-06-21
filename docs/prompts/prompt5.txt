@@ -1,0 +1,398 @@
+Implement Epic 4: Care Plan Management with Cosmos DB based on AGENTS.md and the existing repository.
+
+Build the next business capability for the `healthcare-care-coordination-system` repository: Care Plan Management using Azure Cosmos DB-ready document storage.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0, Epic 1, Epic 2, and Epic 3.
+4. Review existing Patient, Provider, and Appointment APIs.
+5. Review existing React patient, provider, and appointment screens.
+6. Review SQL Server persistence setup, Cosmos DB readiness, Azure AI readiness, tests, documentation, Docker setup, and CI workflow.
+7. Preserve the architecture direction, healthcare privacy guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, error handling approach, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 4 Goal:
+
+Allow users to create, view, update, and manage synthetic patient care plans using Cosmos DB-ready document persistence.
+
+Care Plan Management should demonstrate flexible healthcare document modeling, patient-centered coordination, follow-up planning, and polyglot persistence.
+
+Care plans should be stored in Cosmos DB or through a Cosmos DB-ready abstraction. SQL Server should remain the persistence choice for Patient, Provider, and Appointment master/transactional data.
+
+Backend scope:
+
+1. Implement Care Plan Management in `CarePlan.Api`.
+2. Create a clean domain model for `CarePlan`.
+3. Create a clean model for embedded care plan goals and tasks if appropriate.
+4. Use Cosmos DB-ready persistence for care plan documents.
+5. Add request and response DTOs.
+6. Add validation for all required fields.
+7. Add care plan status lifecycle logic.
+8. Add persistence through a Cosmos DB repository or abstraction.
+9. Add local development configuration using safe placeholder values.
+10. Add synthetic seed data if appropriate.
+11. Add Swagger/OpenAPI documentation readiness.
+12. Add structured logging.
+13. Use correlation ID support if already available.
+14. Add proper error handling using Problem Details or the existing global error-handling pattern.
+15. Add health check readiness if not already present.
+16. Add unit tests and API/integration tests where practical.
+
+Care Plan fields:
+
+* Care Plan ID
+* Patient ID
+* Provider ID
+* Related Appointment ID, optional
+* Title
+* Clinical summary
+* Goals
+* Instructions
+* Follow-up date
+* Status
+* Created timestamp
+* Updated timestamp
+* Correlation ID
+
+Care Plan Goal fields:
+
+* Goal ID
+* Description
+* Target date
+* Status
+* Priority
+
+Care Plan Task fields:
+
+* Task ID
+* Task title
+* Task description
+* Due date
+* Status
+* Priority
+* Assigned to
+* Completed timestamp
+
+Supported care plan statuses:
+
+* Draft
+* Active
+* OnHold
+* Completed
+* Cancelled
+
+Supported goal statuses:
+
+* NotStarted
+* InProgress
+* Achieved
+* NotAchieved
+* Cancelled
+
+Supported task statuses:
+
+* Pending
+* InProgress
+* Completed
+* Overdue
+* Cancelled
+
+Supported priorities:
+
+* Low
+* Medium
+* High
+* Critical
+
+Validation rules:
+
+* Patient ID is required.
+* Patient ID must refer to an existing patient if patient lookup is available.
+* Provider ID is required.
+* Provider ID must refer to an existing provider if provider lookup is available.
+* Title is required.
+* Title should have a reasonable length limit.
+* Clinical summary is required but must be synthetic demo text only.
+* Instructions are required.
+* Follow-up date should not be in the past for active care plans.
+* Status must be a supported value.
+* Goals collection may be empty initially but should be supported.
+* Tasks collection may be empty initially but should be supported.
+* Task due date should not be in the past for new pending tasks.
+* Created timestamp should be system generated.
+* Updated timestamp should be system generated or updated automatically.
+
+Recommended care plan status transition rules:
+
+* Draft → Active
+* Draft → Cancelled
+* Active → OnHold
+* Active → Completed
+* Active → Cancelled
+* OnHold → Active
+* OnHold → Cancelled
+* Completed → no further transition
+* Cancelled → no further transition
+
+Suggested API endpoints:
+
+* `POST /api/v1/care-plans`
+* `GET /api/v1/care-plans`
+* `GET /api/v1/care-plans/{carePlanId}`
+* `GET /api/v1/patients/{patientId}/care-plans`
+* `GET /api/v1/providers/{providerId}/care-plans`
+* `PUT /api/v1/care-plans/{carePlanId}`
+* `PATCH /api/v1/care-plans/{carePlanId}/status`
+* `POST /api/v1/care-plans/{carePlanId}/goals`
+* `PATCH /api/v1/care-plans/{carePlanId}/goals/{goalId}/status`
+* `POST /api/v1/care-plans/{carePlanId}/tasks`
+* `PATCH /api/v1/care-plans/{carePlanId}/tasks/{taskId}/status`
+
+Suggested care plan creation request:
+
+```json
+{
+  "patientId": "patient-id",
+  "providerId": "provider-id",
+  "relatedAppointmentId": "appointment-id",
+  "title": "Diabetes Follow-up Care Plan",
+  "clinicalSummary": "Synthetic demo summary for follow-up care coordination.",
+  "instructions": "Monitor symptoms, complete follow-up lab test, and attend next appointment.",
+  "followUpDate": "2026-07-30",
+  "goals": [
+    {
+      "description": "Improve medication adherence",
+      "targetDate": "2026-07-30",
+      "priority": "High"
+    }
+  ],
+  "tasks": [
+    {
+      "taskTitle": "Schedule follow-up lab test",
+      "taskDescription": "Synthetic task for demo workflow.",
+      "dueDate": "2026-07-15",
+      "priority": "Medium",
+      "assignedTo": "CareCoordinator"
+    }
+  ]
+}
+```
+
+Suggested status update request:
+
+```json
+{
+  "status": "Active",
+  "reason": "Care plan reviewed and activated by provider.",
+  "updatedBy": "System"
+}
+```
+
+Use consistent API response and error response patterns according to `AGENTS.md`.
+
+Cosmos DB persistence expectations:
+
+1. Store care plans as documents.
+2. Design the document model to support nested goals and tasks.
+3. Use a partition key strategy appropriate for care coordination queries.
+4. Recommended partition key: `/patientId`.
+5. Document the partition key decision.
+6. Avoid storing unnecessary sensitive clinical details.
+7. Use synthetic demo content only.
+8. Do not require real Azure Cosmos DB credentials for local development.
+9. If using a local mock/in-memory Cosmos repository for initial MVP, document the future Cosmos DB adapter clearly.
+10. If using Cosmos DB Emulator readiness, document setup clearly.
+11. Add safe placeholder configuration only.
+
+Suggested Cosmos document shape:
+
+```json
+{
+  "id": "careplan-1001",
+  "patientId": "patient-501",
+  "providerId": "provider-201",
+  "relatedAppointmentId": "appointment-301",
+  "title": "Diabetes Follow-up Care Plan",
+  "clinicalSummary": "Synthetic demo clinical summary.",
+  "goals": [],
+  "tasks": [],
+  "status": "Active",
+  "createdAt": "2026-06-21T10:00:00Z",
+  "updatedAt": "2026-06-21T10:00:00Z"
+}
+```
+
+Frontend scope:
+
+1. Implement Care Plan Management UI in React.
+2. Use the existing feature-based React structure.
+3. Add care plan list screen.
+4. Add care plan creation form.
+5. Add care plan details screen.
+6. Add patient-specific care plan view if practical.
+7. Add provider-specific care plan view if practical.
+8. Add care plan status display using professional badges.
+9. Add goal list or goal section.
+10. Add task list or task section.
+11. Add care plan status update action if appropriate for demo use.
+12. Show only valid next statuses where practical.
+13. Use React Hook Form or the existing form approach.
+14. Use Zod or the existing validation approach if already configured.
+15. Add field-level and form-level validation.
+16. Show user-friendly validation messages.
+17. Show loading state during API calls.
+18. Show success message after care plan creation or status update.
+19. Show API error message when creation, fetch, or status update fails.
+20. Use typed React models and API services.
+21. Do not call APIs directly from components; use a dedicated care plan API service or data hook.
+22. Keep the UI professional, clean, and suitable for a healthcare operations portal.
+
+Frontend route expectations:
+
+* `/care-plans`
+* `/care-plans/new`
+* `/care-plans/:id`
+* `/patients/:patientId/care-plans`
+* `/providers/:providerId/care-plans`
+* Optional: link active care plans from `/dashboard`
+* Optional: link care plans from `/appointments/:id`
+
+React implementation expectations:
+
+1. Use React + TypeScript.
+2. Use React Router for routes.
+3. Use a typed API client or API service.
+4. Use TanStack Query if it is already configured or appropriate.
+5. Reuse shared components from previous epics where practical:
+
+   * Page header
+   * Form field
+   * Select field
+   * Status badge
+   * Priority badge
+   * Loading state
+   * Empty state
+   * Error alert
+   * Data table or list card
+6. Do not duplicate unnecessary UI logic.
+7. Keep components small and maintainable.
+
+Healthcare privacy and compliance-readiness expectations:
+
+Care plans can contain sensitive health information. This project must use only synthetic demo content and must not claim production medical compliance.
+
+Ensure implementation and documentation state:
+
+1. Only synthetic care plan data is used.
+2. This is not a production electronic health record system.
+3. The project does not claim HIPAA compliance or medical certification.
+4. Clinical summary and instructions must not contain real patient data.
+5. Logs should use safe metadata such as care plan ID, patient ID, provider ID, and correlation ID.
+6. Do not log full clinical summary or care plan instructions by default.
+7. Cosmos DB documents may contain healthcare-like data, so secure configuration and access-control readiness must be documented.
+8. Future authentication and role-based access control should be documented.
+9. Care plan workflow is included as a coordination pattern, not as medical advice or diagnosis.
+
+Documentation scope:
+
+Update or create relevant documentation:
+
+* `README.md`
+* `docs/api-contracts.md`
+* `docs/local-development.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/roadmap.md`
+* `architecture/lld.md`
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/diagrams/care-plan-flow.md`
+* `architecture/diagrams/polyglot-persistence.md`
+
+Architecture expectations:
+
+1. Keep controllers thin.
+2. Keep validation and business rules out of controllers.
+3. Put status transition rules in the domain or application layer.
+4. Use clear application/domain/infrastructure boundaries.
+5. Use healthcare-friendly naming.
+6. Document the Care Plan service responsibility clearly.
+7. Keep CarePlan.Api focused on care plan lifecycle, goals, and tasks.
+8. Use Cosmos DB-ready design for care plan documents.
+9. Do not implement Clinical AI insights yet.
+10. Do not implement Notification Simulation yet unless a lightweight event-readiness hook already exists.
+11. Do not implement Audit Logging yet unless a lightweight audit-readiness hook already exists.
+12. Do not use real Azure AI calls.
+13. Keep the design ready for future Clinical Insights, Follow-up Task Tracking, Notification, and Audit epics.
+
+Testing expectations:
+
+Add tests for:
+
+* Successful care plan creation
+* Missing patient ID
+* Invalid patient ID if patient lookup exists
+* Missing provider ID
+* Invalid provider ID if provider lookup exists
+* Missing title
+* Missing clinical summary
+* Missing instructions
+* Follow-up date in the past for active care plan
+* Invalid care plan status
+* Fetching all care plans
+* Fetching care plan by ID
+* Fetching care plans by patient ID
+* Fetching care plans by provider ID
+* Care plan not found scenario
+* Updating care plan details
+* Valid status transition from Draft to Active
+* Valid status transition from Active to OnHold
+* Valid status transition from OnHold to Active
+* Valid status transition from Active to Completed
+* Invalid transition from Completed to Active
+* Adding a care plan goal
+* Updating a goal status
+* Adding a care plan task
+* Updating a task status
+* Safe logging does not log full clinical summary or instructions where practical
+* Cosmos repository abstraction can persist and retrieve care plan document where practical
+
+CI/CD expectation:
+
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, care plan, or client data.
+* Do not use real medical records.
+* Do not log full clinical summaries or instructions by default.
+* Do not implement Clinical AI insights yet.
+* Do not implement real Azure AI calls.
+* Do not overbuild beyond Epic 4.
+* Keep the project Azure-ready.
+* Keep the implementation portfolio-grade and Solution Architect quality.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. Cosmos DB or Cosmos-ready persistence files created or modified.
+4. Frontend files created or modified.
+5. Database or document persistence changes.
+6. API endpoints added.
+7. Care plan status transition rules implemented.
+8. Tests added.
+9. Documentation updated.
+10. Healthcare privacy and safe data handling notes.
+11. Cosmos DB design notes.
+12. Commands to run locally.
+13. Commands to test.
+14. Any assumptions made.
+15. Recommended next epic.

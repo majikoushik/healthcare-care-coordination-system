@@ -1,0 +1,8 @@
+{
+  "appointmentId": "demo-appointment-001",
+  "patientId": "demo-patient-001",
+  "providerId": "demo-provider-001",
+  "scheduledAt": "2026-07-10T15:00:00Z",
+  "status": "Scheduled",
+  "reason": "Synthetic follow-up coordination visit"
+}

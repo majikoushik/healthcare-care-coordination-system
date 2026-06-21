@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <ProjectReference Include="..\..\building-blocks\Compliance\Compliance.csproj" />
+    <ProjectReference Include="..\..\building-blocks\Messaging\Messaging.csproj" />
+  </ItemGroup>
+</Project>

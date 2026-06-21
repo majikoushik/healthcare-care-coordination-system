@@ -1,0 +1,454 @@
+Implement Epic 5: Clinical Note Insights with Mock AI Provider based on AGENTS.md and the existing repository.
+
+Build the next business capability for the `healthcare-care-coordination-system` repository: Clinical Note Insights using a mock AI provider.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0, Epic 1, Epic 2, Epic 3, and Epic 4.
+4. Review existing Patient, Provider, Appointment, and Care Plan APIs.
+5. Review React screens for patients, providers, appointments, and care plans.
+6. Review SQL Server persistence setup, Cosmos DB care plan persistence, Azure AI readiness, tests, documentation, Docker setup, and CI workflow.
+7. Preserve the architecture direction, healthcare privacy guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, error handling approach, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 5 Goal:
+
+Allow users to submit synthetic clinical notes and receive structured clinical insight output using a mock AI provider.
+
+This epic must not call real Azure AI services yet. It should prepare the system for future Azure AI Language / Text Analytics for Health integration by introducing a clean AI provider abstraction and a local mock implementation.
+
+Clinical Note Insights should demonstrate:
+
+* AI provider abstraction
+* Healthcare entity extraction readiness
+* Safe handling of synthetic clinical notes
+* Cosmos DB-ready storage of AI insight results
+* Human-review-first design
+* Responsible AI and privacy documentation
+* React UI for submitting and reviewing clinical note insights
+
+Backend scope:
+
+1. Implement Clinical Note Insights in `ClinicalInsights.Api`.
+2. Create a clean domain/application model for `ClinicalNoteInsight`.
+3. Create an AI provider abstraction such as:
+
+   * `IClinicalTextAnalyzer`
+   * `IClinicalInsightProvider`
+   * or similar clean naming
+4. Implement a `MockClinicalTextAnalyzer` for local development.
+5. Do not implement real Azure AI calls in this epic.
+6. Use Cosmos DB-ready persistence for clinical note insight documents.
+7. Add request and response DTOs.
+8. Add validation for all required fields.
+9. Add Swagger/OpenAPI documentation readiness.
+10. Add structured logging with safe metadata only.
+11. Use correlation ID support if already available.
+12. Add proper error handling using Problem Details or the existing global error-handling pattern.
+13. Add health check readiness if not already present.
+14. Add unit tests and API/integration tests where practical.
+
+Clinical Note Insight fields:
+
+* Insight ID
+* Patient ID
+* Provider ID
+* Related Care Plan ID, optional
+* Related Appointment ID, optional
+* Clinical note text
+* Extracted entities
+* Suggested follow-up topics
+* Risk indicators
+* AI provider name
+* AI provider mode
+* Human review status
+* Reviewed by, optional
+* Reviewed timestamp, optional
+* Created timestamp
+* Updated timestamp
+* Correlation ID
+
+Important privacy rule:
+
+Do not log full clinical note text.
+
+The system may store synthetic clinical note text in Cosmos DB for demo purposes, but logs must only include safe metadata such as insight ID, patient ID, provider ID, AI provider mode, and correlation ID.
+
+Supported AI provider modes:
+
+* Mock
+* AzureAIReady
+
+In this epic, only `Mock` should be active.
+
+Supported human review statuses:
+
+* PendingReview
+* Reviewed
+* Approved
+* Rejected
+* RequiresClarification
+
+Suggested extracted entity fields:
+
+* Entity ID
+* Text
+* Category
+* Subcategory, optional
+* Confidence score
+* Offset, optional
+* Length, optional
+* Normalized value, optional
+
+Suggested entity categories for mock provider:
+
+* Symptom
+* Condition
+* Medication
+* Test
+* Procedure
+* FollowUp
+* Lifestyle
+* RiskFactor
+* Unknown
+
+Suggested risk indicators:
+
+* MissedMedication
+* FollowUpNeeded
+* LabTestRecommended
+* WorseningSymptoms
+* LifestyleCounselingNeeded
+* NoImmediateRiskDetected
+
+Mock AI provider behavior:
+
+The mock provider should use deterministic keyword-based extraction from synthetic note text.
+
+Example:
+
+If note contains:
+
+* "blood sugar" or "glucose" → entity category `Test` or `Condition`
+* "fatigue" → entity category `Symptom`
+* "medication adherence" or "missed medication" → risk indicator `MissedMedication`
+* "follow-up" → entity category `FollowUp`
+* "diet" or "exercise" → entity category `Lifestyle`
+
+Keep the mock logic simple, deterministic, and testable.
+
+Do not use machine learning libraries.
+
+Do not call external APIs.
+
+Do not require Azure credentials.
+
+Suggested API endpoints:
+
+* `POST /api/v1/clinical-insights/analyze`
+* `GET /api/v1/clinical-insights`
+* `GET /api/v1/clinical-insights/{insightId}`
+* `GET /api/v1/patients/{patientId}/clinical-insights`
+* `GET /api/v1/care-plans/{carePlanId}/clinical-insights`
+* `PATCH /api/v1/clinical-insights/{insightId}/review-status`
+
+Suggested analyze request:
+
+```json
+{
+  "patientId": "patient-id",
+  "providerId": "provider-id",
+  "relatedCarePlanId": "care-plan-id",
+  "relatedAppointmentId": "appointment-id",
+  "clinicalNoteText": "Synthetic demo note: Patient reports fatigue, high blood sugar, and irregular medication adherence. Follow-up glucose test recommended in 30 days."
+}
+```
+
+Suggested analyze response:
+
+```json
+{
+  "insightId": "insight-id",
+  "patientId": "patient-id",
+  "providerId": "provider-id",
+  "aiProviderName": "MockClinicalTextAnalyzer",
+  "aiProviderMode": "Mock",
+  "humanReviewStatus": "PendingReview",
+  "extractedEntities": [
+    {
+      "text": "fatigue",
+      "category": "Symptom",
+      "confidenceScore": 0.91
+    },
+    {
+      "text": "blood sugar",
+      "category": "Test",
+      "confidenceScore": 0.88
+    }
+  ],
+  "riskIndicators": [
+    "MissedMedication",
+    "FollowUpNeeded",
+    "LabTestRecommended"
+  ],
+  "suggestedFollowUpTopics": [
+    "Review medication adherence",
+    "Schedule follow-up glucose test"
+  ]
+}
+```
+
+Suggested review status update request:
+
+```json
+{
+  "reviewStatus": "Reviewed",
+  "reviewedBy": "CareCoordinator",
+  "reviewNotes": "Synthetic review note for demo use only."
+}
+```
+
+Use consistent API response and error response patterns according to `AGENTS.md`.
+
+Validation rules:
+
+* Patient ID is required.
+* Patient ID must refer to an existing patient if patient lookup is available.
+* Provider ID is required.
+* Provider ID must refer to an existing provider if provider lookup is available.
+* Clinical note text is required.
+* Clinical note text must have a reasonable maximum length.
+* Clinical note text must be synthetic demo content only.
+* Related Care Plan ID is optional.
+* Related Appointment ID is optional.
+* Review status must be a supported value.
+* Reviewed by is required when status changes to Reviewed, Approved, Rejected, or RequiresClarification if practical.
+* Created timestamp should be system generated.
+* Updated timestamp should be system generated or updated automatically.
+
+Cosmos DB persistence expectations:
+
+1. Store clinical insight results as documents.
+2. Use a Cosmos DB-ready repository abstraction.
+3. Recommended partition key: `/patientId`.
+4. Document the partition key decision.
+5. Store extracted entities and risk indicators as nested document arrays.
+6. Use synthetic clinical note text only.
+7. Do not require real Azure Cosmos DB credentials for local development.
+8. If using a local mock/in-memory Cosmos repository for MVP, document the future Cosmos DB adapter clearly.
+9. If Cosmos DB Emulator readiness exists, integrate with it safely.
+10. Add safe placeholder configuration only.
+
+Suggested Cosmos document shape:
+
+```json
+{
+  "id": "insight-1001",
+  "patientId": "patient-501",
+  "providerId": "provider-201",
+  "relatedCarePlanId": "careplan-1001",
+  "relatedAppointmentId": "appointment-301",
+  "clinicalNoteText": "Synthetic demo clinical note.",
+  "extractedEntities": [],
+  "riskIndicators": [],
+  "suggestedFollowUpTopics": [],
+  "aiProviderName": "MockClinicalTextAnalyzer",
+  "aiProviderMode": "Mock",
+  "humanReviewStatus": "PendingReview",
+  "createdAt": "2026-06-21T10:00:00Z",
+  "updatedAt": "2026-06-21T10:00:00Z"
+}
+```
+
+Frontend scope:
+
+1. Implement Clinical Note Insights UI in React.
+2. Use the existing feature-based React structure.
+3. Add clinical insight list screen.
+4. Add clinical note analysis form.
+5. Add clinical insight details screen.
+6. Add patient-specific clinical insights view if practical.
+7. Add care-plan-specific clinical insights view if practical.
+8. Show extracted entities in a professional table or card layout.
+9. Show risk indicators using professional badges.
+10. Show suggested follow-up topics.
+11. Show AI provider mode clearly as `Mock`.
+12. Show human review status using professional badges.
+13. Add review status update action if appropriate for demo use.
+14. Use React Hook Form or the existing form approach.
+15. Use Zod or the existing validation approach if already configured.
+16. Add field-level and form-level validation.
+17. Show user-friendly validation messages.
+18. Show loading state during analysis.
+19. Show success message after clinical note analysis.
+20. Show API error message when analysis, fetch, or review update fails.
+21. Use typed React models and API services.
+22. Do not call APIs directly from components; use a dedicated clinical insights API service or data hook.
+23. Keep the UI professional, clean, and suitable for a healthcare operations portal.
+
+Frontend route expectations:
+
+* `/clinical-insights`
+* `/clinical-insights/new`
+* `/clinical-insights/:id`
+* `/patients/:patientId/clinical-insights`
+* `/care-plans/:carePlanId/clinical-insights`
+* Optional: link recent clinical insights from `/dashboard`
+* Optional: link clinical insights from `/care-plans/:id`
+
+React implementation expectations:
+
+1. Use React + TypeScript.
+2. Use React Router for routes.
+3. Use a typed API client or API service.
+4. Use TanStack Query if it is already configured or appropriate.
+5. Reuse shared components from previous epics where practical:
+
+   * Page header
+   * Form field
+   * Textarea field
+   * Select field
+   * Status badge
+   * Risk badge
+   * Loading state
+   * Empty state
+   * Error alert
+   * Data table or list card
+6. Do not duplicate unnecessary UI logic.
+7. Keep components small and maintainable.
+
+Responsible AI expectations:
+
+This epic must clearly communicate that AI output is assistive only.
+
+Ensure implementation and documentation state:
+
+1. Clinical insights are generated from synthetic demo notes only.
+2. This is not a diagnostic system.
+3. This is not medical advice.
+4. AI output requires human review.
+5. Mock AI output is deterministic demo output.
+6. Future Azure AI Language output must be reviewed by a human before being used in workflow.
+7. Do not claim the system is HIPAA-compliant or clinically certified.
+8. Do not present extracted entities as confirmed diagnosis.
+9. Do not log full clinical note text.
+10. Do not use real patient data or real medical notes.
+
+Healthcare privacy and compliance-readiness expectations:
+
+Clinical notes are sensitive healthcare-like content, even in demo form.
+
+Ensure implementation and documentation state:
+
+1. Only synthetic clinical note data is used.
+2. This is not a production electronic health record system.
+3. The project does not claim HIPAA compliance or medical certification.
+4. Clinical note text must not contain real patient data.
+5. Logs should use safe metadata such as insight ID, patient ID, provider ID, AI provider mode, and correlation ID.
+6. Do not log full clinical note text by default.
+7. Cosmos DB documents may contain healthcare-like data, so secure configuration and access-control readiness must be documented.
+8. Future authentication and role-based access control should be documented.
+9. Clinical insight workflow is included as an AI-readiness pattern, not as medical advice or diagnosis.
+
+Documentation scope:
+
+Update or create relevant documentation:
+
+* `README.md`
+* `docs/api-contracts.md`
+* `docs/local-development.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/azure-ai-language-readiness.md`
+* `docs/roadmap.md`
+* `architecture/lld.md`
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/clinical-ai-architecture.md`
+* `architecture/diagrams/clinical-insights-flow.md`
+
+Architecture expectations:
+
+1. Keep controllers thin.
+2. Keep validation and business rules out of controllers.
+3. Keep AI provider logic behind an abstraction.
+4. Keep mock AI provider deterministic and testable.
+5. Keep Azure AI provider unimplemented or placeholder-only in this epic.
+6. Use clear application/domain/infrastructure boundaries.
+7. Use healthcare-friendly naming.
+8. Document the Clinical Insights service responsibility clearly.
+9. Keep ClinicalInsights.Api focused on synthetic clinical note analysis and insight review workflow.
+10. Do not implement real Azure AI calls.
+11. Do not implement Notification Simulation yet unless a lightweight event-readiness hook already exists.
+12. Do not implement Audit Logging yet unless a lightweight audit-readiness hook already exists.
+13. Keep the design ready for future Azure AI Language Provider Readiness, Notification, and Audit epics.
+
+Testing expectations:
+
+Add tests for:
+
+* Successful clinical note analysis
+* Missing patient ID
+* Invalid patient ID if patient lookup exists
+* Missing provider ID
+* Invalid provider ID if provider lookup exists
+* Missing clinical note text
+* Clinical note text exceeding maximum length
+* Mock provider extracts symptom entity from note
+* Mock provider extracts test-related entity from note
+* Mock provider extracts medication adherence risk indicator
+* Mock provider extracts follow-up recommendation
+* Mock provider returns deterministic output
+* Fetching all clinical insights
+* Fetching clinical insight by ID
+* Fetching clinical insights by patient ID
+* Fetching clinical insights by care plan ID
+* Clinical insight not found scenario
+* Updating human review status
+* Invalid review status
+* Safe logging does not log full clinical note text where practical
+* Cosmos repository abstraction can persist and retrieve clinical insight document where practical
+
+CI/CD expectation:
+
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, clinical note, care plan, or client data.
+* Do not use real medical records.
+* Do not log full clinical note text by default.
+* Do not implement real Azure AI calls.
+* Do not claim diagnostic capability.
+* Do not claim HIPAA compliance.
+* Do not present AI output as medical advice.
+* Do not overbuild beyond Epic 5.
+* Keep the project Azure-ready.
+* Keep the implementation portfolio-grade and Solution Architect quality.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. AI abstraction and mock provider files created or modified.
+4. Cosmos DB or Cosmos-ready persistence files created or modified.
+5. Frontend files created or modified.
+6. API endpoints added.
+7. Mock AI extraction rules implemented.
+8. Human review workflow added.
+9. Tests added.
+10. Documentation updated.
+11. Responsible AI notes.
+12. Healthcare privacy and safe data handling notes.
+13. Cosmos DB design notes.
+14. Commands to run locally.
+15. Commands to test.
+16. Any assumptions made.
+17. Recommended next epic.

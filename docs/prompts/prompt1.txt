@@ -1,0 +1,338 @@
+Implement Epic 0: Repository Foundation based on AGENTS.md.
+
+Create the initial enterprise-grade foundation for the `healthcare-care-coordination-system` repository.
+
+Follow the architecture, quality standards, healthcare privacy guidance, folder structure, Azure-readiness direction, documentation expectations, testing expectations, React frontend standards, SQL Server + Cosmos DB persistence direction, Azure AI Language readiness, and agent workflow rules defined in `AGENTS.md`.
+
+Epic 0 Goal:
+
+Create a clean, professional, Solution Architect-grade repository foundation for a healthcare care coordination platform.
+
+This project must not look like a simple CRUD app or basic appointment booking system. It should look like a cloud-native healthcare care coordination platform designed by a senior Solution Architect.
+
+Project stack:
+
+* Backend: .NET 8 / ASP.NET Core Web API
+* Frontend: React + TypeScript + Vite
+* Relational database: SQL Server / Azure SQL
+* NoSQL database: Azure Cosmos DB for flexible healthcare documents and events
+* Azure AI readiness: Azure AI Language / Text Analytics for Health
+* Cloud target: Azure Container Apps, Azure Static Web Apps, Azure SQL, Azure Cosmos DB, Azure Key Vault, Azure Application Insights, Azure Log Analytics, Azure Service Bus
+
+Scope for Epic 0:
+
+1. Create the recommended repository structure.
+2. Create the initial .NET backend solution skeleton.
+3. Create the React frontend skeleton using Vite and TypeScript.
+4. Create initial building-block libraries or folders.
+5. Create architecture documentation.
+6. Create privacy, compliance-readiness, and secure healthcare data handling documentation.
+7. Create initial ADR files.
+8. Create developer setup documentation.
+9. Create Docker Compose foundation.
+10. Create GitHub Actions CI foundation.
+11. Add `.gitignore` and `.editorconfig`.
+12. Add a professional root `README.md`.
+
+Backend expectations:
+
+* Use ASP.NET Core Web API.
+* Use .NET 8 if available.
+* Use clean architecture or clearly separated service boundaries.
+* Create the initial service folders/projects for:
+
+  * `Patient.Api`
+  * `Provider.Api`
+  * `Appointment.Api`
+  * `CarePlan.Api`
+  * `ClinicalInsights.Api`
+  * `Notification.Worker`
+  * `Audit.Api`
+* Add building-block folders or projects for:
+
+  * `SharedKernel`
+  * `Observability`
+  * `Security`
+  * `Messaging`
+  * `Compliance`
+  * `Cosmos`
+  * `ClinicalAI`
+* Keep the initial implementation minimal but clean.
+* Add health check readiness.
+* Add Swagger/OpenAPI readiness.
+* Add global error-handling readiness.
+* Add correlation ID readiness.
+* Add structured logging readiness.
+* Add placeholder test projects where appropriate.
+* Do not implement business features yet.
+* Do not require real Azure credentials for local development.
+
+Database expectations:
+
+Prepare the repository for polyglot persistence:
+
+1. SQL Server / Azure SQL for structured transactional modules:
+
+   * Patient
+   * Provider
+   * Appointment
+
+2. Azure Cosmos DB for flexible document/event modules:
+
+   * Care plans
+   * Clinical notes
+   * Clinical AI insights
+   * Notification events
+   * Audit events
+
+For local development, add safe configuration placeholders only.
+
+Do not include real connection strings.
+
+Cosmos DB may be represented through local emulator readiness, placeholder configuration, or clear documentation if full local setup is not implemented yet.
+
+Frontend expectations:
+
+* Use React.
+* Use TypeScript.
+* Use Vite.
+* Create the React app under:
+  `src/web/healthcare-care-portal`
+* Use a professional feature-based structure.
+* Recommended frontend stack:
+
+  * React
+  * TypeScript
+  * Vite
+  * React Router
+  * React Hook Form
+  * Zod or equivalent validation readiness
+  * TanStack Query or API service abstraction readiness
+  * Axios or fetch wrapper
+* Add initial routes or placeholders for:
+
+  * Dashboard
+  * Patients
+  * Providers
+  * Appointments
+  * Care Plans
+  * Clinical Insights
+  * Follow-up Tasks
+  * Notifications
+  * Audit
+  * System Health
+* Keep the UI foundation clean, modern, and enterprise-ready.
+* The UI should look like a healthcare operations portal, not a toy frontend.
+
+Recommended React structure:
+
+```text
+src/web/healthcare-care-portal/
+│
+├── src/
+│   ├── app/
+│   │   ├── App.tsx
+│   │   ├── router.tsx
+│   │   └── providers.tsx
+│   │
+│   ├── core/
+│   │   ├── api/
+│   │   ├── hooks/
+│   │   ├── types/
+│   │   └── utils/
+│   │
+│   ├── shared/
+│   │   ├── components/
+│   │   ├── layout/
+│   │   ├── forms/
+│   │   └── ui/
+│   │
+│   ├── features/
+│   │   ├── dashboard/
+│   │   ├── patients/
+│   │   ├── providers/
+│   │   ├── appointments/
+│   │   ├── care-plans/
+│   │   ├── clinical-insights/
+│   │   ├── follow-up-tasks/
+│   │   ├── notifications/
+│   │   ├── audit/
+│   │   └── system-health/
+│   │
+│   ├── assets/
+│   └── main.tsx
+```
+
+Azure AI readiness expectations:
+
+Prepare the architecture for a future Clinical Note Insights module using:
+
+* Mock clinical text analyzer for local development
+* Azure AI Language / Text Analytics for Health provider readiness
+* Provider abstraction
+* Safe configuration
+* No real Azure AI credentials
+* No real clinical data
+* No logging of full clinical notes by default
+
+Do not implement real Azure AI calls in Epic 0.
+
+Add documentation explaining that future Azure AI functionality will be used to extract clinical entities from synthetic clinical notes, with human review and privacy safeguards.
+
+Sample data expectations:
+
+Create a `samples/` folder with safe synthetic healthcare examples only.
+
+Suggested files:
+
+* `samples/patient-sample.json`
+* `samples/provider-sample.json`
+* `samples/appointment-sample.json`
+* `samples/care-plan-sample.json`
+* `samples/clinical-note-sample.md`
+
+Do not use real patient data.
+
+Do not use real medical records.
+
+Do not use real hospital or client data.
+
+Documentation expectations:
+
+Create or update these files:
+
+* `README.md`
+* `architecture/README.md`
+* `architecture/hld.md`
+* `architecture/lld.md`
+* `architecture/nfrs.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/deployment-architecture.md`
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/clinical-ai-architecture.md`
+* `docs/setup.md`
+* `docs/local-development.md`
+* `docs/api-contracts.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/azure-ai-language-readiness.md`
+* `docs/deployment.md`
+* `docs/roadmap.md`
+
+Architecture diagram placeholders:
+
+Create Mermaid-ready diagram files under:
+
+* `architecture/diagrams/system-context.md`
+* `architecture/diagrams/container-diagram.md`
+* `architecture/diagrams/patient-appointment-flow.md`
+* `architecture/diagrams/care-plan-flow.md`
+* `architecture/diagrams/clinical-insights-flow.md`
+* `architecture/diagrams/polyglot-persistence.md`
+* `architecture/diagrams/azure-deployment.md`
+
+ADR expectations:
+
+Create these initial ADRs:
+
+* `architecture/adr/0001-architecture-style.md`
+* `architecture/adr/0002-react-frontend-choice.md`
+* `architecture/adr/0003-polyglot-persistence-sql-and-cosmos.md`
+* `architecture/adr/0004-cosmos-db-for-care-plans-and-events.md`
+* `architecture/adr/0005-azure-ai-language-for-clinical-insights.md`
+* `architecture/adr/0006-mock-ai-provider-first.md`
+* `architecture/adr/0007-observability-strategy.md`
+* `architecture/adr/0008-azure-hosting-strategy.md`
+
+Each ADR must include:
+
+* Status
+* Context
+* Decision
+* Consequences
+* Alternatives considered
+
+CI/CD expectations:
+
+Create GitHub Actions workflow foundation under:
+
+* `.github/workflows/ci.yml`
+
+The CI should be prepared to:
+
+* Restore backend dependencies
+* Build backend
+* Run backend tests
+* Install React frontend dependencies
+* Build React frontend
+* Run frontend tests where practical
+
+Docker expectations:
+
+Create Docker Compose foundation for future local development.
+
+Prepare for:
+
+* Backend API containers
+* React frontend container
+* SQL Server container
+* Cosmos DB emulator readiness or documented placeholder
+* Safe environment variable configuration
+
+Do not include real secrets.
+
+Environment/configuration expectations:
+
+* Add safe placeholder configuration only.
+* Add `.env.example` if useful.
+* Do not commit real `.env` files.
+* Do not hardcode Azure subscription ID, tenant ID, client secret, Azure AI endpoint, Azure AI key, SQL connection string, or Cosmos DB key.
+* Keep local development runnable without Azure credentials.
+
+Healthcare privacy and compliance-readiness expectations:
+
+Epic 0 must clearly document that:
+
+* This is a portfolio demo, not a production medical system.
+* The system must use synthetic data only.
+* It must not claim to be HIPAA-compliant or certified.
+* It should demonstrate compliance-readiness patterns such as audit logging, safe logging, access-control readiness, and traceability.
+* Sensitive health data must not be logged.
+* Full clinical notes should not be logged by default.
+* Azure AI outputs must be treated as assistive insights requiring human review.
+* Clinical insight output must not be presented as medical advice or diagnosis.
+
+Important quality rules:
+
+* Do not build business features yet.
+* Do not implement real Azure AI calls yet.
+* Do not hardcode secrets.
+* Do not use real patient data.
+* Do not use real medical records.
+* Do not overbuild beyond Epic 0.
+* Keep the project Azure-ready.
+* Keep documentation professional.
+* Make the repository look like it was created by a senior Solution Architect.
+* Ensure the structure supports future MVP epics.
+
+After implementation, provide:
+
+1. Summary of what was created.
+2. Final repository structure.
+3. Backend projects created.
+4. React frontend foundation created.
+5. Database readiness created.
+6. Cosmos DB readiness created.
+7. Azure AI Language readiness created.
+8. Architecture documents created.
+9. ADRs created.
+10. Privacy and compliance-readiness documents created.
+11. Commands to run locally.
+12. Commands to build and test.
+13. Any assumptions made.
+14. Recommended next epic.

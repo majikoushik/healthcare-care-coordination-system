@@ -1,0 +1,430 @@
+Implement Epic 8: Notification Simulation based on AGENTS.md and the existing repository.
+
+Build the next business capability for the `healthcare-care-coordination-system` repository: Notification Simulation.
+
+Before implementation:
+
+1. Read `AGENTS.md`.
+2. Review the current repository structure.
+3. Review the implementation from Epic 0 through Epic 7.
+4. Review existing Patient, Provider, Appointment, Care Plan, Clinical Insights, and Follow-up Task modules.
+5. Review SQL Server persistence, Cosmos DB-ready document persistence, Azure AI provider readiness, React screens, tests, documentation, Docker setup, and CI workflow.
+6. Preserve the architecture direction, healthcare privacy guidance, responsible AI guidance, polyglot persistence strategy, testing standards, documentation expectations, API response pattern, observability readiness, and Azure-readiness defined in `AGENTS.md`.
+
+Epic 8 Goal:
+
+Implement a notification simulation capability for healthcare care coordination events.
+
+This module should simulate notification requests and delivery records for patient registration, appointment scheduling, care plan updates, clinical insight review, and follow-up task workflows.
+
+This epic must not send real emails, real SMS, WhatsApp messages, push notifications, or external communication.
+
+Notification Simulation should demonstrate:
+
+* Event-driven architecture readiness
+* Azure Service Bus readiness
+* Cosmos DB document/event persistence
+* Safe notification metadata handling
+* Notification delivery status tracking
+* Retry-readiness documentation
+* Healthcare privacy-aware communication design
+* React UI for viewing simulated notifications
+
+Backend scope:
+
+1. Implement Notification Simulation in `Notification.Worker` and/or a notification API if the existing architecture supports it.
+2. Create a clean domain/application model for `NotificationEvent` or `NotificationRecord`.
+3. Store notification records using Cosmos DB-ready persistence.
+4. Add a simulated notification provider.
+5. Add request and response DTOs.
+6. Add validation for all required fields.
+7. Add notification status lifecycle logic.
+8. Add structured logging with safe metadata only.
+9. Use correlation ID support if already available.
+10. Add proper error handling using Problem Details or the existing global error-handling pattern.
+11. Add Swagger/OpenAPI documentation readiness if notification APIs are exposed.
+12. Add health check readiness if not already present.
+13. Add unit tests and API/integration tests where practical.
+
+Notification fields:
+
+* Notification ID
+* Patient ID, optional
+* Provider ID, optional
+* Related entity type
+* Related entity ID
+* Notification type
+* Channel
+* Recipient type
+* Recipient reference
+* Subject
+* Message summary
+* Status
+* Attempt count
+* Last attempted timestamp, optional
+* Sent timestamp, optional
+* Failure reason, optional
+* Created timestamp
+* Updated timestamp
+* Correlation ID
+
+Supported related entity types:
+
+* Patient
+* Provider
+* Appointment
+* CarePlan
+* ClinicalInsight
+* FollowUpTask
+* System
+
+Supported notification types:
+
+* PatientRegistered
+* ProviderRegistered
+* AppointmentScheduled
+* AppointmentCancelled
+* AppointmentStatusChanged
+* CarePlanCreated
+* CarePlanUpdated
+* ClinicalInsightGenerated
+* ClinicalInsightReviewRequired
+* FollowUpTaskCreated
+* FollowUpTaskDue
+* FollowUpTaskOverdue
+* FollowUpTaskCompleted
+* SystemAlert
+
+Supported channels:
+
+* EmailSimulation
+* SmsSimulation
+* PortalSimulation
+
+Supported recipient types:
+
+* Patient
+* Provider
+* CareCoordinator
+* Admin
+* Auditor
+* System
+
+Supported notification statuses:
+
+* Requested
+* Queued
+* SimulatedSent
+* SimulatedFailed
+* Cancelled
+
+Recommended status transition rules:
+
+* Requested → Queued
+* Requested → Cancelled
+* Queued → SimulatedSent
+* Queued → SimulatedFailed
+* SimulatedFailed → Queued
+* SimulatedSent → no further transition
+* Cancelled → no further transition
+
+Validation rules:
+
+* Related entity type is required.
+* Related entity ID is required.
+* Notification type is required.
+* Channel is required.
+* Recipient type is required.
+* Recipient reference is required.
+* Subject is required.
+* Message summary is required.
+* Message summary must not contain real clinical details.
+* Status must be a supported value.
+* Attempt count must not be negative.
+* Created timestamp should be system generated.
+* Updated timestamp should be system generated or updated automatically.
+
+Suggested API endpoints:
+
+* `POST /api/v1/notifications`
+* `GET /api/v1/notifications`
+* `GET /api/v1/notifications/{notificationId}`
+* `GET /api/v1/patients/{patientId}/notifications`
+* `GET /api/v1/providers/{providerId}/notifications`
+* `GET /api/v1/notifications/related/{relatedEntityType}/{relatedEntityId}`
+* `PATCH /api/v1/notifications/{notificationId}/status`
+* `POST /api/v1/notifications/{notificationId}/simulate-send`
+
+Suggested create request:
+
+```json
+{
+  "patientId": "patient-id",
+  "providerId": "provider-id",
+  "relatedEntityType": "Appointment",
+  "relatedEntityId": "appointment-id",
+  "notificationType": "AppointmentScheduled",
+  "channel": "EmailSimulation",
+  "recipientType": "Patient",
+  "recipientReference": "synthetic.patient@example.com",
+  "subject": "Appointment Scheduled",
+  "messageSummary": "Synthetic notification summary for demo appointment scheduling workflow."
+}
+```
+
+Suggested simulate-send response:
+
+```json
+{
+  "notificationId": "notification-id",
+  "status": "SimulatedSent",
+  "channel": "EmailSimulation",
+  "attemptCount": 1,
+  "sentAt": "2026-07-15T10:00:00Z",
+  "message": "Notification delivery was simulated. No real email, SMS, or external message was sent."
+}
+```
+
+Event-readiness expectations:
+
+This epic should prepare the system for future event-driven architecture using Azure Service Bus.
+
+If event contracts already exist, extend them.
+
+If not, create event contract documentation and lightweight internal event models for:
+
+* PatientRegistered
+* AppointmentScheduled
+* AppointmentStatusChanged
+* CarePlanCreated
+* ClinicalInsightGenerated
+* FollowUpTaskCreated
+* FollowUpTaskDue
+* FollowUpTaskOverdue
+
+Do not implement real Azure Service Bus publishing unless the existing architecture already has safe local abstraction and configuration.
+
+If adding a message bus abstraction, keep it minimal and local-development friendly.
+
+Recommended abstraction names:
+
+* `INotificationDispatcher`
+* `INotificationEventPublisher`
+* `IMessagePublisher`
+* `SimulatedNotificationDispatcher`
+
+Cosmos DB persistence expectations:
+
+1. Store notification records as documents.
+2. Use a Cosmos DB-ready repository abstraction.
+3. Recommended partition key: `/patientId` when patient-specific, with safe fallback for system notifications.
+4. Document the partition key decision.
+5. Support querying by related entity type and related entity ID.
+6. Use synthetic notification content only.
+7. Do not require real Azure Cosmos DB credentials for local development.
+8. If using local mock/in-memory Cosmos repository for MVP, document the future Cosmos DB adapter clearly.
+9. Add safe placeholder configuration only.
+
+Suggested Cosmos document shape:
+
+```json
+{
+  "id": "notification-1001",
+  "patientId": "patient-501",
+  "providerId": "provider-201",
+  "relatedEntityType": "Appointment",
+  "relatedEntityId": "appointment-301",
+  "notificationType": "AppointmentScheduled",
+  "channel": "EmailSimulation",
+  "recipientType": "Patient",
+  "recipientReference": "synthetic.patient@example.com",
+  "subject": "Appointment Scheduled",
+  "messageSummary": "Synthetic notification summary.",
+  "status": "SimulatedSent",
+  "attemptCount": 1,
+  "createdAt": "2026-06-21T10:00:00Z",
+  "updatedAt": "2026-06-21T10:00:00Z"
+}
+```
+
+Frontend scope:
+
+1. Implement Notification Simulation UI in React.
+2. Use the existing feature-based React structure.
+3. Add notification list screen.
+4. Add notification creation or simulation form if appropriate.
+5. Add notification details screen.
+6. Add patient-specific notification view.
+7. Add provider-specific notification view if practical.
+8. Add related-entity notification view if practical.
+9. Show notification status using professional badges.
+10. Show channel using professional badges or icons.
+11. Show notification type clearly.
+12. Add simulate-send action.
+13. Show a clear notice that no real notification is sent.
+14. Use React Hook Form or the existing form approach.
+15. Use Zod or the existing validation approach if already configured.
+16. Add field-level and form-level validation.
+17. Show user-friendly validation messages.
+18. Show loading state during API calls.
+19. Show success message after notification creation or simulation.
+20. Show API error message when creation, fetch, or simulation fails.
+21. Use typed React models and API services.
+22. Do not call APIs directly from components; use a dedicated notification API service or data hook.
+23. Keep the UI professional, clean, and suitable for a healthcare operations portal.
+
+Frontend route expectations:
+
+* `/notifications`
+* `/notifications/new`
+* `/notifications/:id`
+* `/patients/:patientId/notifications`
+* `/providers/:providerId/notifications`
+* Optional: link recent notifications from `/dashboard`
+* Optional: show related notifications inside appointment, care plan, clinical insight, or follow-up task details screens
+
+Dashboard update:
+
+Update the dashboard if practical to show:
+
+* Recent simulated notifications
+* Pending notification requests
+* Simulated failed notifications
+* Notification channel distribution
+* Latest care coordination events
+
+Healthcare privacy and compliance-readiness expectations:
+
+Notifications can easily leak sensitive healthcare information. This epic must demonstrate safe communication patterns.
+
+Ensure implementation and documentation state:
+
+1. Only synthetic notification data is used.
+2. No real email, SMS, push notification, WhatsApp, or external message is sent.
+3. This is not a production healthcare communication system.
+4. The project does not claim HIPAA compliance or medical certification.
+5. Notification message summaries must not contain real clinical details.
+6. Logs should use safe metadata such as notification ID, patient ID, related entity ID, notification type, channel, and correlation ID.
+7. Do not log full message content by default.
+8. Do not include sensitive clinical details in notification subject or summary.
+9. Future authentication and role-based access control should be documented.
+10. Future production communication would require consent, secure templates, opt-out controls, auditability, and regulatory review.
+
+Responsible AI expectations:
+
+If notifications are connected to Clinical Insights:
+
+1. Do not automatically notify patients based on AI-generated clinical insights.
+2. Clinical insight notifications should be limited to review-required workflow events.
+3. AI-generated recommendations require human review before becoming patient-facing communication.
+4. Do not present AI output as diagnosis or medical advice.
+
+Documentation scope:
+
+Update or create relevant documentation:
+
+* `README.md`
+* `docs/api-contracts.md`
+* `docs/local-development.md`
+* `docs/testing-strategy.md`
+* `docs/secure-healthcare-data-handling.md`
+* `docs/roadmap.md`
+* `docs/deployment.md`
+* `architecture/lld.md`
+* `architecture/data-model.md`
+* `architecture/event-model.md`
+* `architecture/api-governance.md`
+* `architecture/security-architecture.md`
+* `architecture/privacy-and-compliance.md`
+* `architecture/observability-architecture.md`
+* `architecture/polyglot-persistence.md`
+* `architecture/deployment-architecture.md`
+
+Architecture expectations:
+
+1. Keep controllers thin.
+2. Keep validation and business rules out of controllers.
+3. Put status transition rules in the domain or application layer.
+4. Use clear application/domain/infrastructure boundaries.
+5. Use healthcare-friendly naming.
+6. Document the Notification Simulation responsibility clearly.
+7. Use Cosmos DB-ready design for notification records.
+8. Keep notification delivery simulated only.
+9. Do not implement real email sending.
+10. Do not implement real SMS sending.
+11. Do not implement WhatsApp or external notification providers.
+12. Do not implement Audit Logging yet unless only lightweight readiness hooks already exist.
+13. Keep the implementation ready for future Azure Service Bus integration.
+14. Keep the implementation portfolio-grade and Solution Architect quality.
+
+Testing expectations:
+
+Add tests for:
+
+* Successful notification creation
+* Missing related entity type
+* Missing related entity ID
+* Missing notification type
+* Missing channel
+* Missing recipient type
+* Missing recipient reference
+* Missing subject
+* Missing message summary
+* Invalid notification type
+* Invalid channel
+* Invalid recipient type
+* Invalid status
+* Fetching all notifications
+* Fetching notification by ID
+* Fetching notifications by patient ID
+* Fetching notifications by provider ID
+* Fetching notifications by related entity
+* Notification not found scenario
+* Valid status transition from Requested to Queued
+* Valid status transition from Queued to SimulatedSent
+* Valid status transition from Queued to SimulatedFailed
+* Valid status transition from SimulatedFailed to Queued
+* Invalid transition from SimulatedSent to Queued
+* Simulate-send action increments attempt count
+* Simulate-send action sets sent timestamp
+* Safe logging does not log full message content where practical
+* No real external notification provider is called
+* Cosmos repository abstraction can persist and retrieve notification documents where practical
+
+CI/CD expectation:
+
+Update GitHub Actions if required so the build and tests include the new backend and React frontend changes.
+
+Important rules:
+
+* Do not hardcode secrets.
+* Do not use real patient, provider, hospital, notification, clinical note, care plan, or client data.
+* Do not send real emails.
+* Do not send real SMS.
+* Do not call external notification APIs.
+* Do not log full notification message content by default.
+* Do not include real clinical details in notification content.
+* Do not automatically notify patients from AI-generated insight content.
+* Do not implement Audit Logging yet unless only lightweight readiness hooks already exist.
+* Do not claim HIPAA compliance, medical certification, diagnosis, or medical advice.
+* Do not overbuild beyond Epic 8.
+
+After implementation, provide:
+
+1. What was implemented.
+2. Backend files created or modified.
+3. Notification dispatcher or simulation files created or modified.
+4. Cosmos DB or Cosmos-ready persistence files created or modified.
+5. Frontend files created or modified.
+6. API endpoints added.
+7. Notification status transition rules implemented.
+8. Event-readiness changes added.
+9. Tests added.
+10. Documentation updated.
+11. Healthcare privacy and safe communication notes.
+12. Responsible AI notes if Clinical Insights are connected.
+13. Cosmos DB design notes.
+14. Commands to run locally.
+15. Commands to test.
+16. Any assumptions made.
+17. Recommended next epic.
