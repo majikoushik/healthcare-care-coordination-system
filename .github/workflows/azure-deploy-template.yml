@@ -1,4 +1,18 @@
-name: Azure Deploy Template
+# =============================================================================
+# AZURE DEPLOYMENT TEMPLATE (BLUEPRINT)
+#
+# IMPORTANT: This workflow is an architectural blueprint template demonstrating
+# cloud-native deployment patterns. It uses placeholder hello-world container
+# images and requires a real Azure subscription, Key Vault, and ACR to function.
+#
+# To deploy the real application:
+# 1. Provide real Azure credentials via secrets.AZURE_CREDENTIALS
+# 2. Configure secrets.AZURE_SUBSCRIPTION_ID and secrets.AZURE_REGISTRY_NAME
+# 3. Build and push the actual service images to your ACR
+# 4. Remove the hello-world image overrides below
+# =============================================================================
+
+name: Azure Container Apps Deploy (Template)
 
 on:
   workflow_call:

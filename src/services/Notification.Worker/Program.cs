@@ -16,7 +16,7 @@ builder.Services.AddHealthcareApiFoundation(serviceName);
 builder.Services.AddSingleton<INotificationRepository, MockNotificationRepository>();
 builder.Services.AddSingleton<ISimulatedNotificationDispatcher, SimulatedNotificationDispatcher>();
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-builder.Services.AddAuditLogging(serviceName);
+builder.Services.AddAuditLogging(serviceName, builder.Configuration);
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();

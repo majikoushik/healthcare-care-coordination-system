@@ -10,11 +10,17 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
-      SQL_CONNECTION_STRING: ${SQL_CONNECTION_STRING}
+      # Fix 3: ASP.NET Core reads ConnectionStrings:DefaultConnection via the
+      # double-underscore env var convention (not the flat SQL_CONNECTION_STRING)
+      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection}
       AI_PROVIDER: Mock
-      SECURITY_MODE: ${SECURITY_MODE:-Demo}
-      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
-      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
+      # Fix 9: Security config binding — use double-underscore for nested section
+      Security__Mode: ${Security__Mode:-Demo}
+      Security__AllowDemoHeaders: ${Security__AllowDemoHeaders:-true}
+      Security__DefaultDemoRole: ${Security__DefaultDemoRole:-CareCoordinator}
+      # Fix 4: Audit API base URL — inside Docker, localhost resolves to the
+      # container itself, not the audit-api service.
+      AuditApi__BaseUrl: http://audit-api:8080
     ports:
       - "5080:8080"
     networks:
@@ -34,11 +40,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
-      SQL_CONNECTION_STRING: ${SQL_CONNECTION_STRING}
+      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection}
       AI_PROVIDER: Mock
-      SECURITY_MODE: ${SECURITY_MODE:-Demo}
-      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
-      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
+      Security__Mode: ${Security__Mode:-Demo}
+      Security__AllowDemoHeaders: ${Security__AllowDemoHeaders:-true}
+      Security__DefaultDemoRole: ${Security__DefaultDemoRole:-CareCoordinator}
+      AuditApi__BaseUrl: http://audit-api:8080
     ports:
       - "5081:8080"
     networks:
@@ -58,11 +65,12 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
-      SQL_CONNECTION_STRING: ${SQL_CONNECTION_STRING}
+      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection}
       AI_PROVIDER: Mock
-      SECURITY_MODE: ${SECURITY_MODE:-Demo}
-      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
-      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
+      Security__Mode: ${Security__Mode:-Demo}
+      Security__AllowDemoHeaders: ${Security__AllowDemoHeaders:-true}
+      Security__DefaultDemoRole: ${Security__DefaultDemoRole:-CareCoordinator}
+      AuditApi__BaseUrl: http://audit-api:8080
     ports:
       - "5082:8080"
     networks:
@@ -87,9 +95,10 @@ services:
       COSMOS_KEY: ${COSMOS_KEY}
       COSMOS_DATABASE: ${COSMOS_DATABASE}
       AI_PROVIDER: Mock
-      SECURITY_MODE: ${SECURITY_MODE:-Demo}
-      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
-      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
+      Security__Mode: ${Security__Mode:-Demo}
+      Security__AllowDemoHeaders: ${Security__AllowDemoHeaders:-true}
+      Security__DefaultDemoRole: ${Security__DefaultDemoRole:-CareCoordinator}
+      AuditApi__BaseUrl: http://audit-api:8080
     ports:
       - "5083:8080"
     networks:
@@ -112,9 +121,10 @@ services:
       COSMOS_DATABASE: ${COSMOS_DATABASE}
       CLINICAL_AI_PROVIDER_MODE: ${CLINICAL_AI_PROVIDER_MODE:-Mock}
       AI_PROVIDER: Mock
-      SECURITY_MODE: ${SECURITY_MODE:-Demo}
-      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
-      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
+      Security__Mode: ${Security__Mode:-Demo}
+      Security__AllowDemoHeaders: ${Security__AllowDemoHeaders:-true}
+      Security__DefaultDemoRole: ${Security__DefaultDemoRole:-CareCoordinator}
+      AuditApi__BaseUrl: http://audit-api:8080
     ports:
       - "5084:8080"
     networks:
@@ -136,9 +146,9 @@ services:
       COSMOS_KEY: ${COSMOS_KEY}
       COSMOS_DATABASE: ${COSMOS_DATABASE}
       AI_PROVIDER: Mock
-      SECURITY_MODE: ${SECURITY_MODE:-Demo}
-      ALLOW_DEMO_HEADERS: ${ALLOW_DEMO_HEADERS:-true}
-      DEFAULT_DEMO_ROLE: ${DEFAULT_DEMO_ROLE:-CareCoordinator}
+      Security__Mode: ${Security__Mode:-Demo}
+      Security__AllowDemoHeaders: ${Security__AllowDemoHeaders:-true}
+      Security__DefaultDemoRole: ${Security__DefaultDemoRole:-CareCoordinator}
     ports:
       - "5085:8080"
     networks:
@@ -154,12 +164,16 @@ services:
         SERVICE_DLL: Notification.Worker.dll
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:8080
       COSMOS_MODE: ${COSMOS_MODE:-Mock}
       COSMOS_ENDPOINT: ${COSMOS_ENDPOINT}
       COSMOS_KEY: ${COSMOS_KEY}
       COSMOS_DATABASE: ${COSMOS_DATABASE}
       AI_PROVIDER: Mock
-      SECURITY_MODE: ${SECURITY_MODE:-Demo}
+      Security__Mode: ${Security__Mode:-Demo}
+      AuditApi__BaseUrl: http://audit-api:8080
+    ports:
+      - "5086:8080"
     networks:
       - healthcare-network
 
@@ -168,8 +182,14 @@ services:
     build:
       context: src/web/healthcare-care-portal
       dockerfile: Dockerfile
-    environment:
-      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5080}
+      args:
+        VITE_PATIENT_API_URL: ${VITE_PATIENT_API_URL:-http://localhost:5080}
+        VITE_PROVIDER_API_URL: ${VITE_PROVIDER_API_URL:-http://localhost:5081}
+        VITE_APPOINTMENT_API_URL: ${VITE_APPOINTMENT_API_URL:-http://localhost:5082}
+        VITE_CARE_PLAN_API_URL: ${VITE_CARE_PLAN_API_URL:-http://localhost:5083}
+        VITE_CLINICAL_INSIGHTS_API_URL: ${VITE_CLINICAL_INSIGHTS_API_URL:-http://localhost:5084}
+        VITE_AUDIT_API_URL: ${VITE_AUDIT_API_URL:-http://localhost:5085}
+        VITE_NOTIFICATION_API_URL: ${VITE_NOTIFICATION_API_URL:-http://localhost:5086}
     ports:
       - "5173:80"
     networks:

@@ -1,44 +1,47 @@
-import { axiosClient } from "./axiosClient";
-import { 
-  ClinicalNoteInsight, 
-  AnalyzeNoteRequest, 
-  UpdateReviewStatusRequest 
+import { createServiceClient } from "./axiosClient";
+import { apiConfig } from "./apiConfig";
+import {
+  ClinicalNoteInsight,
+  AnalyzeNoteRequest,
+  UpdateReviewStatusRequest,
 } from "../../features/clinical-insights/types";
 import { ApiResponse } from "./patientApi";
 
+const clinicalInsightsClient = createServiceClient(apiConfig.clinicalInsightsApiBaseUrl);
+
 export const clinicalInsightApi = {
   getInsights: async (): Promise<ClinicalNoteInsight[]> => {
-    const response = await axiosClient.get<ApiResponse<ClinicalNoteInsight[]>>("/api/v1/clinical-insights");
+    const response = await clinicalInsightsClient.get<ApiResponse<ClinicalNoteInsight[]>>("/api/v1/clinical-insights");
     return response.data.data;
   },
 
   getInsightById: async (id: string): Promise<ClinicalNoteInsight> => {
-    const response = await axiosClient.get<ApiResponse<ClinicalNoteInsight>>(`/api/v1/clinical-insights/${id}`);
+    const response = await clinicalInsightsClient.get<ApiResponse<ClinicalNoteInsight>>(`/api/v1/clinical-insights/${id}`);
     return response.data.data;
   },
 
   getInsightsByPatientId: async (patientId: string): Promise<ClinicalNoteInsight[]> => {
-    const response = await axiosClient.get<ApiResponse<ClinicalNoteInsight[]>>(`/api/v1/patients/${patientId}/clinical-insights`);
+    const response = await clinicalInsightsClient.get<ApiResponse<ClinicalNoteInsight[]>>(`/api/v1/patients/${patientId}/clinical-insights`);
     return response.data.data;
   },
 
   getInsightsByCarePlanId: async (carePlanId: string): Promise<ClinicalNoteInsight[]> => {
-    const response = await axiosClient.get<ApiResponse<ClinicalNoteInsight[]>>(`/api/v1/care-plans/${carePlanId}/clinical-insights`);
+    const response = await clinicalInsightsClient.get<ApiResponse<ClinicalNoteInsight[]>>(`/api/v1/care-plans/${carePlanId}/clinical-insights`);
     return response.data.data;
   },
 
   analyzeNote: async (data: AnalyzeNoteRequest): Promise<ClinicalNoteInsight> => {
-    const response = await axiosClient.post<ApiResponse<ClinicalNoteInsight>>("/api/v1/clinical-insights/analyze", data);
+    const response = await clinicalInsightsClient.post<ApiResponse<ClinicalNoteInsight>>("/api/v1/clinical-insights/analyze", data);
     return response.data.data;
   },
 
   updateReviewStatus: async (id: string, data: UpdateReviewStatusRequest): Promise<ClinicalNoteInsight> => {
-    const response = await axiosClient.patch<ApiResponse<ClinicalNoteInsight>>(`/api/v1/clinical-insights/${id}/review-status`, data);
+    const response = await clinicalInsightsClient.patch<ApiResponse<ClinicalNoteInsight>>(`/api/v1/clinical-insights/${id}/review-status`, data);
     return response.data.data;
   },
 
-  getAiProviderStatus: async (): Promise<any> => {
-    const response = await axiosClient.get("/api/v1/clinical-insights/ai-provider/status");
+  getAiProviderStatus: async (): Promise<unknown> => {
+    const response = await clinicalInsightsClient.get("/api/v1/clinical-insights/ai-provider/status");
     return response.data;
-  }
+  },
 };

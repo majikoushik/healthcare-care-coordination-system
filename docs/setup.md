@@ -6,7 +6,7 @@ This guide gets the portfolio demo running locally without Azure credentials. Lo
 
 ## Prerequisites
 
-- .NET 8 SDK
+- .NET 10 SDK
 - Node.js 20 or later
 - npm
 - Docker Desktop
@@ -24,7 +24,7 @@ Required local defaults:
 - `AI_PROVIDER=Mock`
 - `CLINICAL_AI_PROVIDER_MODE=Mock`
 - `COSMOS_MODE=Mock`
-- `SECURITY_MODE=Demo`
+- `Security__Mode=Demo`
 
 ## Docker Compose
 

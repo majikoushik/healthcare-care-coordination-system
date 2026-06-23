@@ -3,6 +3,8 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="xunit" Version="2.8.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1" />
-    <ProjectReference Include="..\..\src\building-blocks\Security\Security.csproj" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <!-- Reference Provider.Api project for validators and DTOs -->
+    <ProjectReference Include="..\..\src\services\Provider.Api\Provider.Api.csproj" />
   </ItemGroup>
 </Project>

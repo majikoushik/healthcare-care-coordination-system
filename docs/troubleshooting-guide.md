@@ -43,7 +43,7 @@ make up
 
 ### 3. Frontend Cannot Reach Backend
 **Symptom:** Network errors in the React portal.
-**Fix:** Ensure `VITE_API_BASE_URL` in `.env` matches the backend gateway or the specific microservice port (default: `http://localhost:5080`). Note that if running locally without Docker, ports might differ slightly based on `launchSettings.json`.
+**Fix:** Ensure `VITE_*_API_URL` variables in `.env` match the backend microservice ports (default: `http://localhost:508X`). Note that if running locally without Docker, ports might differ slightly based on `launchSettings.json`.
 
 ## CI/CD Issues
 

@@ -31,20 +31,20 @@ docker compose down
 
 | Service Name | Container Name | Port Mapping | Image / Build |
 |---|---|---|---|
-| `patient-api` | `patient-api` | 5080 | Custom .NET 8 Build |
-| `provider-api` | `provider-api` | 5081 | Custom .NET 8 Build |
-| `appointment-api` | `appointment-api` | 5082 | Custom .NET 8 Build |
-| `care-plan-api` | `care-plan-api` | 5083 | Custom .NET 8 Build |
-| `clinical-insights-api` | `clinical-insights-api` | 5084 | Custom .NET 8 Build |
-| `audit-api` | `audit-api` | 5085 | Custom .NET 8 Build |
-| `notification-worker`| `notification-worker` | N/A | Custom .NET 8 Build |
+| `patient-api` | `patient-api` | 5080 | Custom .NET 10 Build |
+| `provider-api` | `provider-api` | 5081 | Custom .NET 10 Build |
+| `appointment-api` | `appointment-api` | 5082 | Custom .NET 10 Build |
+| `care-plan-api` | `care-plan-api` | 5083 | Custom .NET 10 Build |
+| `clinical-insights-api` | `clinical-insights-api` | 5084 | Custom .NET 10 Build |
+| `audit-api` | `audit-api` | 5085 | Custom .NET 10 Build |
+| `notification-worker`| `notification-worker` | N/A | Custom .NET 10 Build |
 | `portal` | `healthcare-care-portal` | 5173 -> 80 | Nginx Alpine / React |
 | `sqlserver` | `sqlserver` | 1433 | SQL Server 2022 |
 
 ## Multi-stage Builds
 
 ### .NET APIs
-The `src/services/Dockerfile` uses `mcr.microsoft.com/dotnet/sdk:8.0` for the build stage and `mcr.microsoft.com/dotnet/aspnet:8.0` for the runtime stage.
+The `src/services/Dockerfile` uses `mcr.microsoft.com/dotnet/sdk:10.0` for the build stage and `mcr.microsoft.com/dotnet/aspnet:10.0` for the runtime stage.
 To improve security, the process runs as a dynamically added `appuser`.
 
 ### React Portal

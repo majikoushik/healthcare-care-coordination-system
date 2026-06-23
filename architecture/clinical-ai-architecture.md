@@ -13,7 +13,7 @@ The platform employs a **Human-Review-First** architecture.
 
 To avoid tight coupling to Azure SDKs during local development, we define `IClinicalTextAnalyzer`.
 - `MockClinicalTextAnalyzer`: A deterministic, keyword-matching implementation used natively for local development. It runs purely in-memory and requires no API keys.
-- `AzureTextAnalyticsForHealthProvider`: (Future implementation) Will map the interface to `Azure.AI.TextAnalytics` to call the true Text Analytics for Health cognitive service.
+- `AzureTextAnalyticsForHealthProvider`: A readiness placeholder demonstrating the intended Azure architecture. It simulates the expected Text Analytics for Health output shape locally without requiring real Azure credentials. (Future production implementation will swap this simulation to call the true `Azure.AI.TextAnalytics` cognitive service.)
 
 ## Data Persistence
 

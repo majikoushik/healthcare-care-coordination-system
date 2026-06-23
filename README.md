@@ -47,7 +47,7 @@ The system models a simplified healthcare coordination journey through a React c
 
 Backend:
 
-- .NET 8
+- .NET 10
 - ASP.NET Core Web API / Minimal APIs
 - Entity Framework Core
 - SQL Server / Azure SQL
@@ -83,6 +83,20 @@ Cloud and DevOps:
 - Docker Compose
 - GitHub Actions
 - Bicep
+
+### Running Tests (Local Validation)
+
+```bash
+# Backend (from repository root)
+Get-ChildItem -Recurse -Filter *.csproj src | ForEach-Object { dotnet build $_.FullName }
+Get-ChildItem -Recurse -Filter *.csproj tests | ForEach-Object { dotnet test $_.FullName }
+
+# Frontend
+cd src/web/healthcare-care-portal
+npm ci
+npm run build
+npm test
+```
 
 ## Architecture Overview
 
@@ -218,11 +232,11 @@ See [Audit Logging Strategy](docs/audit-logging-strategy.md) and [Audit Logging 
 
 Each backend service exposes:
 
-- `GET /health/live`
-- `GET /health/ready`
-- `GET /health`
+- GET /health/live
+- GET /health/ready
+- GET /health
 
-The APIs propagate `X-Correlation-ID` through responses and logs. The React portal includes a `/system-health` dashboard. Application Insights and Log Analytics readiness are documented but not required locally.
+The APIs propagate X-Correlation-ID through responses and logs. The React portal includes a /system-health dashboard. Application Insights and Log Analytics readiness are documented but not required locally.
 
 See [Observability Architecture](architecture/observability-architecture.md) and [Application Insights Readiness](docs/application-insights-readiness.md).
 
@@ -234,7 +248,7 @@ The repository includes:
 - React/Vite Dockerfile served through Nginx.
 - Docker Compose for local orchestration.
 - GitHub Actions CI for backend build/test, frontend type-check/build/test, and Docker build validation.
-- Lockfile-based frontend installs through `npm ci` in CI and container builds.
+- Lockfile-based frontend installs through npm ci in CI and container builds.
 
 Docker commands:
 
@@ -248,7 +262,7 @@ See [Docker Guide](docs/docker-guide.md), [CI/CD Pipeline](docs/ci-cd.md), and [
 
 ## Azure Deployment Blueprint
 
-The Azure blueprint is under `infra/bicep/` and includes:
+The Azure blueprint is under infra/bicep/ and includes:
 
 - Azure Container Apps for backend APIs and worker services.
 - Azure Static Web Apps for the React frontend.
@@ -284,7 +298,7 @@ Recommended portfolio demo path:
 
 Prerequisites:
 
-- .NET 8 SDK
+- .NET 10 SDK
 - Node.js 20 or later
 - npm
 - Docker Desktop
@@ -314,7 +328,7 @@ Local default modes:
 - `AI_PROVIDER=Mock`
 - `CLINICAL_AI_PROVIDER_MODE=Mock`
 - `COSMOS_MODE=Mock`
-- `SECURITY_MODE=Demo`
+- `Security__Mode=Demo`
 
 ## Docker Setup
 

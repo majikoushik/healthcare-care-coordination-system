@@ -3,6 +3,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
     <PackageReference Include="xunit" Version="2.8.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1" />
-    <ProjectReference Include="..\..\src\building-blocks\Cosmos\Cosmos.csproj" />
+    <!-- Reference CarePlan.Api project for status machines -->
+    <ProjectReference Include="..\..\src\services\CarePlan.Api\CarePlan.Api.csproj" />
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@ Local development is designed to exercise the healthcare workflow without Azure 
 
 ## Runtime Defaults
 
-- Frontend uses `VITE_API_BASE_URL`.
+- Frontend uses per-service `VITE_*_API_URL` variables.
 - SQL Server runs through Docker Compose for transactional services.
 - Cosmos DB-backed modules use mock/local repository abstractions unless explicitly configured otherwise.
 - Clinical AI uses `MockClinicalTextAnalyzer`.

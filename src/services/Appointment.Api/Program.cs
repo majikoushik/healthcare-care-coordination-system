@@ -20,7 +20,7 @@ builder.Services.AddDbContext<AppointmentDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-builder.Services.AddAuditLogging(serviceName);
+builder.Services.AddAuditLogging(serviceName, builder.Configuration);
 builder.Services.AddSqlServerReadiness<AppointmentDbContext>(); // Adds /health/ready dependency check
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 

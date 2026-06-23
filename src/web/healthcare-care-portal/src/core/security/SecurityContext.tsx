@@ -24,8 +24,27 @@ const defaultContext: SecurityContextState = {
 
 export const SecurityContext = createContext<SecurityContextState>(defaultContext);
 
+// ---------------------------------------------------------------------------
+// Safe storage helpers — guarded for test environments and private browsing
+// ---------------------------------------------------------------------------
+const safeStorageGet = (key: string): string | null => {
+  try {
+    return typeof localStorage !== "undefined" ? localStorage.getItem(key) : null;
+  } catch {
+    return null;
+  }
+};
+
+const safeStorageSet = (key: string, value: string): void => {
+  try {
+    if (typeof localStorage !== "undefined") localStorage.setItem(key, value);
+  } catch {
+    // Storage unavailable — silently ignore
+  }
+};
+
 const getOrCreateDemoUserId = () => {
-  const existing = localStorage.getItem("demoUserId");
+  const existing = safeStorageGet("demoUserId");
   if (existing) {
     return existing;
   }
@@ -35,7 +54,7 @@ const getOrCreateDemoUserId = () => {
       ? crypto.randomUUID()
       : `demo-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-  localStorage.setItem("demoUserId", generated);
+  safeStorageSet("demoUserId", generated);
   return generated;
 };
 
@@ -78,15 +97,15 @@ const rolePermissions: Record<DemoRole, string[]> = {
 
 export const SecurityProvider = ({ children }: { children: ReactNode }) => {
   const [role, setRoleState] = useState<DemoRole>(() => {
-    return (localStorage.getItem("demoRole") as DemoRole) || "CareCoordinator";
+    return (safeStorageGet("demoRole") as DemoRole) || "CareCoordinator";
   });
   const [userId] = useState(getOrCreateDemoUserId);
 
   const setRole = (newRole: DemoRole) => {
-    localStorage.setItem("demoRole", newRole);
+    safeStorageSet("demoRole", newRole);
     setRoleState(newRole);
     // Reload page to clear TanStack Query cache and reset state for the new role securely
-    window.location.reload(); 
+    if (typeof window !== "undefined") window.location.reload();
   };
 
   const hasPermission = (permission: string) => {

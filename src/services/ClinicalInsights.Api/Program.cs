@@ -39,7 +39,7 @@ else
 builder.Services.AddSingleton<IClinicalInsightRepository, MockClinicalInsightRepository>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-builder.Services.AddAuditLogging(serviceName);
+builder.Services.AddAuditLogging(serviceName, builder.Configuration);
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();

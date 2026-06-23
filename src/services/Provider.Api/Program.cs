@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ProviderDbContext>(options =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddSqlServerReadiness<ProviderDbContext>(); // Adds /health/ready dependency check
-builder.Services.AddAuditLogging(serviceName);
+builder.Services.AddAuditLogging(serviceName, builder.Configuration);
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();

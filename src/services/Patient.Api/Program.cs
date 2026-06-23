@@ -22,7 +22,7 @@ builder.Services.AddDbContext<PatientDbContext>(options =>
 
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddSqlServerReadiness<PatientDbContext>(); // Adds /health/ready dependency check
-builder.Services.AddAuditLogging(serviceName);
+builder.Services.AddAuditLogging(serviceName, builder.Configuration);
 builder.Services.AddHealthcareSecurity(builder.Configuration);
 
 var app = builder.Build();
@@ -54,3 +54,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+// Required for WebApplicationFactory in integration tests
+public partial class Program { }

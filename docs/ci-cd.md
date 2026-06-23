@@ -16,7 +16,7 @@ The CI workflow is divided into three parallel/dependent jobs.
 
 ### 1. Backend Job (`backend`)
 - **Environment**: Ubuntu Latest
-- **Setup**: Configures .NET 8 SDK.
+- **Setup**: Configures .NET 10 SDK.
 - **Steps**:
   - Restores dependencies using `dotnet restore`.
   - Builds all solutions and `.csproj` files (`dotnet build --configuration Release --no-restore`).

@@ -33,7 +33,6 @@ public static class ObservabilityExtensions
             builder.Services.AddApplicationInsightsTelemetry(options => 
             {
                 options.ConnectionString = appInsightsConnString;
-                options.EnableAdaptiveSampling = true;
             });
         }
 
