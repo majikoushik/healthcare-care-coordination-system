@@ -15,31 +15,13 @@ namespace Patient.Api.Tests;
 /// Uses WebApplicationFactory to run the Patient.Api in-memory.
 /// Demonstrates end-to-end integration from HTTP request -> FluentValidation -> EF Core DB.
 /// </summary>
-public class PatientRegistrationIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+public class PatientRegistrationIntegrationTests : IClassFixture<PatientApiFactory>
 {
     private readonly HttpClient _client;
 
-    public PatientRegistrationIntegrationTests(WebApplicationFactory<Program> factory)
+    public PatientRegistrationIntegrationTests(PatientApiFactory factory)
     {
-        // Override the SQL Server DbContext with an InMemory one for CI safety
-        var appFactory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<PatientDbContext>));
-                if (descriptor != null)
-                {
-                    services.Remove(descriptor);
-                }
-
-                services.AddDbContext<PatientDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("IntegrationTestsDb");
-                });
-            });
-        });
-
-        _client = appFactory.CreateClient();
+        _client = factory.CreateClient();
     }
 
     [Fact]

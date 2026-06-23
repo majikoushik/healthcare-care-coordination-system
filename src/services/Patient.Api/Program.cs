@@ -40,16 +40,19 @@ app.MapGet("/api/v1/patients/readiness", (HttpContext context) =>
 
 app.MapPatientEndpoints();
 
-using (var scope = app.Services.CreateScope())
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var db = scope.ServiceProvider.GetRequiredService<PatientDbContext>();
-    if (db.Database.GetMigrations().Any())
+    using (var scope = app.Services.CreateScope())
     {
-        db.Database.Migrate();
-    }
-    else
-    {
-        db.Database.EnsureCreated();
+        var db = scope.ServiceProvider.GetRequiredService<PatientDbContext>();
+        if (db.Database.GetMigrations().Any())
+        {
+            db.Database.Migrate();
+        }
+        else
+        {
+            db.Database.EnsureCreated();
+        }
     }
 }
 
