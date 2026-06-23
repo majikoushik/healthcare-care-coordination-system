@@ -1,3 +1,5 @@
+[![CI](https://github.com/majikoushik/healthcare-care-coordination-system/actions/workflows/ci.yml/badge.svg)](https://github.com/majikoushik/healthcare-care-coordination-system/actions/workflows/ci.yml)
+
 # Healthcare Care Coordination System
 
 Cloud-native healthcare care coordination platform demo built with .NET, React, SQL Server, Azure Cosmos DB, Azure AI Language readiness, RBAC, audit logging, observability, Docker, and Azure deployment architecture.
